@@ -1,0 +1,55 @@
+<mxfile host="Electron" modified="2024-02-22T08:39:11.233Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="egjemn4vVOcN5jZdqccm" version="23.1.5" type="device">
+  <diagram id="2r0j30p131TbFWcqZT18" name="Page-1">
+    <mxGraphModel dx="1434" dy="836" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="QqInX4FVim0Bl44KSGA5-5" value="Pages relation" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="330" width="980" height="860" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-21" value="Create Account" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="44" y="255" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-22" value="Login" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="210" y="270" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-23" value="Dashboard" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="340" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-25" value="Exercises" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="370" y="160" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-26" value="Exercise" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="550" y="160" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-27" value="Create Exercise" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="540" y="420" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-28" value="Workouts" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="350" y="550" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-29" value="Workout" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="300" y="700" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-30" value="Workout Session" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="480" y="710" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-31" value="Plans" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="500" y="530" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-32" value="Create Plan" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="620" y="630" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-33" value="Edit Plan" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="QqInX4FVim0Bl44KSGA5-5">
+          <mxGeometry x="620" y="720" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-20" value="Home" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="490" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QqInX4FVim0Bl44KSGA5-24" value="Daily Calorie Calculator" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="600" width="120" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
