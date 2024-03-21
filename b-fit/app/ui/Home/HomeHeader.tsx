@@ -20,16 +20,16 @@ export default function HomeHeader() {
   }
 
   return (
-    <div className="bg-black flex justify-between item-center h-24 max-w-[1240px] mx-auto text-white">
+    <div className="bg-black flex justify-between item-center max-w-[1240px] mx-auto text-white">
       {/** Logo */}
-      <h1 className="p-2 w-full text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
+      <h1 className="p-2 text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
 
       {/** Desktop Nav */}
       <ul className="hidden md:flex">
         {navItems.map((item) => {
           return (
-            <a key={item.id} href={item.href}>
-              <li className="p-4 hover:bg-[#5a7be9] rounded-xl m-2 cursor-pointer duration-300 hover:text-black">
+            <a key={item.id} href={item.href} className="p-4 hover:bg-[#5a7be9] rounded-xl m-2 cursor-pointer duration-300 hover:text-black">
+              <li>
                 {item.text}
               </li>
             </a>
