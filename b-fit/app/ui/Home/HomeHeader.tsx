@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { HomeNavBarItem } from "@/app/lib/definitions";
@@ -6,61 +6,52 @@ import { HomeNavBarItem } from "@/app/lib/definitions";
 const navItems: HomeNavBarItem[] = [
   { id: "0", href: "#home", text: "Home" },
   { id: "1", href: "#caloriecalculator", text: "Calorie Calculator" },
-  { id: "2", href: "#singleworkouts", text: "Single Workouts" },
-  { id: "3", href: "#workoutplans", text: "Workout Plans" },
-  { id: "4", href: "#exercises", text: "Exercies" },
+  { id: "2", href: "#exercises", text: "Exercises" },
+  { id: "3", href: "#singleworkouts", text: "Single Workouts" },
+  { id: "4", href: "#workoutplans", text: "Workout Plans" },
 ];
 
 export default function HomeHeader() {
-  //state to manage visibility of navbar
   const [nav, setNav] = useState(false);
-  //toggle function to manage navbar display
+
   function handleNav() {
     setNav(!nav);
   }
 
   return (
-    <div className="bg-black flex justify-between item-center max-w-[1240px] mx-auto text-white">
-      {/** Logo */}
+    <div className="bg-[#0F172A]/80 flex justify-between item-center max-w-[1240px] max-h-[70px] p-2 mx-auto text-white sticky top-0">
+      {/* Logo */}
       <h1 className="p-2 text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
 
-      {/** Desktop Nav */}
+      {/* Desktop Nav */}
       <ul className="hidden md:flex">
-        {navItems.map((item) => {
-          return (
-            <a key={item.id} href={item.href} className="p-4 hover:bg-[#5a7be9] rounded-xl m-2 cursor-pointer duration-300 hover:text-black">
-              <li>
-                {item.text}
-              </li>
+        {navItems.map((item) => (
+          <li key={item.id} className="m-2">
+            <a href={item.href} className="p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black">
+              {item.text}
             </a>
-          );
-        })}
+          </li>
+        ))}
       </ul>
+
       {/* Mobile Navigation Icon */}
       <div onClick={handleNav} className="block md:hidden">
         {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
-      {/**Mobile Navigation Menu*/}
-      <ul
-        className={
-          nav
-            ? "fixed md:hidden left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500"
-            : "ease-in-out w-[60%] duration-500 fixed top-0 bottom-0 left-[-100%]"
-        }
-      >
-        {/** Mobile Logo */}
-        <h1 className="p-2 w-full text-3xl font-bold text-[#5a7be9] m-4">
-          B-Fit
-        </h1>
-        {navItems.map((item) => {
-          return (
-            <a key={item.id} href={item.href}>
-              <li className="p-4 border-b rounded-xl hover:bg-[#5a7be9] duration-300 hover:text-black cursor-pointer border-gray-600">
-                {item.text}
-              </li>
+
+      {/* Mobile Navigation Menu */}
+      <ul className={`fixed md:hidden left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500 ${nav ? "" : "left-[-100%]"}`}>
+        {/* Mobile Logo */}
+        <li className="m-4">
+          <h1 className="p-2 w-full text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
+        </li>
+        {navItems.map((item) => (
+          <li key={item.id} className="border-b border-gray-600">
+            <a href={item.href} className="p-4 rounded-xl hover:bg-[#5a7be9] duration-300 hover:text-black cursor-pointer">
+              {item.text}
             </a>
-          );
-        })}
+          </li>
+        ))}
       </ul>
     </div>
   );
