@@ -2,7 +2,7 @@ import SectionCard from "./SectionCard";
 
 export default function Welcome() {
   return (
-    <div id="home" className="h-screen flex flex-col justify-center items-center">
+    <div id="home" className="min-h-screen pt-[70px]">
       <h1 className="text-2xl pb-6 text-center" >Welcome to <b>B-Fit</b></h1>
       <SectionCard>
         <p className="p-4">

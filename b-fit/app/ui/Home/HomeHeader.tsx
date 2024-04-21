@@ -24,7 +24,7 @@ export default function HomeHeader() {
       <h1 className="p-2 text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
 
       {/* Desktop Nav */}
-      <ul className="hidden md:flex">
+      <ul className="hidden md:flex items-center">
         {navItems.map((item) => (
           <li key={item.id} className="m-2">
             <a href={item.href} className="p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black">
@@ -33,6 +33,7 @@ export default function HomeHeader() {
           </li>
         ))}
       </ul>
+      <a className="p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black">Login/Register</a>
 
       {/* Mobile Navigation Icon */}
       <div onClick={handleNav} className="block md:hidden">

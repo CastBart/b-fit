@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="bg-[#0F172A]">
       <HomeHeader />
-      <div className="max-w-[1080px] mx-auto px-4">
+      <div className="max-w-[1080px] flex flex-col mx-auto px-4">
         <Welcome />
         <CalorieCounter />
         <Exercises />

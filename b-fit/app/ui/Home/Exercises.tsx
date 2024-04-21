@@ -2,7 +2,7 @@ import SectionCard from "./SectionCard";
 
 export default function Exercises() {
   return (
-    <div id="exercises" className="h-screen flex flex-col justify-center items-center">
+    <div id="exercises" className="min-h-screen pt-[70px]">
       <h1 className="text-2xl pb-6">Custom Exercises Creation</h1>
       <SectionCard>
         <h3 className="text-xl pb-2 px-4">
