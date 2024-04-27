@@ -8,7 +8,7 @@ import Welcome from "./ui/Home/Welcome";
 
 export default function Home() {
   return (
-    <div className="bg-[#0F172A]">
+    <main id="home_page" className="bg-[#0F172A]">
       <HomeHeader />
       <div className="max-w-[1080px] flex flex-col mx-auto px-4">
         <Welcome />
@@ -17,6 +17,6 @@ export default function Home() {
         <SingleWourkout />
         <WorkoutPlan />
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { HomeNavBarItem } from "@/app/lib/definitions";
+import { HomeNavBarItem, websiteLinks } from "@/app/lib/definitions";
 
 const navItems: HomeNavBarItem[] = [
   { id: "0", href: "#home", text: "Home" },
@@ -33,7 +33,7 @@ export default function HomeHeader() {
           </li>
         ))}
       </ul>
-      <a className="p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black">Login/Register</a>
+      <a className="hidden md:block p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black" href={websiteLinks.login.link}>Login/Sign Up</a>
 
       {/* Mobile Navigation Icon */}
       <div onClick={handleNav} className="block md:hidden">
@@ -47,12 +47,17 @@ export default function HomeHeader() {
           <h1 className="p-2 w-full text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
         </li>
         {navItems.map((item) => (
-          <li key={item.id} className="border-b border-gray-600">
-            <a href={item.href} className="p-4 rounded-xl hover:bg-[#5a7be9] duration-300 hover:text-black cursor-pointer">
+          <li key={item.id} className="border-gray-600 mx-2 my-4">
+            <a href={item.href} className="p-2 rounded-xl hover:bg-[#5a7be9] duration-300 hover:text-black cursor-pointer">
               {item.text}
             </a>
           </li>
         ))}
+        <li key='login_button' className="border-gray-600 mx-2 my-4">
+            <a href={websiteLinks.login.link} className="p-2 rounded-xl hover:bg-[#5a7be9] duration-300 hover:text-black cursor-pointer">
+              Login/Sign Up
+            </a>
+          </li>
       </ul>
     </div>
   );
