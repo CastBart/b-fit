@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { User } from "../definitions";
+import { User, websiteLinks } from "../definitions";
 import { v4 } from "uuid";
 
 // User Form Schema
@@ -68,6 +68,6 @@ export async function registerUser(
     };
   }
 
-  revalidatePath("/home");
-  redirect("/home");
+  revalidatePath(websiteLinks.welcome.link);
+  redirect(websiteLinks.welcome.link);
 }
