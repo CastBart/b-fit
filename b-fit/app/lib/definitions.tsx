@@ -3,12 +3,15 @@ export type HomeNavBarItem = {
   href: string;
   text: string;
 };
+
+//Start User Type
 export type User = {
   id: string;
   name: string;
   email: string;
   password: string;
 };
+
 
 export type Pages = {
   [key: string]: Page;
