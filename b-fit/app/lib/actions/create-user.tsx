@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { User, websiteLinks } from "../definitions";
 import { v4 } from "uuid";
+import { sql } from "@vercel/postgres";
 
 // User Form Schema
 const UserFormSchema = z.object({
@@ -44,7 +45,7 @@ export async function registerUser(
     };
   }
   // Check if password and confirmPassword match
-  const { password, confirmPassword } = validatedFields.data;
+  const { fullName, email, password, confirmPassword } = validatedFields.data;
   if (password !== confirmPassword) {
     return {
       errors: {
@@ -62,6 +63,11 @@ export async function registerUser(
       password: validatedFields.data.password,
     };
     console.log(user);
+    const userExists = await sql`
+    SELECT COUNT(*)
+    FROM users
+    WHERE email = '${email}'`;
+    console.log(userExists)
   } catch (error) {
     return {
       message: "Database error: Failed to Create User",
