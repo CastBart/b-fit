@@ -23,8 +23,8 @@ export type Page = {
 };
 //Webiste Links
 export const websiteLinks: Pages = {
-  welcome: {name: "Welcome", link: "/"},
-  home: { name: "Home", link: "/home" },
+  home: { name: "Home", link: "/" },
+  welcome: {name: "Welcome", link: "/welcome"},
   login: { name: "Login", link: "/login" },
   register: {name: "register", link: "/register"},
   services: { name: "Services", link: "/services" },

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { User, websiteLinks } from "../definitions";
 import { v4 } from "uuid";
-import { sql } from "@vercel/postgres";
+import { Pool, sql } from "@vercel/postgres";
 
 // User Form Schema
 const UserFormSchema = z.object({
@@ -50,24 +50,37 @@ export async function registerUser(
     return {
       errors: {
         confirmPassword: ["Passwords do not match"],
-        password: ["Passwords do not match"],
       },
       message: "Password mismatch",
     };
   }
+
+  // Create User in DB
   try {
-    const user: User = {
-      id: v4(),
-      name: validatedFields.data.fullName,
-      email: validatedFields.data.email,
-      password: validatedFields.data.password,
-    };
-    console.log(user);
-    const userExists = await sql`
+    //check if email exists
+    const { rows } = await sql`
     SELECT COUNT(*)
     FROM users
-    WHERE email = '${email}'`;
-    console.log(userExists)
+    WHERE email = ${email}`;
+    const emailCount = parseInt(rows[0].count, 10);
+    //create user if email doesnt exist
+    if (emailCount === 0) {
+      sql`
+        INSERT INTO users (email, full_name, password)
+        VALUES (${email}, ${fullName}, ${password})
+      `;
+    } else {
+      // return email exists error
+      return {
+        errors: {
+          email: ["Email is already in use"],
+        },
+        message: "Email in use",
+      };
+    }
+    //insert user into DB
+    await sql`
+    `;
   } catch (error) {
     return {
       message: "Database error: Failed to Create User",
