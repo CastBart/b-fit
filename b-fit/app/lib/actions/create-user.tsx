@@ -5,6 +5,7 @@ import { z } from "zod";
 import { User, websiteLinks } from "../definitions";
 import { v4 } from "uuid";
 import { Pool, sql } from "@vercel/postgres";
+import bcrypt from "bcryptjs";
 
 // User Form Schema
 const UserFormSchema = z.object({
@@ -41,7 +42,7 @@ export async function registerUser(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Invoice.",
+      message: "Missing Fields. Failed to Create User.",
     };
   }
   // Check if password and confirmPassword match
@@ -55,6 +56,8 @@ export async function registerUser(
     };
   }
 
+  //Hash User Password
+  const hashedPassword = await bcrypt.hash(password, 10);
   // Create User in DB
   try {
     //check if email exists
@@ -67,7 +70,7 @@ export async function registerUser(
     if (emailCount === 0) {
       sql`
         INSERT INTO users (email, full_name, password)
-        VALUES (${email}, ${fullName}, ${password})
+        VALUES (${email}, ${fullName}, ${hashedPassword})
       `;
     } else {
       // return email exists error
