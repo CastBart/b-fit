@@ -1,11 +1,13 @@
+import Link from "next/link";
 import { websiteLinks } from "../lib/definitions";
 import LoginForm from "../ui/LoginForm";
+import React from "react";
 
-export default function LoginPage() {
+export default function LoginPage(): React.ReactNode {
   return (
     <main id="login_page" className="flex flex-col md:flex-row h-screen bg-[#0F172A]">
       {/* Image section */}
-      <div className="md:w-1/2 h-1/2 md:h-full flex items-center justify-center">
+      <Link href={websiteLinks.home.link} passHref className="md:w-1/2 h-1/2 md:h-full flex items-center justify-center">
         <div className="w-full h-full max-h-screen m-5">
           <img 
             src="/BartFitness-Login.png"
@@ -13,7 +15,7 @@ export default function LoginPage() {
             className="w-full h-full object-contain"
           />
         </div>
-      </div>
+      </Link>
 
       {/* Login section */}
       <div className="md:w-1/2 h-full flex justify-center items-center p-6">
