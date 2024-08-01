@@ -1,6 +1,7 @@
 import WorkoutCard from "@/app/ui/Dashboard/Workouts/WorkoutCard";
+import Link from "next/link";
 
-export default function Page(): React.ReactNode {
+export default async function Page() {
   const workouts = [
     { title: 'Workout 1', description: 'Description for Workout 1' },
     { title: 'Workout 2', description: 'Description for Workout 2' },
@@ -11,8 +12,16 @@ export default function Page(): React.ReactNode {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <header className="p-4 text-center">
-        <h1 className="text-3xl font-semibold">Workouts</h1>
+      <header className="p-6 flex justify-between items-center relative">
+        <div className="flex-grow" />
+        <h1 className="text-3xl font-semibold absolute left-1/2 transform -translate-x-1/2">
+          Workouts
+        </h1>
+        <Link href="/dashboard/workouts/create">
+          <button className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded">
+            Create Workout
+          </button>
+        </Link>
       </header>
       <main className="p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -27,4 +36,4 @@ export default function Page(): React.ReactNode {
       </main>
     </div>
   );
-  }
+}
