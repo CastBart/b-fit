@@ -71,17 +71,19 @@ export default function SideNav() {
           {Object.entries(links).map(([key, link]) => {
             const Icon = link.icon;
             return (
-              <li
-                key={key}
-                className={`flex h-[48px] items-center justify-start gap-4 m-2 rounded-md p-3 ${
-                  pathname === link.link ? "bg-gray-700" : "hover:bg-[#5a7be9]"
-                }`}
-              >
-                {Icon && <Icon className="w-5 h-5" />}
-                <Link href={link.link} className={`block`}>
+              <Link href={link.link} className={`block`} key={key}>
+                <li
+                 
+                  className={`flex h-[48px] items-center justify-start gap-4 m-2 rounded-md p-3 ${
+                    pathname === link.link
+                      ? "bg-gray-700"
+                      : "hover:bg-[#5a7be9]"
+                  }`}
+                >
+                  {Icon && <Icon className="w-5 h-5" />}
                   {link.name}
-                </Link>
-              </li>
+                </li>
+              </Link>
             );
           })}
         </ul>

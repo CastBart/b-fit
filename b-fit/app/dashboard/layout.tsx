@@ -1,6 +1,7 @@
 import SideNav from "../ui/Dashboard/sidenav";
+import { AppProps } from "next/app";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
