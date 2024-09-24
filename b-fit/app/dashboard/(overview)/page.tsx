@@ -1,13 +1,11 @@
-'use client'
-import { useSession } from "next-auth/react";
+'use server'
 
-export default function Page() {
-  const { data: session,status } = useSession();
-  console.log("Session data on client:", session);
+import { auth } from "@/auth";
 
-  if(status === "loading"){
-    return <div>Loading...</div>
-  }
+
+export default async function Page() {
+  const session = await auth()
+  console.log("Session user: ", session?.user?.email);
   return (
     <main>
       <div>Hello {session?.user?.name}, this is user dashboard</div>

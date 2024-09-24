@@ -15,8 +15,8 @@ export default function RegisterForm(): React.ReactNode {
             Full Name
           </label>
           <input
-            id="fullName"
-            name="fullName"
+            id="name"
+            name="name"
             type="text"
             className="rounded-md appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             placeholder="Full Name"
