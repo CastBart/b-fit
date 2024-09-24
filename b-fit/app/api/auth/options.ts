@@ -1,4 +1,4 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
@@ -17,7 +17,10 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-export const options: NextAuthOptions = {
+export const options: NextAuthConfig = {
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -32,10 +35,10 @@ export const options: NextAuthOptions = {
           placeholder: "Your Username",
         },
         password: {
-            label: "Password:",
-            type: "password",
-            placeholder: "Your Password"
-        }
+          label: "Password:",
+          type: "password",
+          placeholder: "Your Password",
+        },
       },
       async authorize(credentials) {
         const parsedCredentials = z
@@ -59,4 +62,3 @@ export const options: NextAuthOptions = {
     }),
   ],
 };
-
