@@ -45,19 +45,23 @@ export const { auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       console.log("JWT callback - initial token:", token); // Debugging line
+      console.log("JWT callback - initial User:", user); // Debugging line
+      
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
+        const customUser = user as User;
+        token.id = customUser.id;
+        token.email = customUser.email;
+        token.name = customUser.name;
       }
+      console.log("JWT callback - Modified User:", user)
       console.log("JWT callback - modified token:", token); // Debugging line
       return token;
     },
 
-    async session({ session, token, user }) {
+    async session({ session, token}) {
       console.log("Session callback - initial session:", session); // Debugging line
       console.log("Session callback - token:", token); // Debugging line
-      if (token && session.user) {
+      if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
