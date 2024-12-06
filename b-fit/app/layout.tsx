@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Ubuntu, Outfit} from "@next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+const ubuntu = Ubuntu({
+  weight: ["300", "400", "500", "700"],
+  style: ["normal","italic"],
+  subsets: ["latin"],
+  display: "swap"
+})
+const outfit = Outfit({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap"
+})
 
 export const metadata: Metadata = {
   title: "B-Fit",
@@ -15,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-[#0F172A]">
-      <body className={inter.className}>{children}</body>
+    <html lang="en">
+      <body className={`container mx-auto ${outfit.className}`}>{children}</body>
     </html>
   );
 }

@@ -19,7 +19,7 @@ export default function HomeHeader() {
   }
 
   return (
-    <div className="bg-[#0F172A]/80 flex justify-between item-center max-w-[1240px] max-h-[70px] p-2 mx-auto text-white sticky top-0">
+    <div className="flex justify-between item-center max-w-[1240px] max-h-[70px] p-2 mx-auto text-white sticky top-0">
       {/* Logo */}
       <h1 className="p-2 text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
 
