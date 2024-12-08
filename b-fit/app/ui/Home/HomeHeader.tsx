@@ -36,7 +36,7 @@ export default function HomeHeader() {
       <a className="hidden md:block p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black" href={websiteLinks.login.link}>Login/Sign Up</a>
 
       {/* Mobile Navigation Icon */}
-      <div onClick={handleNav} className="block md:hidden">
+      <div onClick={handleNav} className="block self-center md:hidden">
         {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
 

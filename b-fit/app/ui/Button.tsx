@@ -35,13 +35,7 @@ export default function Button({
   };
 
   // Combine styles
-  const styles = `
-    ${baseStyles}
-    ${variantStyles[variant]}
-    ${sizeStyles[size]}
-    ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-    ${className}
-  `;
+  const styles = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`;
 
   return (
     <button

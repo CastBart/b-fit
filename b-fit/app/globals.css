@@ -31,7 +31,19 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0f172a;
+
+  /* Gradient Background */
+  background: linear-gradient(
+    to bottom right,
+    #0f172a, /* Dark navy */
+    #1e293b, /* Slightly lighter navy */
+    #334155  /* Even lighter navy */
+  );
+  background-attachment: fixed; /* Ensures the gradient stays in place when scrolling */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #0f172a; /* Fallback for older browsers */
+  min-height: 100%;
 }
 /* Setting Base H tags */
 h1,h2,h3,h4,h5,h6 {

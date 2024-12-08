@@ -1,14 +1,36 @@
 import Button from "../Button";
-import SectionCard from "./SectionCard";
 
 export default function Welcome() {
   return (
-    <div id="welcome" className="flex ">
-      <div className="w-1/2">
-        <h1 className="text-3xl">Track Your Fitness Journey Effortlessly</h1>
-        <Button children="Learn More"/>
+    <div
+      id="welcome"
+      className="flex items-center justify-center min-h-screen text-white px-4"
+    >
+      {/* Left Section */}
+      <div className="w-full lg:w-1/2 flex flex-col items-end space-y-12 ">
+        {/* Welcome Header */}
+        <h1 className="text-4xl md:text-6xl font-bold text-right leading-tight">
+          Track Your Fitness Journey <br />
+          <span className="text-[#5a7be9]">Effortlessly</span>
+        </h1>
+
+        {/* Welcome Subtitle */}
+        <p className="text-lg md:text-xl text-gray-300 text-right max-w-xl">
+          Create workouts, build custom workout plans, extend your exercise
+          library, and calculate your daily calories in one platform.
+        </p>
+
+        {/* Action Button */}
+        <Button size="large">
+          Learn More
+        </Button>
       </div>
-      <div className="w-1/2"></div>
+
+      {/* Right Section */}
+      <div className="hidden lg:block w-1/2">
+        {/* Add an illustration or keep empty for now */}
+        {/* Placeholder for future content */}
+      </div>
     </div>
   );
 }
