@@ -8,9 +8,11 @@ import Welcome from "./ui/Home/Welcome";
 
 export default function Home() {
   return (
-    <main id="home_page" className="">
+    <main id="home_page" className="max-w-[1240px] mx-auto">
       <HomeHeader />
-      <Welcome />
+      <div className="flex flex-col mx-auto px-4">
+        <Welcome />
+      </div>
     </main>
   );
 }

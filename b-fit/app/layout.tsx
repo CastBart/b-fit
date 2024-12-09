@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`container mx-auto ${outfit.className}`}>{children}</body>
+      <body className={`${outfit.className}`}>{children}</body>
     </html>
   );
 }

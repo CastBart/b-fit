@@ -24,7 +24,7 @@ export default function HomeHeader() {
       <h1 className="p-2 text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
 
       {/* Desktop Nav */}
-      <ul className="hidden md:flex items-center">
+      <ul className="hidden lg:flex items-center">
         {navItems.map((item) => (
           <li key={item.id} className="m-2">
             <a href={item.href} className="p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black">
@@ -33,15 +33,15 @@ export default function HomeHeader() {
           </li>
         ))}
       </ul>
-      <a className="hidden md:block p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black" href={websiteLinks.login.link}>Login/Sign Up</a>
+      <a className="hidden lg:block p-4 hover:bg-[#5a7be9] rounded-xl cursor-pointer duration-300 hover:text-black" href={websiteLinks.login.link}>Login/Sign Up</a>
 
       {/* Mobile Navigation Icon */}
-      <div onClick={handleNav} className="block self-center md:hidden">
+      <div onClick={handleNav} className="block self-center lg:hidden">
         {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
 
       {/* Mobile Navigation Menu */}
-      <ul className={`fixed md:hidden left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500 ${nav ? "" : "left-[-100%]"}`}>
+      <ul className={`fixed lg:hidden left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500 ${nav ? "" : "left-[-100%]"}`}>
         {/* Mobile Logo */}
         <li className="m-4">
           <h1 className="p-2 w-full text-3xl font-bold text-[#5a7be9]">B-Fit</h1>
