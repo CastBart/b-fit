@@ -14,6 +14,7 @@ export default function Home() {
       <div className="flex max-w-[1240px] flex-col mx-auto px-4">
         <Welcome />
         <CalorieCounter />
+        <Exercises />
       </div>
       <Footer />
     </main>
