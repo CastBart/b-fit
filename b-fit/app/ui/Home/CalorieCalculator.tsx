@@ -2,7 +2,7 @@ export default function CalorieCounter() {
   return (
     <div
       id="caloriecalculator"
-      className="flex flex-col lg:flex-row items-center justify-center pt-20 text-white px-4 space-y-8 lg:space-y-0"
+      className="flex flex-col lg:flex-row items-center justify-center py-20 text-white px-4 space-y-8 lg:space-y-0"
     >
       {/* Left Section */}
       <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start lg:order-2 text-center lg:text-left space-y-6 p-4">
@@ -11,7 +11,7 @@ export default function CalorieCounter() {
           Optimize Your <span className="text-[#5a7be9]">Nutrition </span>
           with Our Daily Calorie Intake Calculator
         </h1>
-        {/* Welcome Subtitle */}
+        {/* Short Description */}
         <p className="text-lg md:text-xl text-gray-300 max-w-xl">
           Discover the perfect balance for your fitness goals by calculating
           your daily calorie needs. Whether you're building muscle, losing

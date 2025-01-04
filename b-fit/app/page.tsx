@@ -15,6 +15,8 @@ export default function Home() {
         <Welcome />
         <CalorieCounter />
         <Exercises />
+        <SingleWourkout />
+        <WorkoutPlan />
       </div>
       <Footer />
     </main>

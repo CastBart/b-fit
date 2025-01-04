@@ -2,14 +2,9 @@
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { HomeNavBarItem, websiteLinks } from "@/app/lib/definitions";
+import { navItems } from "@/app/lib/definitions";
 
-const navItems: HomeNavBarItem[] = [
-  { id: "0", href: "#home", text: "Home" },
-  { id: "1", href: "#caloriecalculator", text: "Calorie Calculator" },
-  { id: "2", href: "#exercises", text: "Exercises" },
-  { id: "3", href: "#singleworkouts", text: "Single Workouts" },
-  { id: "4", href: "#workoutplans", text: "Workout Plans" },
-];
+
 
 export default function HomeHeader() {
   const [nav, setNav] = useState(false);

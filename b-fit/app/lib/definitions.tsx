@@ -1,8 +1,17 @@
+//Home Nav Bar Item Definition
 export type HomeNavBarItem = {
   id: string;
   href: string;
   text: string;
 };
+//Home NavBar Items
+export const navItems: HomeNavBarItem[] = [
+  { id: "0", href: "#home", text: "Home" },
+  { id: "1", href: "#caloriecalculator", text: "Calorie Calculator" },
+  { id: "2", href: "#exercises", text: "Exercises" },
+  { id: "3", href: "#singleworkouts", text: "Single Workouts" },
+  { id: "4", href: "#workoutplans", text: "Workout Plans" },
+];
 
 //Start User Type
 export type User = {
@@ -33,3 +42,5 @@ export const websiteLinks: Pages = {
   register: {name: "Register", link: "/register", icon: HomeSolid},
   services: { name: "Services", link: "/services", icon: HomeSolid},
 };
+
+
