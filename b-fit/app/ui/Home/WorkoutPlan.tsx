@@ -3,7 +3,7 @@ import SectionCard from "./SectionCard";
 export default function WorkoutPlan() {
   return (
     <div
-      id="exercises"
+      id="workoutplans"
       className="flex flex-col lg:flex-row items-center justify-center py-20 text-white px-4 space-y-8 lg:space-y-0"
     >
       {/* Left Section */}
@@ -29,9 +29,9 @@ export default function WorkoutPlan() {
         {/* Placeholder for future content */}
         <div className="w-full h-full">
           <img
-            src="/BartFitness-Login.png"
+            src="/WorkoutPlan5.jpg"
             alt="Login"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-full"
           />
         </div>
       </div>

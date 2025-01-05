@@ -27,9 +27,9 @@ export default function Exercises() {
         {/* Placeholder for future content */}
         <div className="w-full h-full">
           <img
-            src="/BartFitness-Login.png"
+            src="/Exercise Library4.jpg"
             alt="Login"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-full"
           />
         </div>
       </div>

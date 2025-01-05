@@ -29,9 +29,9 @@ export default function SingleWourkout() {
         {/* Placeholder for future content */}
         <div className="w-full h-full">
           <img
-            src="/BartFitness-Login.png"
+            src="/SingleWourkout4.jpg"
             alt="Login"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-full"
           />
         </div>
       </div>
