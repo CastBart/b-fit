@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { authConfig } from "./auth.config";
 import { z } from "zod";
 import { sql } from "@vercel/postgres";
@@ -17,7 +18,7 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -41,6 +42,7 @@ export const { auth, signIn, signOut } = NextAuth({
         return null;
       },
     }),
+    Google,
   ],
   callbacks: {
     async jwt({ token, user }) {

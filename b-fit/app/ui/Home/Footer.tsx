@@ -38,6 +38,8 @@ export default function Footer() {
         <div className="flex flex-col items-center  space-y-4">
           <h2 className="font-bold mb-2 text-lg text-white">Follow Us</h2>
           <div className="flex space-x-4">
+
+            {/* FACEBOOK */}
             <a
               href="#"
               aria-label="Facebook"
@@ -55,6 +57,7 @@ export default function Footer() {
                 />
               </svg>
             </a>
+            {/* TWITTER */}
             <a
               href="#"
               aria-label="Twitter"
@@ -72,6 +75,7 @@ export default function Footer() {
                 />
               </svg>
             </a>
+            {/* INSTAGRAM */}
             <a
               href="#"
               aria-label="Instagram"
@@ -89,6 +93,7 @@ export default function Footer() {
                 />
               </svg>
             </a>
+            {/* YOUTUBE */}
             <a
               href="#"
               aria-label="YouTube"
