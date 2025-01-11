@@ -6,6 +6,9 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import type { User } from "@/app/lib/definitions";
 import bcrypt from "bcryptjs";
+import {PrismaAdapter} from "@auth/prisma-adapter";
+import { prisma } from './app/lib/db';
+
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
@@ -20,6 +23,8 @@ async function getUser(email: string): Promise<User | undefined> {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -44,33 +49,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
     Google,
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      console.log("JWT callback - initial token:", token); // Debugging line
-      console.log("JWT callback - initial User:", user); // Debugging line
-      
-      if (user) {
-        const customUser = user as User;
-        token.id = customUser.id;
-        token.email = customUser.email;
-        token.name = customUser.name;
-      }
-      console.log("JWT callback - Modified User:", user)
-      console.log("JWT callback - modified token:", token); // Debugging line
-      return token;
-    },
-
-    async session({ session, token}) {
-      console.log("Session callback - initial session:", session); // Debugging line
-      console.log("Session callback - token:", token); // Debugging line
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-      }
-      console.log("Session callback - modified session:", session); // Debugging line
-      return session;
-    },
-  },
-  secret: process.env.AUTH_SECRET,
+  
 });
