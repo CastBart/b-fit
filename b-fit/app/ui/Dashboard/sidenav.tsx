@@ -1,40 +1,41 @@
 "use client";
 import { Pages } from "@/app/lib/definitions";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-import { signOut } from "@/auth";
+
 import {
-  Bars3Solid,
-  XMarkSolid,
-  ArrowLeftOnRectangleSolid,
-  CalculatorSolid,
-  PencilSquareSolid,
-  ClipboardDocumentListSolid,
-  BoltSolid,
-} from "@graywolfai/react-heroicons";
+  Bars3Icon,
+  XMarkIcon,
+  ArrowLeftStartOnRectangleIcon,
+  CalculatorIcon,
+  PencilSquareIcon,
+  ClipboardDocumentListIcon,
+  BoltIcon,
+} from "@heroicons/react/24/solid";
 import { handleLogOut } from "@/app/lib/actions/logout";
 
 const links: Pages = {
   calorieCounter: {
     name: "Calorie Calculator",
     link: "/dashboard/caloriecalculator",
-    icon: CalculatorSolid,
+    icon: CalculatorIcon,
   },
   exercises: {
     name: "All Exercises",
     link: "/dashboard/exercises",
-    icon: BoltSolid,
+    icon: BoltIcon,
   },
   workouts: {
     name: "All Workouts",
     link: "/dashboard/workouts",
-    icon: ClipboardDocumentListSolid,
+    icon: ClipboardDocumentListIcon,
   },
   plans: {
     name: "All Plans",
     link: "/dashboard/plans",
-    icon: PencilSquareSolid,
+    icon: PencilSquareIcon,
   },
 };
 
@@ -56,9 +57,9 @@ export default function SideNav() {
         }`}
       >
         {isOpen ? (
-          <XMarkSolid className="w-10 h-10" />
+          <XMarkIcon className="w-10 h-10" />
         ) : (
-          <Bars3Solid className="w-10 h-10" />
+          <Bars3Icon className="w-10 h-10" />
         )}
       </button>
       {/* Sidebar */}
@@ -73,7 +74,6 @@ export default function SideNav() {
             return (
               <Link href={link.link} className={`block`} key={key}>
                 <li
-                 
                   className={`flex h-[48px] items-center justify-start gap-4 m-2 rounded-md p-3 ${
                     pathname === link.link
                       ? "bg-gray-700"
@@ -87,18 +87,13 @@ export default function SideNav() {
             );
           })}
         </ul>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await handleLogOut();
-          }}
-          className="mt-4"
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="flex h-[48px] w-full items-center justify-start gap-4 m-2 rounded-md p-3 hover:bg-[#5a7be9]"
         >
-          <button className="flex h-[48px] w-full items-center justify-start gap-4 m-2 rounded-md p-3 hover:bg-[#5a7be9]">
-            <ArrowLeftOnRectangleSolid className="w-5 h-5" />
-            <div className="block">Sign Out</div>
-          </button>
-        </form>
+          <ArrowLeftStartOnRectangleIcon className="w-5 h-5" />
+          <div className="block">Sign Out</div>
+        </button>
       </nav>
     </div>
   );

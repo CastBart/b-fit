@@ -1,7 +1,7 @@
 "use server";
-import { signOut } from "@/auth";
+import { signOut } from "next-auth/react";
 
 export async function handleLogOut() {
-  //sign out and redirect to home
-  await signOut({ redirectTo: '/'});
+  // Sign out and redirect to home
+  await signOut({ callbackUrl: "/" });
 }

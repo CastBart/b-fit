@@ -2,7 +2,8 @@
 import React, { FC, ReactNode } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { authenticate } from "@/app/lib/actions/authenticate";
-import { ExclamationCircleSolid } from "@graywolfai/react-heroicons";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+
 
 export default function LoginForm(): React.ReactNode {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -45,7 +46,7 @@ export default function LoginForm(): React.ReactNode {
       >
         {errorMessage && (
           <>
-            <ExclamationCircleSolid className="h-5 w-5 text-red-500" />
+            <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
             <p className="text-sm text-red-500">{errorMessage}</p>
           </>
         )}

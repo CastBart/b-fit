@@ -14,12 +14,17 @@ export const navItems: HomeNavBarItem[] = [
 ];
 
 //Start User Type
-export type User = {
+export interface User {
   id: string;
-  name: string;
+  name: string | null; // Allow null
   email: string;
+  emailVerified: Date | null;
   password: string;
-};
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 
 
 export type Pages = {
@@ -27,7 +32,7 @@ export type Pages = {
 };
 // Start Page Definitions
 import { ForwardRefExoticComponent, RefAttributes, SVGProps } from "react";
-import { HomeSolid } from "@graywolfai/react-heroicons";
+import { HomeIcon } from "@heroicons/react/24/solid";
 export type HeroIcon = ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, "ref"> & RefAttributes<SVGSVGElement>>;
 export type Page = {
   name: string;
@@ -36,11 +41,11 @@ export type Page = {
 };
 //Webiste Links
 export const websiteLinks: Pages = {
-  home: { name: "Home", link: "/", icon: HomeSolid},
-  welcome: {name: "Welcome", link: "/welcome", icon: HomeSolid},
-  login: { name: "Login", link: "/login", icon: HomeSolid},
-  register: {name: "Register", link: "/register", icon: HomeSolid},
-  services: { name: "Services", link: "/services", icon: HomeSolid},
+  home: { name: "Home", link: "/", icon: HomeIcon},
+  welcome: {name: "Welcome", link: "/welcome", icon: HomeIcon},
+  login: { name: "Login", link: "/login", icon: HomeIcon},
+  register: {name: "Register", link: "/register", icon: HomeIcon},
+  services: { name: "Services", link: "/services", icon: HomeIcon},
 };
 
 

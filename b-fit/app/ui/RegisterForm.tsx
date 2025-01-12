@@ -23,8 +23,8 @@ export default function RegisterForm(): React.ReactNode {
             aria-describedby="fullName-error"
           />
           <div id="fullName-error" aria-live="polite" aria-atomic="true">
-            {state.errors?.fullName &&
-              state.errors.fullName.map((error: string) => (
+            {state.errors?.name &&
+              state.errors.name.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
