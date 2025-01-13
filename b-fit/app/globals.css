@@ -4,15 +4,21 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: 248, 250, 252; /* Light off-white */
+  --background-end-rgb: 203, 213, 225; /* Muted gray-blue */
+  --gradient-start: #f8fafc; /* Light off-white */
+  --gradient-middle: #e2e8f0; /* Soft light gray-blue */
+  --gradient-end: #cbd5e1; /* Muted gray-blue */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 15, 23, 42; /* Dark navy */
+    --background-end-rgb: 51, 65, 85; /* Even lighter navy */
+    --gradient-start: #0f172a; /* Dark navy */
+    --gradient-middle: #1e293b; /* Slightly lighter navy */
+    --gradient-end: #334155; /* Even lighter navy */
   }
 }
 
@@ -34,20 +40,22 @@ html {
   /* Gradient Background */
   background: linear-gradient(
     to bottom right,
-    #0f172a, /* Dark navy */
-    #1e293b, /* Slightly lighter navy */
-    #334155  /* Even lighter navy */
+    var(--gradient-start), /* Top-left */
+    var(--gradient-middle), /* Middle */
+    var(--gradient-end) /* Bottom-right */
   );
   background-attachment: fixed; /* Ensures the gradient stays in place when scrolling */
   background-size: cover;
   background-repeat: no-repeat;
-  background-color: #0f172a; /* Fallback for older browsers */
+  background-color: var(--gradient-start); /* Fallback for older browsers */
   min-height: 100%;
 }
+
 /* Setting Base H tags */
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: 700; /* Bold for headings */
 }
+
 p {
   font-weight: 400; /* Regular weight for paragraphs */
 }
@@ -76,7 +84,7 @@ strong {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: var(--background-start-rgb);
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -103,11 +111,11 @@ strong {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: var(--background-start-rgb);
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: var(--background-start-rgb);
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: var(--background-start-rgb);
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
