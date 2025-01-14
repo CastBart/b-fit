@@ -24,6 +24,7 @@
     "@vercel/postgres": "^0.5.1",
     "autoprefixer": "10.4.15",
     "aws-sdk": "^2.1608.0",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.471.0",
@@ -32,7 +33,6 @@
     "next-auth": "^5.0.0-beta.11",
     "nock": "^13.5.4",
     "postcss": "8.4.31",
-    "prisma": "^6.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.54.2",
@@ -58,6 +58,7 @@
     "eslint-config-next": "^14.0.0",
     "eslint-config-prettier": "9.0.0",
     "prettier": "^3.0.3",
-    "prettier-plugin-tailwindcss": "0.5.4"
+    "prettier-plugin-tailwindcss": "0.5.4",
+    "prisma": "^6.2.1"
   }
 }
