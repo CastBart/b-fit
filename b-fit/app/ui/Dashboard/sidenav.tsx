@@ -14,7 +14,8 @@ import {
   ClipboardDocumentListIcon,
   BoltIcon,
 } from "@heroicons/react/24/solid";
-import { handleLogOut } from "@/app/lib/actions/logout";
+import { handleLogOut } from "@/actions/logout";
+import SignOutButton from "@/components/auth/signout-button";
 
 const links: Pages = {
   calorieCounter: {
@@ -87,13 +88,14 @@ export default function SideNav() {
             );
           })}
         </ul>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex h-[48px] w-full items-center justify-start gap-4 m-2 rounded-md p-3 hover:bg-[#5a7be9]"
-        >
-          <ArrowLeftStartOnRectangleIcon className="w-5 h-5" />
-          <div className="block">Sign Out</div>
-        </button>
+        <form action={handleLogOut}>
+          <button
+            type="submit"
+            className="flex h-[48px] w-full items-center justify-start gap-4 m-2 rounded-md p-3 hover:bg-[#5a7be9]"
+          >
+            Sign out
+          </button>
+        </form>
       </nav>
     </div>
   );

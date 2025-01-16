@@ -21,6 +21,13 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/ui/HomeNavigation.js", "app/ui/Home/HomeHeader.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/ui/HomeNavigation.js",
+    "app/ui/Home/HomeHeader.js"
+  ],
   "exclude": ["node_modules"]
 }

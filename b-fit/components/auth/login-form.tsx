@@ -35,8 +35,10 @@ export default function LoginForm() {
     setSuccess("");
     startTransition(() => {
       login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data !== undefined) {
+          setError(data.error);
+          setSuccess(data.success);
+        }
       });
     });
   }
