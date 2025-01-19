@@ -3,7 +3,6 @@
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/data/user";
 import { getVerificationTokenByToken } from "@/data/verification-token";
-import { error } from "console";
 
 export async function newVerification(token: string) {
   const existingToken = await getVerificationTokenByToken(token);
