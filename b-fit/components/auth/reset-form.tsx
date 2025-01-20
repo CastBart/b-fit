@@ -1,7 +1,7 @@
 "use client";
 import * as z from "zod";
 import { useTransition, useState } from "react";
-import { ResetSchema } from "@/app/schemas";
+import { ResetSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

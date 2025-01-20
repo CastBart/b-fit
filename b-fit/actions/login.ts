@@ -1,12 +1,15 @@
 "use server";
 import * as z from "zod";
-import { LoginSchema } from "@/app/schemas";
+import { LoginSchema } from "@/schemas";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/data/user";
-import { generateVerificationToken } from "@/lib/tokens";
-import { sendVerificationEmail } from "@/lib/mail";
+import {
+  generateVerificationToken,
+  generateTwoFactorToken,
+} from "@/lib/tokens";
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
 
 export async function login(values: z.infer<typeof LoginSchema>) {
   const validatedFields = LoginSchema.safeParse(values);
@@ -32,6 +35,12 @@ export async function login(values: z.infer<typeof LoginSchema>) {
       verificationToken.token
     );
     return { success: "Confirmation email sent!" };
+  }
+
+  if (existingUser.isTwoFactorEnabled && existingUser.email) {
+    const twoFactorToken = await generateTwoFactorToken(existingUser.email);
+    await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+    return { twoFactor: true };
   }
 
   try {

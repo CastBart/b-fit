@@ -2,7 +2,7 @@
 import * as z from "zod";
 import { useTransition, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { NewPasswordSchema } from "@/app/schemas";
+import { NewPasswordSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
