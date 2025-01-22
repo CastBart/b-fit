@@ -1,14 +1,15 @@
-'use server'
+'use client'
 
-import { auth } from "@/auth";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 
-export default async function Page() {
-  const session = await auth()
-  console.log("Session user: ", session?.user);
+export default function Page() {
+  // console.log("Session user: ", session?.user);
+  const user = useCurrentUser();
+  console.log(user)
   return (
     <main>
-      <div>Hello {session?.user.name}, this is user dashboard</div>
+      <div>Hello {user?.name}, this is user dashboard</div>
     </main>
   );
 }
