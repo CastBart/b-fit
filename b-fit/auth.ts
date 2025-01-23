@@ -22,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true;
       //Prevent sign in without email verification
-      const existingUser = await getUserById(user.id);
+      const existingUser = await getUserById(user.id || "");
       if (!existingUser || !existingUser.emailVerified) {
         return false;
       }

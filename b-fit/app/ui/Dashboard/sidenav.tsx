@@ -1,6 +1,5 @@
 "use client";
 import { Pages } from "@/app/lib/definitions";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -8,15 +7,22 @@ import React, { useState } from "react";
 import {
   Bars3Icon,
   XMarkIcon,
-  ArrowLeftStartOnRectangleIcon,
   CalculatorIcon,
   PencilSquareIcon,
   ClipboardDocumentListIcon,
   BoltIcon,
+  HomeIcon,
+  Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 import { handleLogOut } from "@/actions/logout";
+import { Button } from "@/components/ui/button";
 
 const links: Pages = {
+  dashboardHome: {
+    name: "Dashboard",
+    link: "/dashboard",
+    icon: HomeIcon,
+  },
   calorieCounter: {
     name: "Calorie Calculator",
     link: "/dashboard/caloriecalculator",
@@ -42,7 +48,7 @@ const links: Pages = {
 export default function SideNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  function SignOut(){
+  function SignOut() {
     handleLogOut();
   }
 
@@ -76,8 +82,9 @@ export default function SideNav() {
             const Icon = link.icon;
             return (
               <Link href={link.link} className={`block`} key={key}>
-                <li
-                  className={`flex h-[48px] items-center justify-start gap-4 m-2 rounded-md p-3 ${
+                <Button
+                  variant="ghost"
+                  className={`flex h-[48px] w-full items-center justify-start gap-4 my-2 rounded-md p-3 ${
                     pathname === link.link
                       ? "bg-gray-700"
                       : "hover:bg-[#5a7be9]"
@@ -85,18 +92,25 @@ export default function SideNav() {
                 >
                   {Icon && <Icon className="w-5 h-5" />}
                   {link.name}
-                </li>
+                </Button>
               </Link>
             );
           })}
         </ul>
-        <button
-          onClick={SignOut}
-          className="flex h-[48px] items-center justify-start gap-4 m-2 rounded-md p-3 hover:bg-[#5a7be9]"
-        >
-          <ArrowLeftStartOnRectangleIcon className="w-5 h-5" />
-          <span className="">Sign out</span>
-        </button>
+
+        <Link href="/dashboard/settings" className="">
+          <Button
+            variant="ghost"
+            className={`flex h-[48px] w-full items-center justify-start gap-4 my-2 rounded-md p-3 ${
+              pathname === "/dashboard/settings"
+                ? "bg-gray-700"
+                : "hover:bg-[#5a7be9]"
+            }`}
+          >
+            <Cog6ToothIcon className="w-5 h-5" />
+            <span className="">Settings</span>
+          </Button>
+        </Link>
       </nav>
     </div>
   );
