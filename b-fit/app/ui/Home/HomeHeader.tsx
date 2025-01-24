@@ -1,8 +1,8 @@
 'use client'
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { HomeNavBarItem, websiteLinks } from "@/app/lib/definitions";
-import { navItems } from "@/app/lib/definitions";
+import { HomeNavBarItem, websiteLinks } from "@/lib/definitions";
+import { navItems } from "@/lib/definitions";
 
 
 

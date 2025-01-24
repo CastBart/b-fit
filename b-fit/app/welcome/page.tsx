@@ -1,4 +1,4 @@
-import { websiteLinks } from "../lib/definitions";
+import { websiteLinks } from "../../lib/definitions";
 import SectionCard from "../ui/Home/SectionCard";
 
 export default function WelcomePage(): React.ReactNode {
