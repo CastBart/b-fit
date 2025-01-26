@@ -22,17 +22,15 @@ export default function MenuItemCard({
   href,
 }: MenuItemCardProps) {
   return (
-    <Link href={href}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{headerTitle}</CardTitle>
-          <CardDescription>{headerDescription}</CardDescription>
-        </CardHeader>
-        <CardContent>{children}</CardContent>
-        {/* <CardFooter>
+    <Card className="w-[250px]">
+      <CardHeader className="flex flex-col space-y-2 justify-center items-center">
+        <CardTitle>{headerTitle}</CardTitle>
+        <CardDescription>{headerDescription}</CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+      {/* <CardFooter>
           <p>Card Footer</p>
         </CardFooter> */}
-      </Card>
-    </Link>
+    </Card>
   );
 }

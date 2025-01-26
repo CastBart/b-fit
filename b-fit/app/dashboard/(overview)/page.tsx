@@ -9,7 +9,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/solid";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import MenuItemCard from "@/components/dashboard/overview/menu-item-card";
+import MenuItemCard from "@/components/dashboard/overview/dashboard-item-card";
 
 const links: Pages = {
   calorieCounter: {
@@ -53,9 +53,13 @@ export default function Page() {
                   {link.name}
                 </Button>
               </Link> */}
-              <MenuItemCard headerTitle={link.name} href={link.link}>
-                <Icon className="w-5 h-5"/>
-              </MenuItemCard>
+              <Link href={link.link}>
+                <MenuItemCard headerTitle={link.name} href={link.link}>
+                  <div className="w-full flex justify-center items-center">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                </MenuItemCard>
+              </Link>
             </li>
           );
         })}

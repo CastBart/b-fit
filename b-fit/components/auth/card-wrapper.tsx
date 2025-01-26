@@ -24,9 +24,7 @@ export default function CardWrapper({
   return (
     <Card className="w-[300px] md:w-[400px] m-10 shadow-md">
       <CardHeader>
-        <Link href="/">
-          <Header label={headerLabel} />
-        </Link>
+        <Header label={headerLabel} />
       </CardHeader>
       <CardContent>{children}</CardContent>
       {showSocial && (
