@@ -1,6 +1,6 @@
 "use client";
 import * as z from "zod";
-import { useTransition, useState } from "react";
+import { useTransition, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { NewPasswordSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
@@ -46,40 +46,42 @@ export default function NewPasswordForm() {
     });
   }
   return (
-    <CardWrapper
-      headerLabel="Enter a new password!"
-      backButtonLabel="Back to login"
-      backButtonHref="/auth/login"
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="******"
-                      disabled={isPending}
-                      type="password"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button type="submit" className="w-full" disabled={isPending}>
-            Reset password
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+    <Suspense>
+      <CardWrapper
+        headerLabel="Enter a new password!"
+        backButtonLabel="Back to login"
+        backButtonHref="/auth/login"
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="******"
+                        disabled={isPending}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormError message={error} />
+            <FormSuccess message={success} />
+            <Button type="submit" className="w-full" disabled={isPending}>
+              Reset password
+            </Button>
+          </form>
+        </Form>
+      </CardWrapper>
+    </Suspense>
   );
 }
