@@ -1,4 +1,4 @@
-import SectionCard from "./section-card";
+import Image from "next/image";
 
 export default function Exercises() {
   return (
@@ -26,11 +26,12 @@ export default function Exercises() {
         {/* Add an illustration or keep empty for now */}
         {/* Placeholder for future content */}
         <div className="w-full h-full">
-          <img
+          {/* <img
             src="/Exercise Library4.jpg"
             alt="Login"
             className="w-full h-full object-contain rounded-full"
-          />
+          /> */}
+          <Image src="/Exercise Library4.jpg" width={600} height={600} alt="Exercise Library" className="w-full h-full object-contain rounded-full"/>
         </div>
       </div>
     </div>

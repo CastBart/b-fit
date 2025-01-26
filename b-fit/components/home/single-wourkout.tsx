@@ -1,5 +1,4 @@
-import SectionCard from "./section-card";
-
+import Image from "next/image";
 export default function SingleWourkout() {
   return (
     <div
@@ -28,11 +27,12 @@ export default function SingleWourkout() {
         {/* Add an illustration or keep empty for now */}
         {/* Placeholder for future content */}
         <div className="w-full h-full">
-          <img
+          {/* <img
             src="/SingleWourkout4.jpg"
             alt="Login"
             className="w-full h-full object-contain rounded-full"
-          />
+          /> */}
+          <Image src="/SingleWourkout4.jpg" width={600} height={600} alt="Single Workout Image" className="w-full h-full object-contain rounded-full"/>
         </div>
       </div>
     </div>

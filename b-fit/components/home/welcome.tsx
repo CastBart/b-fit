@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 export default function Welcome() {
   return (
     <div
@@ -30,11 +31,7 @@ export default function Welcome() {
         {/* Add an illustration or keep empty for now */}
         {/* Placeholder for future content */}
         <div className="w-full h-full">
-          <img 
-            src="/BartFitness-Login.png"
-            alt="Login"
-            className="w-full h-full object-contain"
-          />
+          <Image src="/BartFitness-Login.png" width={600} height={600} alt="B-Fit logo" className="w-full h-full object-contain rounded-full"/>
         </div>
       </div>
     </div>
