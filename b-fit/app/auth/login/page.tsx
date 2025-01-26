@@ -1,9 +1,10 @@
 import LoginForm from "@/components/auth/login-form";
-import React from "react";
-
+import React, { Suspense } from "react";
 
 export default function LoginPage(): React.ReactNode {
   return (
-   <LoginForm />
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

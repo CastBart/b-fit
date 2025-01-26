@@ -1,6 +1,6 @@
 "use client";
 import { BeatLoader } from "react-spinners";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { newVerification } from "@/actions/new-verification";
 import CardWrapper from "@/components/auth/card-wrapper";
@@ -34,18 +34,16 @@ export default function NewVerificationForm() {
   }, [onSubmit]);
 
   return (
-    <Suspense>
-      <CardWrapper
-        headerLabel="Confirm your verification"
-        backButtonLabel="Back to login"
-        backButtonHref="/auth/login"
-      >
-        <div className="flex items-center w-full justify-center">
-          {!success && !error && <BeatLoader />}
-          <FormSuccess message={success} />
-          {!success && <FormError message={error} />}
-        </div>
-      </CardWrapper>
-    </Suspense>
+    <CardWrapper
+      headerLabel="Confirm your verification"
+      backButtonLabel="Back to login"
+      backButtonHref="/auth/login"
+    >
+      <div className="flex items-center w-full justify-center">
+        {!success && !error && <BeatLoader />}
+        <FormSuccess message={success} />
+        {!success && <FormError message={error} />}
+      </div>
+    </CardWrapper>
   );
 }

@@ -61,7 +61,6 @@ export default function LoginForm() {
     });
   }
   return (
-    <Suspense>
       <CardWrapper
         headerLabel="Welcome back!"
         backButtonLabel="Don't have an account?"
@@ -147,6 +146,5 @@ export default function LoginForm() {
           </form>
         </Form>
       </CardWrapper>
-    </Suspense>
   );
 }

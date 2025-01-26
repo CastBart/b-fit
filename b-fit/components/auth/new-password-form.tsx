@@ -46,7 +46,6 @@ export default function NewPasswordForm() {
     });
   }
   return (
-    <Suspense>
       <CardWrapper
         headerLabel="Enter a new password!"
         backButtonLabel="Back to login"
@@ -82,6 +81,5 @@ export default function NewPasswordForm() {
           </form>
         </Form>
       </CardWrapper>
-    </Suspense>
   );
 }
