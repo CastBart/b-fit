@@ -27,7 +27,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/ui/HomeNavigation.js",
-    "app/ui/Home/HomeHeader.js"
+    "components/home/HomeHeader.js"
   ],
   "exclude": ["node_modules"]
 }

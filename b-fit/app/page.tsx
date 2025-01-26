@@ -1,17 +1,16 @@
-import Image from "next/image";
-import HomeHeader from "@/app/ui//Home/HomeHeader";
-import CalorieCounter from "@/app/ui/Home/CalorieCalculator";
-import SingleWourkout from "@/app/ui/Home/SingleWourkout";
-import WorkoutPlan from "@/app/ui/Home/WorkoutPlan";
-import Exercises from "@/app/ui/Home/Exercises";
-import Welcome from "./ui/Home/Welcome";
-import Footer from "./ui/Home/Footer";
+import HomeHeader from "@/components/home/home-header";
+import CalorieCounter from "@/components/home/calorie-calculator";
+import SingleWourkout from "@/components/home/single-wourkout";
+import WorkoutPlan from "@/components/home/workout-plan";
+import Exercises from "@/components/home/exercises";
+import Welcome from "@/components/home/welcome";
+import Footer from "@/components/home/footer";
 
 export default function Home() {
   return (
-    <main id="home_page" className=" mx-auto">
+    <main id="home_page" className=" mx-auto bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155]">
       <HomeHeader />
-      <div className="flex max-w-[1240px] flex-col mx-auto px-4">
+      <div className="flex max-w-[1240px] flex-col mx-auto px-4 ">
         <Welcome />
         <CalorieCounter />
         <Exercises />

@@ -1,5 +1,5 @@
 import { websiteLinks } from "../../lib/definitions";
-import SectionCard from "../ui/Home/SectionCard";
+import SectionCard from "../../components/home/section-card";
 
 export default function WelcomePage(): React.ReactNode {
   return (

@@ -1,4 +1,4 @@
-import Button from "../Button";
+import { Button } from "@/components/ui/button";
 export default function Welcome() {
   return (
     <div
@@ -20,7 +20,7 @@ export default function Welcome() {
         </p>
 
         {/* Action Button */}
-        <Button size="large">
+        <Button size="lg">
           Learn More
         </Button>
       </div>

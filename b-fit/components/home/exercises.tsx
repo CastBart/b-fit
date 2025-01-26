@@ -1,4 +1,4 @@
-import SectionCard from "./SectionCard";
+import SectionCard from "./section-card";
 
 export default function Exercises() {
   return (

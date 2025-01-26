@@ -5,12 +5,6 @@ import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 import {
-  Bars3Icon,
-  XMarkIcon,
-  CalculatorIcon,
-  PencilSquareIcon,
-  ClipboardDocumentListIcon,
-  BoltIcon,
   HomeIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
@@ -23,26 +17,6 @@ const links: Pages = {
     link: "/dashboard",
     icon: HomeIcon,
   },
-  // calorieCounter: {
-  //   name: "Calorie Calculator",
-  //   link: "/dashboard/caloriecalculator",
-  //   icon: CalculatorIcon,
-  // },
-  // exercises: {
-  //   name: "Exercises",
-  //   link: "/dashboard/exercises",
-  //   icon: BoltIcon,
-  // },
-  // workouts: {
-  //   name: "Workouts",
-  //   link: "/dashboard/workouts",
-  //   icon: ClipboardDocumentListIcon,
-  // },
-  // plans: {
-  //   name: "Plans",
-  //   link: "/dashboard/plans",
-  //   icon: PencilSquareIcon,
-  // },
 };
 
 export default function SideNav() {

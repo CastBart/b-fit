@@ -9,6 +9,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/solid";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import MenuItemCard from "@/components/dashboard/overview/menu-item-card";
 
 const links: Pages = {
   calorieCounter: {
@@ -43,7 +44,7 @@ export default function Page() {
           const Icon = link.icon;
           return (
             <li key={key} className="">
-              <Link href={link.link}>
+              {/* <Link href={link.link}>
                 <Button
                   // variant=""
                   // className="flex flex-col w-[200px] bg-gray-800 h-full text-white hover:text-[#5a7be9]"
@@ -51,7 +52,10 @@ export default function Page() {
                   {Icon && <Icon className="w-5 h-5" />}
                   {link.name}
                 </Button>
-              </Link>
+              </Link> */}
+              <MenuItemCard headerTitle={link.name} href={link.link}>
+                <Icon className="w-5 h-5"/>
+              </MenuItemCard>
             </li>
           );
         })}
