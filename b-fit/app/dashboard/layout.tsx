@@ -1,18 +1,30 @@
 import SideNav from "@/components/dashboard/sidenav";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { DashboardSidebar } from "@/components/dashboard/sidebar";
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await auth();
+  console.log(JSON.stringify(session?.user))
   return (
+    // <SessionProvider session={session}>
+    //   <div className="min-h-screen flex">
+    //     <SideNav />
+    //     <div className="overflow-auto p-5 w-full">{children}</div>
+    //   </div>
+    // </SessionProvider>
     <SessionProvider session={session}>
-      <div className="h-screen flex">
-        <SideNav />
-        <div className="overflow-auto p-5 w-full">{children}</div>
-      </div>
+      <SidebarProvider>
+        <DashboardSidebar />
+        <main className="w-full min-h-screen">
+          <SidebarTrigger />
+          {children}
+        </main>
+      </SidebarProvider>
     </SessionProvider>
   );
 }

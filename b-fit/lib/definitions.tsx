@@ -38,6 +38,7 @@ export type Page = {
   name: string;
   link: string;
   icon: HeroIcon;
+  description?: string;
 };
 //Webiste Links
 export const websiteLinks: Pages = {
