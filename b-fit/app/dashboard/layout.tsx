@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import DashboardHeader from "@/components/dashboard/dashboard-header";
 export default async function Layout({
   children,
 }: {
@@ -21,7 +22,8 @@ export default async function Layout({
       <SidebarProvider>
         <DashboardSidebar />
         <main className="w-full min-h-screen">
-          <SidebarTrigger />
+          <DashboardHeader />
+          {/* <SidebarTrigger /> */}
           {children}
         </main>
       </SidebarProvider>
