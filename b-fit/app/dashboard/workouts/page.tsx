@@ -11,7 +11,7 @@ export default async function Page() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen text-white">
       <header className="p-6 flex justify-between items-center relative">
         <div className="flex-grow" />
         <h1 className="text-3xl font-semibold absolute left-1/2 transform -translate-x-1/2">

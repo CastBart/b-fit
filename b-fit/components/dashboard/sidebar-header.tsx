@@ -55,7 +55,7 @@ export default function Sidebar_Header({
               className="w-[--radix-dropdown-menu-trigger-width]"
               align="start"
             >
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={SignOut}>Sign Out</DropdownMenuItem>

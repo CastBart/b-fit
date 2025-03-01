@@ -30,11 +30,20 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>B-Fit</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuButton asChild isActive>
-              <Link href="/dashboard"><span>Dashboard</span></Link>
+            <SidebarMenuButton asChild isActive={pathName === "/dashboard"}>
+              <Link href="/dashboard">Dashboard</Link>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild >
+            <SidebarMenuButton asChild isActive={pathName === "/dashboard/plans"}>
+              <Link href="/dashboard/plans">Plans</Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton asChild isActive={pathName === "/dashboard/workouts"}>
               <Link href="/dashboard/workouts">Workouts</Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton asChild isActive={pathName === "/dashboard/exercises"}>
+              <Link href="/dashboard/exercises">Exercises</Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton asChild isActive={pathName === "/dashboard/caloriecalculator"}>
+              <Link href="/dashboard/caloriecalculator">Calorie Calculator</Link>
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarGroup>

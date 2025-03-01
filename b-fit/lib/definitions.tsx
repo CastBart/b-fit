@@ -49,4 +49,66 @@ export const websiteLinks: Pages = {
   services: { name: "Services", link: "/services", icon: HomeIcon},
 };
 
+// Exercise Types
+// Enum for Exercise Equipment
+enum ExerciseEquipment {
+  Cable = "Cable",
+  Barbell = "Barbell",
+  Dumbbells = "Dumbbells",
+  Machine = "Machine",
+  Bodyweight = "Bodyweight",
+  SmithMachine = "Smith Machine",
+  TrapBar = "Trap Bar",
+  EzBar = "EZ Bar",
+  Kettlebells = "Kettlebells",
+  ResistanceBands = "Resistance Bands",
+  TRX = "TRX",
+}
 
+// Enum for Muscle Groups
+enum MuscleGroup {
+  Traps = "Traps",
+  Front_Delts = "Front Delts",
+  Side_Delts = "Side Delts",
+  Rear_Delts = "Rear Delts",
+  Chest = "Chest",
+  Upper_Back = "Upper Back",
+  Lats = "Lats",
+  Core = "Core",
+  Biceps = "Biceps",
+  Triceps = "Triceps",
+  Forearms = "Forearms",
+  Lower_Back = "Lower Back",
+  Abductors = "Abductors",
+  Adductors = "Adductors",
+  Glutes = "Glutes",
+  Quads = "Quads",
+  Hamstrings = "Hamstrings",
+  Calves = "Calves",
+}
+
+// Enum for Exercise Type
+enum ExerciseType {
+  Small = "Small exercise",
+  Medium = "Medium exercise",
+  Large = "Large exercise",
+}
+enum ExerciseOwnership{
+  BFit = "B-Fit",
+  Custom = "Custom"
+}
+
+// Exercise Interface
+export interface Exercise {
+  id: string;
+  owner: ExerciseOwnership;
+  name: string;
+  equipment: ExerciseEquipment;
+  primaryMuscle: MuscleGroup; // Renamed for clarity
+  auxiliaryMuscles: MuscleGroup[]; // Changed to an array
+  type: ExerciseType; // Used an enum instead of a string union
+  notes?: string;
+}
+
+// Export enums for use in other files
+export { ExerciseEquipment, MuscleGroup, ExerciseType, ExerciseOwnership};
