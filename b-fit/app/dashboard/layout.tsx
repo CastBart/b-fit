@@ -15,7 +15,7 @@ export default async function Layout({
     <SessionProvider session={session}>
       <SidebarProvider>
         <DashboardSidebar />
-        <main className="w-full min-h-screen">
+        <main className="w-full max-h-screen">
           <DashboardHeader title="Exercises"/>
           {children}
         </main>

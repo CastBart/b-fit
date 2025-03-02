@@ -15,7 +15,7 @@ interface ExerciseTableProps {
 
 export default function ExerciseTable({ exersices }: ExerciseTableProps) {
   return (
-    <Table>
+    <Table className="">
       <TableCaption>All exercises</TableCaption>
       <TableBody>
         {exersices.map(
