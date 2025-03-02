@@ -12,18 +12,11 @@ export default async function Layout({
   const session = await auth();
   console.log(JSON.stringify(session?.user))
   return (
-    // <SessionProvider session={session}>
-    //   <div className="min-h-screen flex">
-    //     <SideNav />
-    //     <div className="overflow-auto p-5 w-full">{children}</div>
-    //   </div>
-    // </SessionProvider>
     <SessionProvider session={session}>
       <SidebarProvider>
         <DashboardSidebar />
         <main className="w-full min-h-screen">
-          <DashboardHeader />
-          {/* <SidebarTrigger /> */}
+          <DashboardHeader title="Exercises"/>
           {children}
         </main>
       </SidebarProvider>

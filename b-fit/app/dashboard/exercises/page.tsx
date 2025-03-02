@@ -5,6 +5,9 @@ import Link from "next/link";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import exercises from "@/lib/exercise-list";
+import ExerciseTable from "@/components/exercises/exercise-table";
+import DashboardHeader from "@/components/dashboard/dashboard-header";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,54 +18,34 @@ export default function Page() {
   );
 
   return (
-    <div className="min-h-screen text-white p-6">
-      <header className="flex justify-between items-center relative mb-6">
-        <div className="flex-grow" />
-        <h1 className="text-3xl font-semibold absolute left-1/2 transform -translate-x-1/2">
-          Exercises
-        </h1>
-        <Link href="/dashboard/workouts/create">
-          <button className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded">
-            Create Exercise
-          </button>
-        </Link>
-      </header>
-
-      {/* Search Bar */}
-      <div className="relative mb-4">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-        <input
-          type="text"
-          placeholder="Search exercises..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 pl-10 rounded border border-gray-300"
-        />
-        <FunnelIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+    <div className="max-w-[600px] mx-auto">
+      {/* Search Bar and Create Exercise button */}
+      <div className="grid grid-cols-6 sticky top-16 z-50 bg-background p-2 gap-2 items-center">
+        {/* Search Bar */}
+        <div className="relative  col-span-4 col-start-1">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 pl-10 rounded border "
+          />
+          <FunnelIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+        </div>
+        <Button asChild className="col-span-1 col-start-6">
+          <Link href="/dashboard/workouts/create">Create</Link>
+        </Button>
+        {/* <Link href="/dashboard/workouts/create" className="col-span-2 col-start-5">
+            <button className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded">
+              Create Exercise
+            </button>
+          </Link> */}
       </div>
 
       {/* Exercise Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-500 text-white">
-          <thead>
-            <tr className="bg-gray-700">
-              <th className="border border-gray-500 p-2">Name</th>
-              <th className="border border-gray-500 p-2">Equipment</th>
-              <th className="border border-gray-500 p-2">Primary Muscle</th>
-              <th className="border border-gray-500 p-2">Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredExercises.map((exercise, index) => (
-              <tr key={index} className="hover:bg-gray-600">
-                <td className="border border-gray-500 p-2">{exercise.name}</td>
-                <td className="border border-gray-500 p-2">{exercise.equipment}</td>
-                <td className="border border-gray-500 p-2">{exercise.primaryMuscle}</td>
-                <td className="border border-gray-500 p-2">{exercise.type}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="max-w-[600px] mx-auto">
+        <ExerciseTable exersices={filteredExercises} />
       </div>
     </div>
   );
