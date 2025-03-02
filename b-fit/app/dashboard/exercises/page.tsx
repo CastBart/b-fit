@@ -18,9 +18,9 @@ export default function Page() {
   );
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto bg-sidebar">
       {/* Search Bar and Create Exercise button */}
-      <div className="grid grid-cols-6 sticky top-16 z-50 bg-background p-2 gap-2 items-center">
+      <div className="grid grid-cols-6 sticky top-16 z-50 p-2 bg-sidebar gap-2 items-center">
         {/* Search Bar */}
         <div className="relative  col-span-4 col-start-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
