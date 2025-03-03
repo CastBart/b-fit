@@ -10,15 +10,28 @@ import {
 
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { useSidebar } from "../ui/sidebar";
+import { number } from "zod";
 
-export default function ExerciseFilter() {
-    const {isMobile} = useSidebar()
+interface ExerciseFilterProps {
+  numOfExercises: number;
+}
+
+export default function ExerciseFilter({
+  numOfExercises,
+}: ExerciseFilterProps) {
+  const { isMobile } = useSidebar();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <FunnelIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-full" >
+      <div className="flex justify-between items-center ">
+        <div className="text-muted-foreground">{`${numOfExercises} exercises`}</div>
+        <DropdownMenuTrigger className="text-primary">
+          <div className="flex gap-2 justify-end items-center">
+            Filters
+            <FunnelIcon className="w-5 h-5" />
+          </div>
+        </DropdownMenuTrigger>
+      </div>
+      <DropdownMenuContent className="w-full">
         <DropdownMenuLabel className="text-center">Filters</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
@@ -37,3 +50,4 @@ export default function ExerciseFilter() {
     </DropdownMenu>
   );
 }
+
