@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -10,30 +12,23 @@ import {
 import { Exercise } from "@/lib/definitions";
 
 interface ExerciseTableProps {
-  exersices: Exercise[]; // Corrected the prop usage
+  exercises: Exercise[];
 }
 
-export default function ExerciseTable({ exersices }: ExerciseTableProps) {
+export default function ExerciseTable({ exercises }: ExerciseTableProps) {
   return (
     <div className="overflow-y-auto custom-scrollbar">
       <Table>
         <TableCaption>All exercises</TableCaption>
         <TableBody>
-          {exersices.map(
-            (
-              exercise,
-              index
-            ) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <div className="text-lg font-semibold">{exercise.name}</div>
-                  <span className="text-muted-foreground">
-                    {exercise.equipment}
-                  </span>
-                </TableCell>
-              </TableRow>
-            )
-          )}
+          {exercises.map((exercise, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <div className="text-lg font-semibold">{exercise.name}</div>
+                <span className="text-muted-foreground">{exercise.equipment}</span>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>
