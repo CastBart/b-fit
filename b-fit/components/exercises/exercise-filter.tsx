@@ -13,8 +13,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import { FunnelIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
 import {
   ExerciseEquipment,
   MuscleGroup,
@@ -34,69 +34,58 @@ export default function ExerciseFilter({
   numOfExercises,
   setFilters,
 }: ExerciseFilterProps) {
-  const [selectedEquipment, setSelectedEquipment] = useState<ExerciseEquipment[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<
+    ExerciseEquipment[]
+  >([]);
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleGroup[]>([]);
   const [selectedType, setSelectedType] = useState<ExerciseType[]>([]);
+  const hasFilters =
+    selectedEquipment.length > 0 ||
+    selectedMuscle.length > 0 ||
+    selectedType.length > 0;
 
-  
-
-  // Toggle selection for multi-select
-  const toggleSelection = <T extends ExerciseEquipment | MuscleGroup | ExerciseType>(
-    selectedList: T[],
-    setSelected: React.Dispatch<React.SetStateAction<T[]>>,
-    value: T
-  ) => {
-    setSelected((prev) => {
-      const updatedSelection = prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value];
-
-      // Update filters after modifying the selected state
-      setFilters({
-        equipment: value in ExerciseEquipment ? updatedSelection as ExerciseEquipment[] : selectedEquipment,
-        muscle: value in MuscleGroup ? updatedSelection as MuscleGroup[] : selectedMuscle,
-        type: value in ExerciseType ? updatedSelection as ExerciseType[] : selectedType,
-      });
-
-      return updatedSelection;
-    });
-  };
-
-  // Utility function to handle filtering by type
-  const filterByType = <T,>(
-    selectedList: T[],
-    setSelected: React.Dispatch<React.SetStateAction<T[]>>,
-    value: T,
-    typeEnum: Record<string, T>
-  ): T[] => {
-    const newSelection = selectedList.includes(value)
-      ? selectedList.filter((item) => item !== value)
-      : [...selectedList, value];
-
-    setSelected(newSelection);
-    return newSelection;
-  };
-
-
-  // Update filters
-  const handleFilterChange = () => {
+  // ✅ useEffect ensures filters update **AFTER** state changes
+  useEffect(() => {
     setFilters({
       equipment: selectedEquipment,
       muscle: selectedMuscle,
       type: selectedType,
     });
-  };
+  }, [selectedEquipment, selectedMuscle, selectedType, setFilters]);
 
+  // Toggle selection for multi-select
+  const toggleSelection = <
+    T extends ExerciseEquipment | MuscleGroup | ExerciseType,
+  >(
+    selectedList: T[],
+    setSelected: React.Dispatch<React.SetStateAction<T[]>>,
+    value: T
+  ) => {
+    setSelected((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
+  };
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedEquipment([]);
+    setSelectedMuscle([]);
+    setSelectedType([]);
+  };
   return (
     <DropdownMenu>
       <div className="flex justify-between items-center">
         <div className="text-muted-foreground">{`${numOfExercises} exercises`}</div>
-        <DropdownMenuTrigger className="text-primary">
-          <div className="flex gap-2 justify-end items-center">
-            Filters
-            <FunnelIcon className="w-5 h-5" />
-          </div>
-        </DropdownMenuTrigger>
+        <div className="flex gap-2 items-center text-primary">
+          {hasFilters && <XMarkIcon onClick={clearFilters} className="w-5 h-5 hover:cursor-pointer" />}
+          <DropdownMenuTrigger>
+            <div className="flex gap-2 justify-end items-center">
+              Filters
+              <FunnelIcon className="w-5 h-5" />
+            </div>
+          </DropdownMenuTrigger>
+        </div>
       </div>
       <DropdownMenuContent
         className="w-full"
@@ -126,7 +115,7 @@ export default function ExerciseFilter({
                     )
                   }
                   onSelect={(e) => {
-                    e.preventDefault()
+                    e.preventDefault();
                   }}
                 >
                   {equip}
@@ -148,14 +137,10 @@ export default function ExerciseFilter({
                   key={musc}
                   checked={selectedMuscle.includes(musc)}
                   onCheckedChange={() =>
-                    toggleSelection(
-                      selectedMuscle,
-                      setSelectedMuscle,
-                      musc
-                    )
+                    toggleSelection(selectedMuscle, setSelectedMuscle, musc)
                   }
                   onSelect={(e) => {
-                    e.preventDefault()
+                    e.preventDefault();
                   }}
                 >
                   {musc}
@@ -177,14 +162,10 @@ export default function ExerciseFilter({
                   key={type}
                   checked={selectedType.includes(type)}
                   onCheckedChange={() =>
-                    toggleSelection(
-                      selectedType,
-                      setSelectedType,
-                      type
-                    )
+                    toggleSelection(selectedType, setSelectedType, type)
                   }
                   onSelect={(e) => {
-                    e.preventDefault()
+                    e.preventDefault();
                   }}
                 >
                   {type}
