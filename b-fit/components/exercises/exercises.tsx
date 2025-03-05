@@ -2,7 +2,7 @@
 import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import ExerciseSearch from "@/components/exercises/exercise-search";
-import ExerciseFilter from "@/components/exercises/exercise-filter";
+import ExerciseFilters from "@/components/exercises/exercise-filters";
 import {
   ExerciseEquipment,
   MuscleGroup,
@@ -11,6 +11,7 @@ import {
 
 import { useState, useEffect } from "react";
 import CreateExercise from "./exercise-create";
+import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 
 export default function Exercises() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,12 +60,18 @@ export default function Exercises() {
   }, [searchTerm, filters]);
   return (
     <>
-      <CreateExercise className="inline"/>
+      <div className="flex justify-end">
+        <CreateExercise className="" />
+      </div>
       <ExerciseSearch setSearchTerm={setSearchTerm} />
-      <ExerciseFilter
+      <ExerciseFilterDrawer
         numOfExercises={filteredExercises.length}
         setFilters={setFilters}
       />
+      {/* <ExerciseFilters
+        numOfExercises={filteredExercises.length}
+        setFilters={setFilters}
+      /> */}
       <ExerciseTable exercises={filteredExercises} />
     </>
   );

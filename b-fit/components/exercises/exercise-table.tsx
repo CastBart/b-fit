@@ -19,7 +19,7 @@ export default function ExerciseTable({ exercises }: ExerciseTableProps) {
   return (
     <div className="overflow-y-auto custom-scrollbar">
       <Table>
-        <TableCaption>All exercises</TableCaption>
+        <TableCaption >All exercises</TableCaption>
         <TableBody>
           {exercises.map((exercise, index) => (
             <TableRow key={index}>
