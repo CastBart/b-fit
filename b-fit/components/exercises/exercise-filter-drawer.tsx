@@ -25,7 +25,6 @@ import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
 import { useState, useEffect } from "react";
 
-
 interface ExerciseFilterDrawerProps {
   numOfExercises: number;
   setFilters: (filters: {
@@ -42,10 +41,15 @@ export function ExerciseFilterDrawer({
   const [open, setOpen] = React.useState(false);
   const { state } = useSidebar();
   console.log(state);
-  const [selectedEquipment, setSelectedEquipment] = useState<ExerciseEquipment[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<
+    ExerciseEquipment[]
+  >([]);
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleGroup[]>([]);
   const [selectedType, setSelectedType] = useState<ExerciseType[]>([]);
-  const hasFilters = selectedEquipment.length > 0 || selectedMuscle.length > 0 || selectedType.length > 0;
+  const hasFilters =
+    selectedEquipment.length > 0 ||
+    selectedMuscle.length > 0 ||
+    selectedType.length > 0;
 
   useEffect(() => {
     setFilters({
@@ -62,16 +66,32 @@ export function ExerciseFilterDrawer({
   };
   return (
     <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerTrigger asChild>
-        <div className="flex gap-2 justify-end items-center hover:cursor-pointer text-primary">
-          Filters
-          <FunnelIcon className="w-5 h-5" />
+      <div className="flex justify-between items-center">
+        <div className="text-muted-foreground">{`${numOfExercises} exercises`}</div>
+        <div className="flex gap-2 items-center justify-end text-primary">
+          {hasFilters && (
+            <XMarkIcon
+              onClick={clearFilters}
+              className="w-5 h-5 hover:cursor-pointer"
+            />
+          )}
+
+          <DrawerTrigger asChild>
+            <div className="flex gap-2 justify-end items-center hover:cursor-pointer text-primary">
+              Filters
+              <FunnelIcon className="w-5 h-5" />
+            </div>
+          </DrawerTrigger>
         </div>
-      </DrawerTrigger>
-      <DrawerContent className={`h-[80vh] w-[600px] justify-self-center `}>
+      </div>
+      <DrawerContent className="custom-drawer justify-self-center">
         <DrawerHeader className="gap-4">
-          <DrawerTitle className="text-center text-3xl">Filters</DrawerTitle>
-          <Separator className="h-1"></Separator>
+          <div className="flex flex-col ">
+            <DrawerTitle className="text-center text-3xl">Filters</DrawerTitle>
+            <Separator className="h-1"></Separator>
+          </div>
+        </DrawerHeader>
+        <div className="flex flex-col gap-4 px-4 flex-1 my-4">
           <ExerciseFilter
             title="Equipment"
             data={Object.values(ExerciseEquipment)}
@@ -90,10 +110,10 @@ export function ExerciseFilterDrawer({
             selectedItems={selectedType}
             setSelectedItems={setSelectedType}
           />
-        </DrawerHeader>
-        <DrawerFooter className="pt-2">
+        </div>
+        <DrawerFooter className="pt-2 row-span-1">
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="secondary">Cancel</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

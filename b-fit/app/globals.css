@@ -191,3 +191,24 @@ strong {
     @apply bg-background text-foreground;
   }
 }
+
+@media (min-width: 1024px) { /* Desktop */
+  .custom-drawer {
+    height: 50vh;
+    width: 600px;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) { /* Mobile Portrait */
+  .custom-drawer {
+    height: 50vh;
+    width: 100vw;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) { /* Mobile Landscape */
+  .custom-drawer {
+    height: 100vh;
+    width: 100vw;
+  }
+}

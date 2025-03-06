@@ -2,7 +2,6 @@
 import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import ExerciseSearch from "@/components/exercises/exercise-search";
-import ExerciseFilters from "@/components/exercises/exercise-filters";
 import {
   ExerciseEquipment,
   MuscleGroup,
@@ -68,10 +67,6 @@ export default function Exercises() {
         numOfExercises={filteredExercises.length}
         setFilters={setFilters}
       />
-      {/* <ExerciseFilters
-        numOfExercises={filteredExercises.length}
-        setFilters={setFilters}
-      /> */}
       <ExerciseTable exercises={filteredExercises} />
     </>
   );
