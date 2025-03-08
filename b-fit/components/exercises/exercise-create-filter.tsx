@@ -18,37 +18,63 @@ import {
   ExerciseType,
 } from "@/lib/definitions";
 import { Separator } from "../ui/separator";
+import { Label } from "../ui/label";
 
 interface ExerciseFilterProps<T> {
   title: string;
   data: T[];
   selectedItems: T[];
   setSelectedItems: React.Dispatch<React.SetStateAction<T[]>>;
+  singleSelect?: boolean;
 }
 
-export default function ExerciseFilter<
-  T extends ExerciseEquipment | MuscleGroup | ExerciseType,
->({ title, data, selectedItems, setSelectedItems }: ExerciseFilterProps<T>) {
+export default function ExerciseCreateFilter<
+  T extends ExerciseEquipment | MuscleGroup | ExerciseType
+>({
+  title,
+  data,
+  selectedItems,
+  setSelectedItems,
+  singleSelect = false,
+}: ExerciseFilterProps<T>) {
   const toggleSelection = (value: T) => {
-    setSelectedItems((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
+    if (singleSelect) {
+      // For single selection, just set the selected item
+      setSelectedItems([value]);
+    } else {
+      // For multi selection, toggle the selected item
+      setSelectedItems((prev) =>
+        prev.includes(value)
+          ? prev.filter((item) => item !== value)
+          : [...prev, value]
+      );
+    }
   };
+
   return (
     <Dialog>
-      <DialogTrigger asChild className="grow">
-        <Button className="text-xl">
+      <div>
+        <Label htmlFor={`create_exercise_filter_${title.replace(" ", "_")}`}>
           {title}
-        </Button>
-      </DialogTrigger>
+        </Label>
+        <DialogTrigger
+          asChild
+          className="grow"
+          id={`create_exercise_filter_${title.replace(" ", "_")}`}
+        >
+          <Button className="w-full">
+            <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+              {selectedItems.length > 0 ? selectedItems.join(", ") : title}
+            </div>
+          </Button>
+        </DialogTrigger>
+      </div>
       <DialogContent className="custom-dialog">
         <DialogHeader className="gap-2">
           <DialogTitle className="text-center">{`${title} Filters`}</DialogTitle>
           <Separator className="h-1" />
         </DialogHeader>
-        <div className=" grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar">
+        <div className="grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar">
           {data.map((item) => (
             <div
               key={String(item)}

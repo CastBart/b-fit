@@ -11,6 +11,7 @@ import {
 import { useState, useEffect } from "react";
 import CreateExercise from "./exercise-create";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
+import CreateExerciseDrawer from "./exercise-create-drawer";
 
 export default function Exercises() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,9 +60,7 @@ export default function Exercises() {
   }, [searchTerm, filters]);
   return (
     <>
-      <div className="flex justify-end">
-        <CreateExercise className="" />
-      </div>
+      <CreateExerciseDrawer />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
       <ExerciseFilterDrawer
         numOfExercises={filteredExercises.length}

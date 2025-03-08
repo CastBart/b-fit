@@ -217,7 +217,7 @@ strong {
   }
 }
 
-@media (max-width: 1024px) and (orientation: portrait) { /* Mobile Portrait */
+@media (max-width: 640px) and (orientation: portrait) { /* Mobile Portrait */
   .custom-drawer {
     height: 50vh;
     width: 100vw;

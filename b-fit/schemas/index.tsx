@@ -23,3 +23,11 @@ export const ResetSchema = z.object({
 export const NewPasswordSchema = z.object({
   password: z.string().min(6, { message: "Minumum 6 characters required" }),
 });
+
+export const ExerciseSchema = z.object({
+  name: z.string().min(1, { message: "Exercise name is required" }),
+  equipment: z.array(z.string()).min(1, { message: "At least one equipment is required" }),
+  primaryMuscle: z.string().min(1, { message: "Primary muscle is required" }),
+  auxiliaryMuscles: z.array(z.string()).optional(),
+  exerciseType: z.string().min(1, { message: "Exercise type is required" }),
+});

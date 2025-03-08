@@ -85,8 +85,8 @@ export function ExerciseFilterDrawer({
         </div>
       </div>
       <DrawerContent className="custom-drawer justify-self-center">
-        <DrawerHeader className="gap-4">
-          <div className="flex flex-col ">
+        <DrawerHeader>
+          <div className="flex flex-col gap-2">
             <DrawerTitle className="text-center text-3xl">Filters</DrawerTitle>
             <Separator className="h-1"></Separator>
           </div>
@@ -120,3 +120,4 @@ export function ExerciseFilterDrawer({
     </Drawer>
   );
 }
+
