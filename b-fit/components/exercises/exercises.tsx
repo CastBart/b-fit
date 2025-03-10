@@ -9,7 +9,6 @@ import {
 } from "@/lib/definitions";
 
 import { useState, useEffect } from "react";
-import CreateExercise from "./exercise-create";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import CreateExerciseDrawer from "./exercise-create-drawer";
 

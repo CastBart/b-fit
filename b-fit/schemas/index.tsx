@@ -1,4 +1,9 @@
 import * as z from "zod";
+import {
+  ExerciseEquipment,
+  ExerciseType,
+  MuscleGroup,
+} from "@/lib/definitions";
 
 export const LoginSchema = z.object({
   email: z.string().email({
@@ -24,10 +29,36 @@ export const NewPasswordSchema = z.object({
   password: z.string().min(6, { message: "Minumum 6 characters required" }),
 });
 
-export const ExerciseSchema = z.object({
-  name: z.string().min(1, { message: "Exercise name is required" }),
-  equipment: z.array(z.string()).min(1, { message: "At least one equipment is required" }),
-  primaryMuscle: z.string().min(1, { message: "Primary muscle is required" }),
-  auxiliaryMuscles: z.array(z.string()).optional(),
-  exerciseType: z.string().min(1, { message: "Exercise type is required" }),
+// export const CreateExerciseSchema = z.object({
+//   exerciseName: z.string().min(1, { message: "Exercise name is required" }),
+//   equipment: z.nativeEnum(ExerciseEquipment, {
+//     required_error: "Equipment is required",
+//   }),
+//   primaryMuscle: z.nativeEnum(MuscleGroup, {
+//     required_error: "Primary muscle group is required",
+//   }),
+//   auxiliaryMuscles: z
+//     .array(z.nativeEnum(MuscleGroup))
+//     .optional()
+//     .default([]),
+//   exerciseType: z.nativeEnum(ExerciseType, {
+//     required_error: "Exercise type is required",
+//   }),
+// });
+
+export const CreateExerciseSchema = z.object({
+  exerciseName: z.string().min(1, { message: "Exercise name is required" }),
+  equipment: z.nativeEnum(ExerciseEquipment, {
+    required_error: "Equipment selection is required",
+  }),
+  primaryMuscle: z.nativeEnum(MuscleGroup, {
+    required_error: "Primary muscle selection is required",
+  }),
+  auxiliaryMuscles: z.array(z.nativeEnum(MuscleGroup)).nonempty({
+    message: "At least one auxiliary muscle must be selected",
+  }),
+  exerciseType: z.nativeEnum(ExerciseType, {
+    required_error: "Exercise type selection is required",
+  }),
 });
+
