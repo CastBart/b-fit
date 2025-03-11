@@ -41,30 +41,40 @@ export default function CreateExerciseDrawer() {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
-  const form = useForm<z.infer<typeof CreateExerciseSchema>>({
+  const form = useForm<z.infer<typeof CreateExerciseSchema> & {
+    equipment: ExerciseEquipment | "";
+    primaryMuscle: MuscleGroup | "";
+    exerciseType: ExerciseType | "";
+  }>({
     resolver: zodResolver(CreateExerciseSchema),
     defaultValues: {
       exerciseName: "",
-      equipment: undefined,
-      primaryMuscle: undefined,
+      equipment: "" as ExerciseEquipment,
+      primaryMuscle: "" as MuscleGroup,
       auxiliaryMuscles: [],
-      exerciseType: undefined,
+      exerciseType: "" as ExerciseType,
     },
   });
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
     console.log("Form submitted!");
-    console.log("Form submitted with values:", values); // Debugging log
+    console.log("Form submitted with values:", values);
     console.log("Errors:", form.formState.errors);
 
     setError("");
     setSuccess("");
+
     startTransition(() => {
       createExercise(values).then((data) => {
-        console.log("Server response:", data); // Debugging log
+        console.log("Server response:", data);
         setError(data.error);
         setSuccess(data.success);
-        if (data.success) setOpen(false);
+
+        if (data.success) {
+          form.reset();
+
+          setOpen(false);
+        }
       });
     });
   }
@@ -187,3 +197,4 @@ export default function CreateExerciseDrawer() {
     </Drawer>
   );
 }
+

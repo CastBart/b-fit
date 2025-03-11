@@ -26,39 +26,27 @@ export const ResetSchema = z.object({
 });
 
 export const NewPasswordSchema = z.object({
-  password: z.string().min(6, { message: "Minumum 6 characters required" }),
+  password: z.string().min(3, { message: "Minumum 3 characters required" }),
 });
-
-// export const CreateExerciseSchema = z.object({
-//   exerciseName: z.string().min(1, { message: "Exercise name is required" }),
-//   equipment: z.nativeEnum(ExerciseEquipment, {
-//     required_error: "Equipment is required",
-//   }),
-//   primaryMuscle: z.nativeEnum(MuscleGroup, {
-//     required_error: "Primary muscle group is required",
-//   }),
-//   auxiliaryMuscles: z
-//     .array(z.nativeEnum(MuscleGroup))
-//     .optional()
-//     .default([]),
-//   exerciseType: z.nativeEnum(ExerciseType, {
-//     required_error: "Exercise type is required",
-//   }),
-// });
 
 export const CreateExerciseSchema = z.object({
   exerciseName: z.string().min(1, { message: "Exercise name is required" }),
-  equipment: z.nativeEnum(ExerciseEquipment, {
-    required_error: "Equipment selection is required",
-  }),
-  primaryMuscle: z.nativeEnum(MuscleGroup, {
-    required_error: "Primary muscle selection is required",
-  }),
+  equipment: z
+    .union([z.nativeEnum(ExerciseEquipment), z.literal("")])
+    .refine((val) => val !== "", {
+      message: "Equipment selection is required",
+    }),
+  primaryMuscle: z
+    .union([z.nativeEnum(MuscleGroup), z.literal("")])
+    .refine((val) => val !== "", {
+      message: "Primary muscle selection is required",
+    }),
   auxiliaryMuscles: z.array(z.nativeEnum(MuscleGroup)).nonempty({
     message: "At least one auxiliary muscle must be selected",
   }),
-  exerciseType: z.nativeEnum(ExerciseType, {
-    required_error: "Exercise type selection is required",
-  }),
+  exerciseType: z
+    .union([z.nativeEnum(ExerciseType), z.literal("")])
+    .refine((val) => val !== "", {
+      message: "Exercise type selection is required",
+    }),
 });
-

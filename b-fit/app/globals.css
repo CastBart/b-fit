@@ -208,7 +208,7 @@ strong {
 
 @media (min-width: 1024px) { /* Desktop */
   .custom-drawer {
-    height: 50vh;
+    height: 65vh;
     width: 600px;
   }
   .custom-dialog {
@@ -219,7 +219,7 @@ strong {
 
 @media (max-width: 640px) and (orientation: portrait) { /* Mobile Portrait */
   .custom-drawer {
-    height: 50vh;
+    height: 65vh;
     width: 100vw;
   }
   .custom-dialog {
