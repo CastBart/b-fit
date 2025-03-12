@@ -98,6 +98,18 @@ enum ExerciseOwnership{
   Custom = "Custom"
 }
 
+export function getEnumKeyByValue<T extends Record<string, string>>(enumObj: T, value: string): keyof T | undefined {
+  return Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined;
+}
+export function getEnumKeysByValues<T extends Record<string, string>>(
+  enumObj: T,
+  values: string[]
+): (keyof T)[] {
+  return values
+    .map((value) => Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined)
+    .filter((key): key is keyof T => key !== undefined); // Filters out undefined values
+}
+
 // Exercise Interface
 export interface Exercise {
   id: string;

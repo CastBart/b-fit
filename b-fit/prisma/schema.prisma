@@ -22,18 +22,19 @@ enum UserType {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  image         String?
-  accounts      Account[]
-  type          UserType  @default(PERSONAL)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isTwoFactorEnabled Boolean @default(false)
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String                 @unique
+  emailVerified         DateTime?
+  password              String?
+  image                 String?
+  accounts              Account[]
+  type                  UserType               @default(PERSONAL)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  Exercise              Exercise[]
 }
 
 model Account {
@@ -74,6 +75,7 @@ model PasswordResetToken {
 
   @@unique([email, token])
 }
+
 model TwoFactorToken {
   id      String   @id @default(cuid())
   email   String
@@ -87,7 +89,63 @@ model TwoFactorConfirmation {
   id String @id @default(cuid())
 
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
- @@unique([userId]) 
+  @@unique([userId])
 }
+
+// Exercise
+enum ExerciseEquipment {
+  Cable
+  Barbell
+  Dumbbells
+  Machine
+  Bodyweight
+  SmithMachine
+  TrapBar
+  EzBar
+  Kettlebells
+  ResistanceBands
+  TRX
+}
+
+enum MuscleGroup {
+  Traps
+  Front_Delts
+  Side_Delts
+  Rear_Delts
+  Chest
+  Upper_Back
+  Lats
+  Core
+  Biceps
+  Triceps
+  Forearms
+  Lower_Back
+  Abductors
+  Adductors
+  Glutes
+  Quads
+  Hamstrings
+  Calves
+}
+
+enum ExerciseType {
+  Small
+  Medium
+  Large
+}
+
+model Exercise {
+  id               String            @id @default(cuid())
+  name             String
+  equipment        ExerciseEquipment
+  primaryMuscle    MuscleGroup
+  auxiliaryMuscles MuscleGroup[]
+  exerciseType     ExerciseType
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
