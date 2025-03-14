@@ -28,6 +28,7 @@ interface ExerciseFilterProps<T> {
   name: string;
   control: Control<any>;
   singleSelect?: boolean;
+  blankSelectionTxt?: string;
 }
 
 export default function ExerciseCreateFilter<T extends string>({
@@ -36,6 +37,7 @@ export default function ExerciseCreateFilter<T extends string>({
   name,
   control,
   singleSelect = false,
+  blankSelectionTxt = "Please select",
 }: ExerciseFilterProps<T>) {
   return (
     <Controller
@@ -43,11 +45,21 @@ export default function ExerciseCreateFilter<T extends string>({
       name={name}
       render={({ field, fieldState }) => {
         const [selectedItems, setSelectedItems] = useState<T[]>(
-          Array.isArray(field.value) ? field.value : field.value ? [field.value] : []
+          Array.isArray(field.value)
+            ? field.value
+            : field.value
+              ? [field.value]
+              : []
         );
 
         useEffect(() => {
-          setSelectedItems(Array.isArray(field.value) ? field.value : field.value ? [field.value] : []);
+          setSelectedItems(
+            Array.isArray(field.value)
+              ? field.value
+              : field.value
+                ? [field.value]
+                : []
+          );
         }, [field.value]);
 
         const handleSelection = (value: T) => {
@@ -67,17 +79,19 @@ export default function ExerciseCreateFilter<T extends string>({
 
         return (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
             <FormControl>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="w-full">
-                    <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
-                      {selectedItems.length > 0
-                        ? singleSelect
-                          ? selectedItems[0] // Show only one if single select
-                          : selectedItems.join(", ")
-                        : `Select ${title}`}
+                  <Button className="w-full h-12" variant={"secondary"}>
+                    <div className=" flex items-center justify-between w-full">
+                      <FormLabel>{title}</FormLabel>
+                      <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground">
+                        {selectedItems.length > 0
+                          ? singleSelect
+                            ? selectedItems[0] // Show only one if single select
+                            : selectedItems.join(", ")
+                          : `${blankSelectionTxt}`}
+                      </div>
                     </div>
                   </Button>
                 </DialogTrigger>
@@ -91,15 +105,23 @@ export default function ExerciseCreateFilter<T extends string>({
                       <div
                         key={String(item)}
                         onClick={(e) => {
-                          if (!(e.target as HTMLElement).matches("input, label")) {
-                            handleSelection(item); // Handles clicks outside the checkbox
+                          if (
+                            !(e.target as HTMLElement).matches("input, label")
+                          ) {
+                            handleSelection(item);
                           }
                         }}
-                        className="flex gap-2 items-center justify-center h-20 px-4 py-2 rounded-sm bg-primary text-primary-foreground shadow hover:bg-primary/90 cursor-pointer"
+                        className={`flex gap-2 items-center justify-center h-20 px-4 py-2 rounded-sm shadow cursor-pointer
+                        ${selectedItems.includes(item) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"} 
+                        hover:bg-primary/90`}
                       >
-                        <Checkbox
-                          checked={singleSelect ? selectedItems[0] === item : selectedItems.includes(item)}
-                          onCheckedChange={() => handleSelection(item)} // Ensures only the checkbox click toggles
+                        {/* <Checkbox
+                          checked={
+                            singleSelect
+                              ? selectedItems[0] === item
+                              : selectedItems.includes(item)
+                          }
+                          onCheckedChange={() => handleSelection(item)}
                           id={String(item)}
                           className="border-primary-foreground"
                         />
@@ -108,15 +130,14 @@ export default function ExerciseCreateFilter<T extends string>({
                           htmlFor={String(item)}
                         >
                           {String(item)}
-                        </label>
+                        </label> */}
+                        {String(item)}
                       </div>
                     ))}
                   </div>
-                  <DialogFooter className="sm:justify-start">
-                    <DialogClose asChild>
-                      <Button type="button" variant="secondary">
-                        Close
-                      </Button>
+                  <DialogFooter className="sm:justify-center">
+                    <DialogClose asChild className="w-full">
+                      <Button type="button">OK</Button>
                     </DialogClose>
                   </DialogFooter>
                 </DialogContent>
@@ -129,4 +150,3 @@ export default function ExerciseCreateFilter<T extends string>({
     />
   );
 }
-

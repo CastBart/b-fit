@@ -1,4 +1,5 @@
 "use client";
+
 import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import ExerciseSearch from "@/components/exercises/exercise-search";
@@ -6,11 +7,12 @@ import {
   ExerciseEquipment,
   MuscleGroup,
   ExerciseType,
+  Exercise,
 } from "@/lib/definitions";
-
 import { useState, useEffect } from "react";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import CreateExerciseDrawer from "./exercise-create-drawer";
+import { fetchUserExercises } from "@/actions/fetch-exercises";
 
 export default function Exercises() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,11 +21,20 @@ export default function Exercises() {
     muscle: [] as MuscleGroup[],
     type: [] as ExerciseType[],
   });
-
+  const [userExercises, setUserExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState(exercisesData);
 
+  // Fetch user-created exercises on mount
   useEffect(() => {
-    let updatedExercises = exercisesData;
+    async function loadUserExercises() {
+      const exercises = await fetchUserExercises();
+      setUserExercises(exercises);
+    }
+    loadUserExercises();
+  }, []);
+
+  useEffect(() => {
+    let updatedExercises = [...exercisesData, ...userExercises];
 
     // Apply search filter
     if (searchTerm) {
@@ -56,10 +67,17 @@ export default function Exercises() {
     }
 
     setFilteredExercises(updatedExercises);
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, userExercises]);
+
+  // Update list when a new exercise is created
+  async function handleExerciseCreated() {
+    const exercises = await fetchUserExercises();
+    setUserExercises(exercises);
+  }
+
   return (
     <>
-      <CreateExerciseDrawer />
+      <CreateExerciseDrawer onExerciseCreated={handleExerciseCreated} />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
       <ExerciseFilterDrawer
         numOfExercises={filteredExercises.length}

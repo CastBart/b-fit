@@ -36,16 +36,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateExerciseSchema } from "@/schemas/index";
 
-export default function CreateExerciseDrawer() {
+interface CreateExerciseDrawerProps {
+  onExerciseCreated: () => void;
+}
+
+export default function CreateExerciseDrawer({
+  onExerciseCreated,
+}: CreateExerciseDrawerProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
-  const form = useForm<z.infer<typeof CreateExerciseSchema> & {
-    equipment: ExerciseEquipment | "";
-    primaryMuscle: MuscleGroup | "";
-    exerciseType: ExerciseType | "";
-  }>({
+  const form = useForm<
+    z.infer<typeof CreateExerciseSchema> & {
+      equipment: ExerciseEquipment | "";
+      primaryMuscle: MuscleGroup | "";
+      exerciseType: ExerciseType | "";
+    }
+  >({
     resolver: zodResolver(CreateExerciseSchema),
     defaultValues: {
       exerciseName: "",
@@ -72,22 +80,12 @@ export default function CreateExerciseDrawer() {
 
         if (data.success) {
           form.reset();
-
           setOpen(false);
+          onExerciseCreated();
         }
       });
     });
   }
-
-  // State for filters
-  const [selectedEquipment, setSelectedEquipment] = useState<
-    ExerciseEquipment[]
-  >([]);
-  const [selectedMuscle, setSelectedMuscle] = useState<MuscleGroup[]>([]);
-  const [selectedAuxMuscles, setSelectedAuxMuscles] = useState<MuscleGroup[]>(
-    []
-  );
-  const [selectedType, setSelectedType] = useState<ExerciseType[]>([]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
@@ -105,7 +103,11 @@ export default function CreateExerciseDrawer() {
         </DrawerHeader>
         <div className="grid gap-4 px-4 min-h-[200px] overflow-y-auto custom-scrollbar">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              id="create-exercise-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+            >
               {/* Exercise Name */}
               <FormField
                 control={form.control}
@@ -135,7 +137,7 @@ export default function CreateExerciseDrawer() {
                   />
                 )}
               />
-
+              {/* Primary Muscles Selection (Single-Select) */}
               <FormField
                 control={form.control}
                 name="primaryMuscle"
@@ -150,6 +152,7 @@ export default function CreateExerciseDrawer() {
                 )}
               />
 
+              {/* Auxilary Muscles Selection (Multi-Select) */}
               <FormField
                 control={form.control}
                 name="auxiliaryMuscles"
@@ -159,6 +162,7 @@ export default function CreateExerciseDrawer() {
                     data={Object.values(MuscleGroup)}
                     name="auxiliaryMuscles"
                     control={form.control}
+                    blankSelectionTxt="None"
                   />
                 )}
               />
@@ -176,10 +180,6 @@ export default function CreateExerciseDrawer() {
                   />
                 )}
               />
-
-              <Button type="submit" className="w-full" disabled={isPending}>
-                Create Exercise
-              </Button>
             </form>
           </Form>
         </div>
@@ -187,14 +187,30 @@ export default function CreateExerciseDrawer() {
         <DrawerFooter className="flex justify-between px-4 mt-auto">
           <FormError message={error} />
           <FormSuccess message={success} />
-          <div className="w-full flex justify-between gap-2">
+          <div className="w-full flex justify-between gap-4">
             <DrawerClose asChild className="w-full">
-              <Button variant="secondary">Cancel</Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  form.reset(); // 🔹 Reset the form when Cancel is clicked
+                  setError("");
+                  setSuccess("");
+                }}
+              >
+                Cancel
+              </Button>
             </DrawerClose>
+            <Button
+              type="submit"
+              form="create-exercise-form"
+              className="w-full mt-auto"
+              disabled={isPending}
+            >
+              Create
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
 }
-

@@ -29,7 +29,7 @@ export const NewPasswordSchema = z.object({
   password: z.string().min(3, { message: "Minumum 3 characters required" }),
 });
 
-export const CreateExerciseSchema = z.object({
+export const CreateExerciseSchema = z.object({ 
   exerciseName: z.string().min(1, { message: "Exercise name is required" }),
   equipment: z
     .union([z.nativeEnum(ExerciseEquipment), z.literal("")])
@@ -41,12 +41,11 @@ export const CreateExerciseSchema = z.object({
     .refine((val) => val !== "", {
       message: "Primary muscle selection is required",
     }),
-  auxiliaryMuscles: z.array(z.nativeEnum(MuscleGroup)).nonempty({
-    message: "At least one auxiliary muscle must be selected",
-  }),
+  auxiliaryMuscles: z.array(z.nativeEnum(MuscleGroup)).default([]), // Optional
   exerciseType: z
     .union([z.nativeEnum(ExerciseType), z.literal("")])
     .refine((val) => val !== "", {
       message: "Exercise type selection is required",
     }),
 });
+

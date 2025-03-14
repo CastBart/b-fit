@@ -97,10 +97,12 @@ enum ExerciseOwnership{
   BFit = "B-Fit",
   Custom = "Custom"
 }
-
+// fucntion to convert frontend enums values into backend
 export function getEnumKeyByValue<T extends Record<string, string>>(enumObj: T, value: string): keyof T | undefined {
   return Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined;
 }
+
+// fucntion to convert multi frontend enums values into backend
 export function getEnumKeysByValues<T extends Record<string, string>>(
   enumObj: T,
   values: string[]
@@ -109,6 +111,16 @@ export function getEnumKeysByValues<T extends Record<string, string>>(
     .map((value) => Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined)
     .filter((key): key is keyof T => key !== undefined); // Filters out undefined values
 }
+
+export function getEnumValueByKey<T extends Record<string, string>>(enumObj: T, key: string): T[keyof T] {
+  return (enumObj[key as keyof T] || key) as T[keyof T]; // Ensures the return type is from the enum
+}
+
+export function getEnumValuesByKeys<T extends Record<string, string>>(enumObj: T, keys: string[]): T[keyof T][] {
+  return keys.map((key) => (enumObj[key as keyof T] || key) as T[keyof T]);
+}
+
+
 
 // Exercise Interface
 export interface Exercise {

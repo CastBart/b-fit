@@ -141,11 +141,10 @@ model Exercise {
   name             String
   equipment        ExerciseEquipment
   primaryMuscle    MuscleGroup
-  auxiliaryMuscles MuscleGroup[]
+  auxiliaryMuscles MuscleGroup[]     @default([]) // Optional
   exerciseType     ExerciseType
   userId           String
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
-
