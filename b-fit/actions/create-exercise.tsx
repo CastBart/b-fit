@@ -5,16 +5,30 @@ import { CreateExerciseSchema } from "@/schemas";
 import { db } from "@/lib/db";
 import { auth } from "@/auth"; // Authentication setup
 import { Prisma } from "@prisma/client"; // ✅ Import Prisma enums
-import { ExerciseEquipment, MuscleGroup, ExerciseType, getEnumKeyByValue, getEnumKeysByValues } from "@/lib/definitions"; // ✅ Import frontend enums
+import {
+  ExerciseEquipment,
+  MuscleGroup,
+  ExerciseType,
+  getEnumKeyByValue,
+  getEnumKeysByValues,
+} from "@/lib/definitions"; // ✅ Import frontend enums
 
-export async function createExercise(values: z.infer<typeof CreateExerciseSchema>) {
+export async function createExercise(
+  values: z.infer<typeof CreateExerciseSchema>
+) {
   // Validate fields
   const validatedFields = CreateExerciseSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid exercise fields!" };
   }
 
-  const { exerciseName, equipment, primaryMuscle, auxiliaryMuscles, exerciseType } = validatedFields.data;
+  const {
+    exerciseName,
+    equipment,
+    primaryMuscle,
+    auxiliaryMuscles,
+    exerciseType,
+  } = validatedFields.data;
 
   // Ensure the user is authenticated
   const session = await auth();
@@ -25,7 +39,10 @@ export async function createExercise(values: z.infer<typeof CreateExerciseSchema
   // Convert frontend enum values to Prisma enums
   const equipmentEnumKey = getEnumKeyByValue(ExerciseEquipment, equipment);
   const primaryMuscleEnumKey = getEnumKeyByValue(MuscleGroup, primaryMuscle);
-  const auxiliaryMusclesEnumKeys = getEnumKeysByValues(MuscleGroup, auxiliaryMuscles);
+  const auxiliaryMusclesEnumKeys = getEnumKeysByValues(
+    MuscleGroup,
+    auxiliaryMuscles
+  );
   const exerciseTypeEnumKey = getEnumKeyByValue(ExerciseType, exerciseType);
 
   // Ensure all required fields are correctly mapped
@@ -38,7 +55,7 @@ export async function createExercise(values: z.infer<typeof CreateExerciseSchema
     await db.exercise.create({
       data: {
         name: exerciseName,
-        equipment: equipmentEnumKey, 
+        equipment: equipmentEnumKey,
         primaryMuscle: primaryMuscleEnumKey,
         auxiliaryMuscles: auxiliaryMusclesEnumKeys,
         exerciseType: exerciseTypeEnumKey,
@@ -46,7 +63,15 @@ export async function createExercise(values: z.infer<typeof CreateExerciseSchema
       },
     });
 
-    return { success: "Exercise created successfully!" };
+    return {
+      exercise: {
+        exerciseName,
+        equipment,
+        primaryMuscle,
+        auxiliaryMuscles,
+        exerciseType,
+      },
+    };
   } catch (error) {
     console.error("Error creating exercise:", error);
     return { error: "Failed to create exercise." };

@@ -17,11 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import FormError from "../form-error";
-import FormSuccess from "../from-success";
 import {
   ExerciseEquipment,
   MuscleGroup,
@@ -45,7 +45,6 @@ export default function CreateExerciseDrawer({
 }: CreateExerciseDrawerProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
   const form = useForm<
     z.infer<typeof CreateExerciseSchema> & {
@@ -70,18 +69,21 @@ export default function CreateExerciseDrawer({
     console.log("Errors:", form.formState.errors);
 
     setError("");
-    setSuccess("");
 
     startTransition(() => {
       createExercise(values).then((data) => {
         console.log("Server response:", data);
         setError(data.error);
-        setSuccess(data.success);
 
-        if (data.success) {
+        if (data.exercise) {
           form.reset();
           setOpen(false);
           onExerciseCreated();
+          toast("New Exercise!", {
+            description: `You have added ${data.exercise.exerciseName} to your library!`,
+            duration: 2300,
+            position: "top-center",
+          });
         }
       });
     });
@@ -186,7 +188,6 @@ export default function CreateExerciseDrawer({
         {/* Drawer Footer */}
         <DrawerFooter className="flex justify-between px-4 mt-auto">
           <FormError message={error} />
-          <FormSuccess message={success} />
           <div className="w-full flex justify-between gap-4">
             <DrawerClose asChild className="w-full">
               <Button
@@ -194,7 +195,6 @@ export default function CreateExerciseDrawer({
                 onClick={() => {
                   form.reset(); // 🔹 Reset the form when Cancel is clicked
                   setError("");
-                  setSuccess("");
                 }}
               >
                 Cancel
