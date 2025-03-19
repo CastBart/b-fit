@@ -16,6 +16,7 @@ export default function ExerciseSearch({ setSearchTerm }: ExerciseSearchProps) {
         placeholder="Search"
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full p-2 px-10 rounded border"
+        id="exercise-search"
       />
     </div>
   );

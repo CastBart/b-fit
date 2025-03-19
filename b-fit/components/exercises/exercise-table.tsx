@@ -16,11 +16,11 @@ interface ExerciseTableProps {
 export default function ExerciseTable({ exercises }: ExerciseTableProps) {
   return (
     <div className="overflow-y-auto custom-scrollbar">
-      <Table>
+      <Table id="exercise-table">
         <TableCaption >All exercises</TableCaption>
-        <TableBody>
+        <TableBody id="exercise-table-body">
           {exercises.map((exercise, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} id={`exercise-table-row-${exercise.id}`}>
               <TableCell>
                 <div className="text-lg font-semibold">{exercise.name}</div>
                 <span className="text-muted-foreground">{exercise.equipment}</span>

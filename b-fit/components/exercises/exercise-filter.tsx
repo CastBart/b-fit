@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -11,7 +10,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   ExerciseEquipment,
   MuscleGroup,
@@ -36,41 +34,49 @@ export default function ExerciseFilter<
         : [...prev, value]
     );
   };
+
   return (
     <Dialog>
       <DialogTrigger asChild className="grow">
-        <Button className="text-xl">
-          {title}
-        </Button>
+        <Button className="text-xl">{title}</Button>
       </DialogTrigger>
-      <DialogContent className="custom-dialog">
+      <DialogContent
+        className="custom-dialog"
+        id={`${title.toLowerCase().replace(/ /g, "-")}-dialog-content`}
+      >
         <DialogHeader className="gap-2">
-          <DialogTitle className="text-center">{`${title} Filters`}</DialogTitle>
+          <DialogTitle
+            className="text-center"
+            id={`${title.toLowerCase().replace(/ /g, "-")}-dialog-title`}
+          >{`${title} Filters`}</DialogTitle>
           <Separator className="h-1" />
         </DialogHeader>
-        <div className=" grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar">
+        <div className="grid grid-cols-2 gap-2 max-h-[500px] px-2 overflow-y-auto custom-scrollbar">
           {data.map((item) => (
             <div
               key={String(item)}
-              onClick={() => toggleSelection(item)} // ✅ Clicking anywhere toggles
-              className="flex gap-2 items-center justify-center h-20 px-4 py-2 rounded-sm bg-primary text-primary-foreground shadow hover:bg-primary/90 cursor-pointer"
+              id={`${title
+                .toLowerCase()
+                .replace(/ /g, "-")}-filter-option-${String(
+                item.toLocaleLowerCase().replace(/ /g, "-")
+              )}`}
+              onClick={() => toggleSelection(item)}
+              className={`flex gap-2 items-center justify-center h-20 px-4 py-2 rounded-sm shadow cursor-pointer
+              ${
+                selectedItems.includes(item)
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground"
+              } 
+              hover:bg-primary/90`}
             >
-              <Checkbox
-                checked={selectedItems.includes(item)}
-                onCheckedChange={() => toggleSelection(item)}
-                id={String(item)}
-                className="border-primary-foreground"
-              />
-              <label className="w-full cursor-pointer" htmlFor={String(item)}>
-                {String(item)}
-              </label>
+              {String(item)}
             </div>
           ))}
         </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
+        <DialogFooter className="sm:justify-start px-2" id={`${title.toLowerCase().replace(/ /g, "-")}-dialog-footer`}>
+          <DialogClose asChild className="w-full" id={`${title.toLowerCase().replace(/ /g, "-")}-dialog-close`}>
+            <Button type="button" >
+              OK
             </Button>
           </DialogClose>
         </DialogFooter>
