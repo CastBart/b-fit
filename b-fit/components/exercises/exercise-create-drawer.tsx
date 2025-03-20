@@ -91,13 +91,13 @@ export default function CreateExerciseDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerTrigger asChild>
+      <DrawerTrigger asChild id="create-exercise-drawer-trigger" title="Create Exercise Drawer Trigger">
         <Button>Create</Button>
       </DrawerTrigger>
-      <DrawerContent className="custom-drawer justify-self-center">
-        <DrawerHeader>
+      <DrawerContent id="create-exercise-drawer-content" title="Create Exercise Drawer Content" className="custom-drawer justify-self-center">
+        <DrawerHeader id="create-exercise-drawer-header">
           <div className="flex flex-col gap-2">
-            <DrawerTitle className="text-center text-3xl">
+            <DrawerTitle className="text-center text-3xl" id="create-exercise-drawer-header-title">
               Create Exercise
             </DrawerTitle>
             <Separator className="h-1" />

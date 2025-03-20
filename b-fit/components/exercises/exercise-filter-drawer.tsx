@@ -84,14 +84,14 @@ export function ExerciseFilterDrawer({
           </DrawerTrigger>
         </div>
       </div>
-      <DrawerContent className="custom-drawer justify-self-center">
+      <DrawerContent className="custom-drawer justify-self-center" id="exercise-filters-drawer-content">
         <DrawerHeader>
           <div className="flex flex-col gap-2">
-            <DrawerTitle className="text-center text-3xl">Filters</DrawerTitle>
+            <DrawerTitle id="exercise-filters-drawer-title" className="text-center text-3xl">Filters</DrawerTitle>
             <Separator className="h-1"></Separator>
           </div>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 px-4 flex-1 my-4">
+        <div className="flex flex-col gap-4 px-4 flex-1 my-4" id="exercise-filters-filter_by">
           <ExerciseFilter
             title="Equipment"
             data={Object.values(ExerciseEquipment)}
@@ -111,9 +111,9 @@ export function ExerciseFilterDrawer({
             setSelectedItems={setSelectedType}
           />
         </div>
-        <DrawerFooter className="pt-2 row-span-1">
-          <DrawerClose asChild>
-            <Button variant="secondary">Cancel</Button>
+        <DrawerFooter className="pt-2 row-span-1" id="exercise-filters-drawer-footer">
+          <DrawerClose asChild id="exercise-filters-drawer-close">
+            <Button variant="secondary">Close</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
