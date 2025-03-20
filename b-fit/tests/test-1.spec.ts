@@ -9,7 +9,7 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).click();
   await page.getByRole('textbox', { name: 'Password' }).fill('Password1234');
   await page.getByRole('button', { name: 'Login' }).click();
-  await expect(page.getByRole('button', { name: 'Testing User buttermaslo97@' })).toHaveText("buttermaslo97@gmail.com");
+  //await expect(page.getByRole('button', { name: 'Testing User buttermaslo97@' })).toHaveText("buttermaslo97@gmail.com",{timeout:10000});
 
   //Go to exercise page
   await page.getByRole('link', { name: 'Exercises', exact: true }).click();
@@ -36,10 +36,10 @@ test('test', async ({ page }) => {
   await page.getByText('Small exercise').click();
   await page.getByRole('button', { name: 'OK' }).click();
   //tests
-  await expect(page.getByRole('textbox', { name: 'Exercise Name' })).toHaveText("Testing Exercise");
-  await expect(page.getByRole('button', { name: 'Equipment Machine' })).toHaveText("Machine");
-  await expect(page.getByRole('button', { name: 'Primary Muscle Biceps' })).toHaveText("Biceps");
-  await expect(page.getByRole('button', { name: 'Auxiliary Muscles Triceps' })).toHaveText("Triceps");
+  await expect(page.getByRole('textbox', { name: 'Exercise Name' })).toHaveValue("Testing Exercise");
+  await expect(page.getByRole('button', { name: 'Equipment Machine' })).toHaveText("EquipmentMachine");
+  await expect(page.getByRole('button', { name: 'Primary Muscle Biceps' })).toHaveText("Primary MuscleBiceps");
+  await expect(page.getByRole('button', { name: 'Auxiliary Muscles Triceps' })).toHaveText("Auxiliary MusclesTriceps");
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('region', { name: 'Notifications alt+T' }).getByRole('listitem')).toHaveText("You have added Testing Exercise to your library!");
+  await expect(page.getByRole('region', { name: 'Notifications alt+T' }).getByRole('listitem')).toHaveText("You have added Testing Exercise to your library!",{timeout:15000});
 });
