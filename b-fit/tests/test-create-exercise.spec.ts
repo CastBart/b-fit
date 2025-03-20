@@ -41,5 +41,7 @@ test('test', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Equipment Machine' })).toHaveText("EquipmentMachine");
   await expect(page.getByRole('button', { name: 'Primary Muscle Biceps' })).toHaveText("Primary MuscleBiceps");
   await expect(page.getByRole('button', { name: 'Auxiliary Muscles Triceps' })).toHaveText("Auxiliary MusclesTriceps");
+  await expect(page.getByRole('button', { name: 'Exercise Type Small exercise' })).toHaveText("Exercise TypeSmall exercise");
   await page.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('table', { name: 'All exercises' })).toContainText("Testing ExerciseMachine");
 });
