@@ -1,13 +1,10 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -38,7 +35,7 @@ export function ExerciseFilterDrawer({
   numOfExercises,
   setFilters,
 }: ExerciseFilterDrawerProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const { state } = useSidebar();
   console.log(state);
   const [selectedEquipment, setSelectedEquipment] = useState<

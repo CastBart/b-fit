@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Exercise } from "@/lib/definitions";
+import { ExerciseDetailsDrawer } from "./exercise-details-drawer";
 
 interface ExerciseTableProps {
   exercises: Exercise[];
@@ -22,8 +23,9 @@ export default function ExerciseTable({ exercises }: ExerciseTableProps) {
           {exercises.map((exercise, index) => (
             <TableRow key={index} id={`exercise-table-row-${exercise.id}`}>
               <TableCell>
-                <div className="text-lg font-semibold">{exercise.name}</div>
-                <span className="text-muted-foreground">{exercise.equipment}</span>
+                <ExerciseDetailsDrawer exercise={exercise}/>
+                {/* <div className="text-lg font-semibold">{exercise.name}</div>
+                <span className="text-muted-foreground">{exercise.equipment}</span> */}
               </TableCell>
             </TableRow>
           ))}
