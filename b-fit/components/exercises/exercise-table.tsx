@@ -18,19 +18,15 @@ export default function ExerciseTable({ exercises }: ExerciseTableProps) {
   return (
     <div className="overflow-y-auto custom-scrollbar">
       <Table id="exercise-table">
-        <TableCaption >All exercises</TableCaption>
+        <TableCaption>All exercises</TableCaption>
         <TableBody id="exercise-table-body">
           {exercises.map((exercise, index) => (
-            <TableRow key={index} id={`exercise-table-row-${exercise.id}`}>
-              <TableCell>
-                <ExerciseDetailsDrawer exercise={exercise}/>
-                {/* <div className="text-lg font-semibold">{exercise.name}</div>
-                <span className="text-muted-foreground">{exercise.equipment}</span> */}
-              </TableCell>
-            </TableRow>
+            <ExerciseDetailsDrawer key={index} index={index} exercise={exercise} />
           ))}
         </TableBody>
       </Table>
     </div>
   );
 }
+
+

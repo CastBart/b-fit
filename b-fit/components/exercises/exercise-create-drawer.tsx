@@ -64,15 +64,11 @@ export default function CreateExerciseDrawer({
   });
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
-    console.log("Form submitted!");
-    console.log("Form submitted with values:", values);
-    console.log("Errors:", form.formState.errors);
 
     setError("");
 
     startTransition(() => {
       createExercise(values).then((data) => {
-        console.log("Server response:", data);
         setError(data.error);
 
         if (data.exercise) {

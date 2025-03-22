@@ -37,7 +37,6 @@ export function ExerciseFilterDrawer({
 }: ExerciseFilterDrawerProps) {
   const [open, setOpen] = useState(false);
   const { state } = useSidebar();
-  console.log(state);
   const [selectedEquipment, setSelectedEquipment] = useState<
     ExerciseEquipment[]
   >([]);
