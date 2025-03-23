@@ -5,6 +5,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -83,7 +84,8 @@ export function ExerciseFilterDrawer({
       <DrawerContent className="custom-drawer justify-self-center" id="exercise-filters-drawer-content">
         <DrawerHeader>
           <div className="flex flex-col gap-2">
-            <DrawerTitle id="exercise-filters-drawer-title" className="text-center text-3xl">Filters</DrawerTitle>
+            <DrawerTitle className="text-center text-3xl">Filters</DrawerTitle>
+            <DrawerDescription className="hidden">Exercise Filtering</DrawerDescription>
             <Separator className="h-1"></Separator>
           </div>
         </DrawerHeader>

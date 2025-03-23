@@ -3,6 +3,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -43,21 +44,24 @@ export function ExerciseDetailsDrawer({
         <DrawerHeader>
           <div className="flex flex-col gap-2">
             <DrawerTitle
-              id="exercise-details-drawer-title"
               className="text-center text-3xl"
             >
               Exercise Details
             </DrawerTitle>
+            <DrawerDescription className="hidden">
+              View exercise details
+            </DrawerDescription>
             <Separator className="h-1"></Separator>
           </div>
         </DrawerHeader>
+
         <Tabs defaultValue="info" className="px-4">
           <TabsList className="grid grid-cols-2">
             <TabsTrigger value="info">Info</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           <ExerciseDetailsInfo exercise={exercise} />
-          <ExerciseDetailsHistory />
+          <ExerciseDetailsHistory exercise={exercise} />
         </Tabs>
         <DrawerFooter>
           <DrawerClose asChild id="exercise-filters-drawer-close">

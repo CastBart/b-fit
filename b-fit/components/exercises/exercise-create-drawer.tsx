@@ -4,6 +4,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -93,9 +94,10 @@ export default function CreateExerciseDrawer({
       <DrawerContent id="create-exercise-drawer-content" title="Create Exercise Drawer Content" className="custom-drawer justify-self-center">
         <DrawerHeader id="create-exercise-drawer-header">
           <div className="flex flex-col gap-2">
-            <DrawerTitle className="text-center text-3xl" id="create-exercise-drawer-header-title">
+            <DrawerTitle className="text-center text-3xl">
               Create Exercise
             </DrawerTitle>
+            <DrawerDescription className="hidden">Create your own Exercise</DrawerDescription>
             <Separator className="h-1" />
           </div>
         </DrawerHeader>

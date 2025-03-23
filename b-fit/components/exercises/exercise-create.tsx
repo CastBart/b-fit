@@ -29,6 +29,7 @@ export default function CreateExercise() {
             <DrawerTitle className="text-center text-3xl">
               Create Exercise
             </DrawerTitle>
+            <DrawerDescription className="hidden">Create your own exercise</DrawerDescription>
             <Separator className="h-1"></Separator>
           </div>
         </DrawerHeader>
