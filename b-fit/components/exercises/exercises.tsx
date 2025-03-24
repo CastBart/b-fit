@@ -67,7 +67,7 @@ export default function Exercises() {
     toast(`Delete "${exerciseName}"?`, {
       description: "Are you sure you want to delete this exercise? This action cannot be undone.",
       position: "bottom-center",
-      duration: 10000,
+      duration: 100000,
       action: {
         label: "Confirm Delete",
         onClick: async () => {
@@ -76,7 +76,7 @@ export default function Exercises() {
           toast.success(`"${exerciseName}" has been deleted.`);
         },
       },
-      closeButton: true,
+      className: "pointer-events-auto"
     });
   }
 

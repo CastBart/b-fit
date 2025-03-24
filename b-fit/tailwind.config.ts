@@ -10,6 +10,9 @@ const config: Config = {
   
   theme: {
   	extend: {
+		zIndex: {
+			toast: "9999", // Higher than the drawer overlay
+		  },
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
   			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'

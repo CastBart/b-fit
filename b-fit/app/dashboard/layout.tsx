@@ -16,7 +16,7 @@ export default async function Layout({
       <SidebarProvider>
         <DashboardSidebar />
         <main className="w-full max-h-screen">
-          <DashboardHeader title="Exercises" />
+          <DashboardHeader />
           {children}
           <Toaster />
         </main>
