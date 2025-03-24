@@ -7,67 +7,55 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "../ui/separator";
 import { Exercise } from "@/lib/definitions";
-import { useState, useEffect } from "react";
 import ExerciseDetailsInfo from "./exercise-details-info";
 import ExerciseDetailsHistory from "./exercise-details-history";
 
 interface ExerciseDetailsDrawerProps {
-  index: number;
-  exercise: Exercise;
+  selectedExercise: Exercise | null;
+  onClose: () => void;
+  onDelete: (exerciseId: string, exerciseName: string) => void;
 }
 
 export function ExerciseDetailsDrawer({
-  index,
-  exercise,
+  selectedExercise,
+  onClose,
+  onDelete,
 }: ExerciseDetailsDrawerProps) {
-  const [open, setOpen] = useState(false);
   return (
-    <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerTrigger asChild className="w-full">
-        <TableRow key={index} id={`exercise-table-row-${exercise.id}`}>
-          <TableCell className="w-full">
-            <div className="text-lg font-semibold">{exercise.name}</div>
-            <span className="text-muted-foreground">{exercise.equipment}</span>
-          </TableCell>
-        </TableRow>
-      </DrawerTrigger>
-      <DrawerContent
-        className="custom-drawer justify-self-center"
-        id="exercise-details-drawer-content"
-      >
-        <DrawerHeader>
-          <div className="flex flex-col gap-2">
-            <DrawerTitle
-              className="text-center text-3xl"
-            >
-              Exercise Details
-            </DrawerTitle>
-            <DrawerDescription className="hidden">
-              View exercise details
-            </DrawerDescription>
-            <Separator className="h-1"></Separator>
-          </div>
-        </DrawerHeader>
-
-        <Tabs defaultValue="info" className="px-4">
-          <TabsList className="grid grid-cols-2">
-            <TabsTrigger value="info">Info</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-          </TabsList>
-          <ExerciseDetailsInfo exercise={exercise} />
-          <ExerciseDetailsHistory exercise={exercise} />
-        </Tabs>
-        <DrawerFooter>
-          <DrawerClose asChild id="exercise-filters-drawer-close">
-            <Button variant="secondary">Close</Button>
-          </DrawerClose>
-        </DrawerFooter>
+    <Drawer open={!!selectedExercise} onOpenChange={onClose} shouldScaleBackground={false}>
+      <DrawerContent className="custom-drawer justify-self-center">
+        {selectedExercise && (
+          <>
+            <DrawerHeader>
+              <div className="flex flex-col gap-2">
+                <DrawerTitle className="text-center text-3xl">
+                  {selectedExercise.name}
+                </DrawerTitle>
+                <DrawerDescription className="hidden">View exercise details</DrawerDescription>
+                <Separator className="h-1"></Separator>
+              </div>
+            </DrawerHeader>
+            <Tabs defaultValue="info" className="px-4 flex flex-col overflow-y-auto custom-scrollbar">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="info">Info</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+              </TabsList>
+              <div>
+                <ExerciseDetailsInfo exercise={selectedExercise} onDelete={onDelete} />
+                <ExerciseDetailsHistory exercise={selectedExercise} />
+              </div>
+            </Tabs>
+            <DrawerFooter>
+              <DrawerClose asChild id="exercise-filters-drawer-close">
+                <Button variant="secondary">Close</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </>
+        )}
       </DrawerContent>
     </Drawer>
   );

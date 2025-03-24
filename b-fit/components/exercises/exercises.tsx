@@ -1,30 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { deleteExercise } from "@/actions/delete-exercise";
 import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
+import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
-import {
-  ExerciseEquipment,
-  MuscleGroup,
-  ExerciseType,
-  Exercise,
-} from "@/lib/definitions";
-import { useState, useEffect } from "react";
+import { ExerciseEquipment, MuscleGroup, ExerciseType, Exercise } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
-import CreateExerciseDrawer from "./exercise-create-drawer";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { toast } from "sonner"; // ✅ Import toast for confirmation
 
 export default function Exercises() {
+  const [userExercises, setUserExercises] = useState<Exercise[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     equipment: [] as ExerciseEquipment[],
     muscle: [] as MuscleGroup[],
     type: [] as ExerciseType[],
   });
-  const [userExercises, setUserExercises] = useState<Exercise[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState(exercisesData);
 
-  // Fetch user-created exercises on mount
   useEffect(() => {
     async function loadUserExercises() {
       const exercises = await fetchUserExercises();
@@ -33,17 +29,17 @@ export default function Exercises() {
     loadUserExercises();
   }, []);
 
-  useEffect(() => {
-    let updatedExercises = [...exercisesData, ...userExercises];
+  const allExercises = [...exercisesData, ...userExercises];
 
-    // Apply search filter
+  useEffect(() => {
+    let updatedExercises = allExercises;
+
     if (searchTerm) {
       updatedExercises = updatedExercises.filter((exercise) =>
         exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Apply multi-filters
     if (filters.equipment.length > 0) {
       updatedExercises = updatedExercises.filter((exercise) =>
         filters.equipment.includes(exercise.equipment)
@@ -54,9 +50,7 @@ export default function Exercises() {
       updatedExercises = updatedExercises.filter(
         (exercise) =>
           filters.muscle.includes(exercise.primaryMuscle) ||
-          exercise.auxiliaryMuscles.some((muscle) =>
-            filters.muscle.includes(muscle)
-          )
+          exercise.auxiliaryMuscles.some((muscle) => filters.muscle.includes(muscle))
       );
     }
 
@@ -69,21 +63,29 @@ export default function Exercises() {
     setFilteredExercises(updatedExercises);
   }, [searchTerm, filters, userExercises]);
 
-  // Update list when a new exercise is created
-  async function handleExerciseCreated() {
-    const exercises = await fetchUserExercises();
-    setUserExercises(exercises);
+  function handleDelete(exerciseId: string, exerciseName: string) {
+    toast(`Delete "${exerciseName}"?`, {
+      description: "Are you sure you want to delete this exercise? This action cannot be undone.",
+      position: "bottom-center",
+      duration: 10000,
+      action: {
+        label: "Confirm Delete",
+        onClick: async () => {
+          await deleteExercise(exerciseId);
+          setUserExercises((prev) => prev.filter((e) => e.id !== exerciseId));
+          toast.success(`"${exerciseName}" has been deleted.`);
+        },
+      },
+      closeButton: true,
+    });
   }
 
   return (
     <>
-      <CreateExerciseDrawer onExerciseCreated={handleExerciseCreated} />
+      <CreateExerciseDrawer onExerciseCreated={() => fetchUserExercises().then(setUserExercises)} />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
-      <ExerciseFilterDrawer
-        numOfExercises={filteredExercises.length}
-        setFilters={setFilters}
-      />
-      <ExerciseTable exercises={filteredExercises} />
+      <ExerciseFilterDrawer numOfExercises={filteredExercises.length} setFilters={setFilters} />
+      <ExerciseTable exercises={filteredExercises} onDelete={handleDelete} />
     </>
   );
 }
