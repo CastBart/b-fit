@@ -7,11 +7,21 @@ import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
-import { ExerciseEquipment, MuscleGroup, ExerciseType, Exercise } from "@/lib/definitions";
+import {
+  ExerciseEquipment,
+  MuscleGroup,
+  ExerciseType,
+  Exercise,
+} from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import { toast } from "sonner"; // ✅ Import toast for confirmation
 
-export default function Exercises() {
+interface ExercisesProps {
+  mode: "view" | "select"; // ✅ "view" for exercise details, "select" for adding to a list
+  onExerciseSelect?: (exercise: Exercise) => void; // ✅ Callback for when an exercise is selected
+}
+
+export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
   const [userExercises, setUserExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,7 +60,9 @@ export default function Exercises() {
       updatedExercises = updatedExercises.filter(
         (exercise) =>
           filters.muscle.includes(exercise.primaryMuscle) ||
-          exercise.auxiliaryMuscles.some((muscle) => filters.muscle.includes(muscle))
+          exercise.auxiliaryMuscles.some((muscle) =>
+            filters.muscle.includes(muscle)
+          )
       );
     }
 
@@ -69,7 +81,8 @@ export default function Exercises() {
    */
   function handleDelete(exerciseId: string, exerciseName: string) {
     toast(`Delete "${exerciseName}"?`, {
-      description: "Are you sure you want to delete this exercise? This action cannot be undone.",
+      description:
+        "Are you sure you want to delete this exercise? This action cannot be undone.",
       position: "bottom-center",
       duration: 100000,
       action: {
@@ -80,16 +93,25 @@ export default function Exercises() {
           toast.success(`"${exerciseName}" has been deleted.`);
         },
       },
-      className: "pointer-events-auto"
+      className: "pointer-events-auto",
     });
   }
 
   return (
     <>
-      <CreateExerciseDrawer onExerciseCreated={() => fetchUserExercises().then(setUserExercises)} />
+      <CreateExerciseDrawer
+        onExerciseCreated={() => fetchUserExercises().then(setUserExercises)}
+      />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
-      <ExerciseFilterDrawer numOfExercises={filteredExercises.length} setFilters={setFilters} />
-      <ExerciseTable exercises={filteredExercises} onDelete={handleDelete} />
+      <ExerciseFilterDrawer
+        numOfExercises={filteredExercises.length}
+        setFilters={setFilters}
+      />
+      <ExerciseTable
+        mode="view"
+        exercises={filteredExercises}
+        onDelete={handleDelete}
+      />
     </>
   );
 }
