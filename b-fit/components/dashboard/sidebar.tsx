@@ -14,6 +14,13 @@ import {
 import Sidebar_Header from "./sidebar-header";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import {
+  Calculator,
+  ClipboardPen,
+  Dumbbell,
+  Grab,
+  LayoutDashboard,
+} from "lucide-react";
 
 export function DashboardSidebar() {
   const pathName = usePathname();
@@ -30,20 +37,56 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>B-Fit</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuButton asChild isActive={pathName === "/dashboard"}>
-              <Link href="/dashboard">Dashboard</Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard">
+                <LayoutDashboard />
+                Dashboard
+              </Link>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild isActive={pathName === "/dashboard/plans"}>
-              <Link href="/dashboard/plans">Plans</Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard/plans"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard/plans">
+                <ClipboardPen />
+                Plans
+              </Link>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild isActive={pathName === "/dashboard/workouts"}>
-              <Link href="/dashboard/workouts">Workouts</Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard/workouts"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard/workouts">
+                {" "}
+                <Grab />
+                Workouts
+              </Link>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild isActive={pathName === "/dashboard/exercises"}>
-              <Link href="/dashboard/exercises">Exercises</Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard/exercises"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard/exercises">
+                <Dumbbell />
+                Exercises
+              </Link>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild isActive={pathName === "/dashboard/caloriecalculator"}>
-              <Link href="/dashboard/caloriecalculator">Calorie Calculator</Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard/caloriecalculator"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard/caloriecalculator">
+                <Calculator />
+                Calorie Calculator
+              </Link>
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarGroup>

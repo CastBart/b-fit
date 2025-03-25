@@ -63,6 +63,10 @@ export default function Exercises() {
     setFilteredExercises(updatedExercises);
   }, [searchTerm, filters, userExercises]);
 
+  /**
+   * Delete exercise to handle delete of exercises.
+   * TODO: Change toast into a dialog
+   */
   function handleDelete(exerciseId: string, exerciseName: string) {
     toast(`Delete "${exerciseName}"?`, {
       description: "Are you sure you want to delete this exercise? This action cannot be undone.",
