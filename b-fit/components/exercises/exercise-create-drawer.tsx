@@ -88,7 +88,7 @@ export default function CreateExerciseDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerTrigger asChild id="create-exercise-drawer-trigger" title="Create Exercise Drawer Trigger">
+      <DrawerTrigger asChild id="create-exercise-drawer-trigger" title="Create Exercise Drawer Trigger" className="mb-2">
         <Button>Create</Button>
       </DrawerTrigger>
       <DrawerContent id="create-exercise-drawer-content" title="Create Exercise Drawer Content" className="custom-drawer justify-self-center">

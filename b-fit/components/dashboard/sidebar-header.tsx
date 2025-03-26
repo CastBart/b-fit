@@ -34,10 +34,10 @@ export default function Sidebar_Header({
     // className="flex flex-row justify-center items-center space-x-2"
     >
       <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem className="">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="flex flex-row justify-center items-center space-x-1 h-full">
+              <SidebarMenuButton className="flex flex-row justify-center items-center space-x-1 h-full min-h-[56px]">
                 <Avatar>
                   <AvatarImage src={imgSrc} />
                   <AvatarFallback>

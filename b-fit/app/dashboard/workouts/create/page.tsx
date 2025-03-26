@@ -1,72 +1,118 @@
 "use client";
-import React, { use, useState } from "react";
-import SelectExerciseDialog from "@/app/ui/Exercises/SelectExerciseDialog";
-import SelectedExercise from "@/app/ui/Exercises/SelectedExercise";
 
-export default function Page() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "sonner";
+import Exercises from "@/components/exercises/exercises";
+import { Exercise } from "@/lib/definitions";
+import { WorkoutSchema } from "@/schemas";
+import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-select-exercise-drawer";
 
-  const addExercise = (exercise: string) => {
-    setSelectedExercises([...selectedExercises, exercise]);
-  };
+export default function CreateWorkout() {
+  const form = useForm<z.infer<typeof WorkoutSchema>>({
+    resolver: zodResolver(WorkoutSchema),
+    defaultValues: { name: "", description: "", exercises: [] },
+  });
 
-  const removeExercise = (index: number) => {
-    setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
-  };
+  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+
+  function onSubmit(values: z.infer<typeof WorkoutSchema>) {
+    toast.success("Workout created!", {
+      description: `Workout "${values.name}" has been saved.`,
+    });
+    console.log("Workout Data:", values);
+    form.reset();
+    setSelectedExercises([]);
+  }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <header className="p-6 text-center">
-        <h1 className="text-3xl font-semibold">Create Workout</h1>
-        <button
-          onClick={() => setIsDialogOpen(true)}
-          className="absolute top-6 right-6 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
-        >
-          Add Exercise
-        </button>
-      </header>
-      <main className="flex-grow p-6 flex flex-col items-center">
-        <div className="mb-6 w-full max-w-4xl">
-          <label className="block mb-2 text-lg font-semibold">
-            Workout Title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500"
+    <div className="max-w-3xl mx-auto p-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Name Input */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Workout Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter workout name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <label className="block mt-2 mb-2 text-lg font-semibold">
-            Workout Description
-          </label>
-          <textarea
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500"
-            rows={4} // Adjust the number of rows to control the height of the textarea
-          ></textarea>
-        </div>
-        <div className="w-full max-w-4xl">
-          <h2 className="text-2xl font-semibold mb-4">Selected Exercises</h2>
-          <ul className="flex flex-col space-y-2 overflow-y-auto pr-2 max-h-80 custom-scrollbar">
-            {selectedExercises.map((exercise, index) => (
-              <li key={index}>
-                <SelectedExercise
-                  name={exercise}
-                  onRemove={() => removeExercise(index)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
-      <SelectExerciseDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onAdd={addExercise}
-      />
+
+          {/* Description Input */}
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Describe your workout (optional)"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Exercise Selection */}
+          <div className="space-y-2">
+            <FormLabel>Selected Exercises</FormLabel>
+            {selectedExercises.length === 0 ? (
+              <p className="text-muted-foreground">No exercises selected.</p>
+            ) : (
+              <ul className="space-y-1">
+                {selectedExercises.map((exercise) => (
+                  <li
+                    key={exercise.id}
+                    className="flex justify-between p-2 bg-secondary rounded"
+                  >
+                    {exercise.name}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() =>
+                        setSelectedExercises(
+                          selectedExercises.filter((e) => e.id !== exercise.id)
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Exercise Selector */}
+          <WorkoutSelectExerciseDrawer />
+          {/* Submit Button */}
+          <Button type="submit" className="w-full">
+            Create Workout
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

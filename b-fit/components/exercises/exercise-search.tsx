@@ -9,7 +9,7 @@ interface ExerciseSearchProps {
 
 export default function ExerciseSearch({ setSearchTerm }: ExerciseSearchProps) {
   return (
-    <div className="relative">
+    <div className="relative mb-2">
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
       <Input
         type="text"
