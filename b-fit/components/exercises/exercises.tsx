@@ -17,13 +17,11 @@ import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import { toast } from "sonner"; // ✅ Import toast for confirmation
 
 interface ExercisesProps {
-  containerStyleClass?: string;
   mode: "view" | "select"; // ✅ "view" for exercise details, "select" for adding to a list
   onExerciseSelect?: (exercise: Exercise) => void; // ✅ Callback for when an exercise is selected
 }
 
 export default function Exercises({
-  containerStyleClass,
   mode,
   onExerciseSelect,
 }: ExercisesProps) {
@@ -116,6 +114,7 @@ export default function Exercises({
         mode={mode}
         exercises={filteredExercises}
         onDelete={handleDelete}
+        onSelect={onExerciseSelect}
       />
     </>
   );

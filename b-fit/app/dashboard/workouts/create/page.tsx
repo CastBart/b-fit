@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
-import Exercises from "@/components/exercises/exercises";
 import { Exercise } from "@/lib/definitions";
 import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-select-exercise-drawer";
@@ -29,20 +28,29 @@ export default function CreateWorkout() {
 
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
 
+  function handleExerciseSelect(newExercises: Exercise[]) {
+    setSelectedExercises((prev) => {
+      const uniqueExercises = [...prev, ...newExercises].filter(
+        (exercise, index, self) =>
+          index === self.findIndex((e) => e.id === exercise.id)
+      );
+      return uniqueExercises;
+    });
+  }
+
   function onSubmit(values: z.infer<typeof WorkoutSchema>) {
     toast.success("Workout created!", {
       description: `Workout "${values.name}" has been saved.`,
     });
-    console.log("Workout Data:", values);
+    console.log("Workout Data:", { ...values, exercises: selectedExercises });
     form.reset();
-    setSelectedExercises([]);
+    setSelectedExercises([]); // Reset selected exercises after submitting
   }
 
   return (
     <div className="max-w-3xl mx-auto p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name Input */}
           <FormField
             control={form.control}
             name="name"
@@ -57,7 +65,6 @@ export default function CreateWorkout() {
             )}
           />
 
-          {/* Description Input */}
           <FormField
             control={form.control}
             name="description"
@@ -75,7 +82,6 @@ export default function CreateWorkout() {
             )}
           />
 
-          {/* Exercise Selection */}
           <div className="space-y-2">
             <FormLabel>Selected Exercises</FormLabel>
             {selectedExercises.length === 0 ? (
@@ -92,8 +98,8 @@ export default function CreateWorkout() {
                       size="sm"
                       variant="destructive"
                       onClick={() =>
-                        setSelectedExercises(
-                          selectedExercises.filter((e) => e.id !== exercise.id)
+                        setSelectedExercises((prev) =>
+                          prev.filter((e) => e.id !== exercise.id)
                         )
                       }
                     >
@@ -105,9 +111,8 @@ export default function CreateWorkout() {
             )}
           </div>
 
-          {/* Exercise Selector */}
-          <WorkoutSelectExerciseDrawer />
-          {/* Submit Button */}
+          <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
+
           <Button type="submit" className="w-full">
             Create Workout
           </Button>

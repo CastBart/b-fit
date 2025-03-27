@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Drawer,
   DrawerClose,
@@ -11,8 +12,26 @@ import {
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import Exercises from "../exercises/exercises";
+import { Exercise } from "@/lib/definitions";
 
-export default function WorkoutSelectExerciseDrawer() {
+export default function WorkoutSelectExerciseDrawer({
+  onExerciseSelect,
+}: {
+  onExerciseSelect: (exercises: Exercise[]) => void;
+}) {
+  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+
+  function handleExerciseSelect(exercise: Exercise) {
+    setSelectedExercises((prev) => {
+      return prev.some((e) => e.id === exercise.id) ? prev : [...prev, exercise];
+    });
+  }
+
+  function handleConfirmSelection() {
+    onExerciseSelect(selectedExercises); // Pass selected exercises to parent
+    setSelectedExercises([]); // ✅ Clear the selection after adding
+  }
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -26,11 +45,21 @@ export default function WorkoutSelectExerciseDrawer() {
           </DrawerDescription>
           <Separator className="h-1" />
         </DrawerHeader>
-        <Exercises mode="select" />
-        <DrawerFooter>
-          <DrawerClose>
-            <Button variant={"secondary"}>Cancel</Button>
-          </DrawerClose>
+
+        {/* Pass the selection handler to Exercises */}
+        <Exercises mode="select" onExerciseSelect={handleExerciseSelect} />
+
+        <DrawerFooter className="">
+          <div className="flex justify-between items-center">
+            <DrawerClose asChild>
+              <Button variant={"secondary"}>Cancel</Button>
+            </DrawerClose>
+            {selectedExercises.length > 0 && (
+              <DrawerClose asChild>
+                <Button onClick={handleConfirmSelection}>{`Add (${selectedExercises.length})`}</Button>
+              </DrawerClose>
+            )}
+          </div>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
