@@ -65,7 +65,6 @@ export default function CreateExerciseDrawer({
   });
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
-
     setError("");
 
     startTransition(() => {
@@ -88,16 +87,27 @@ export default function CreateExerciseDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerTrigger asChild id="create-exercise-drawer-trigger" title="Create Exercise Drawer Trigger" className="mb-2">
-        <Button>Create</Button>
+      <DrawerTrigger
+        asChild
+        id="create-exercise-drawer-trigger"
+        title="Create Exercise Drawer Trigger"
+        className="mb-2"
+      >
+        <Button type="button">Create</Button>
       </DrawerTrigger>
-      <DrawerContent id="create-exercise-drawer-content" title="Create Exercise Drawer Content" className="custom-drawer justify-self-center">
+      <DrawerContent
+        id="create-exercise-drawer-content"
+        title="Create Exercise Drawer Content"
+        className="custom-drawer justify-self-center"
+      >
         <DrawerHeader id="create-exercise-drawer-header">
           <div className="flex flex-col gap-2">
             <DrawerTitle className="text-center text-3xl">
               Create Exercise
             </DrawerTitle>
-            <DrawerDescription className="hidden">Create your own Exercise</DrawerDescription>
+            <DrawerDescription className="hidden">
+              Create your own Exercise
+            </DrawerDescription>
             <Separator className="h-1" />
           </div>
         </DrawerHeader>
@@ -189,6 +199,7 @@ export default function CreateExerciseDrawer({
           <div className="w-full flex justify-between gap-4">
             <DrawerClose asChild className="w-full">
               <Button
+                type="button"
                 variant="secondary"
                 onClick={() => {
                   form.reset(); // 🔹 Reset the form when Cancel is clicked

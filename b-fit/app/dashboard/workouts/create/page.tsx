@@ -15,6 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "sonner";
 import { Exercise } from "@/lib/definitions";
 import { WorkoutSchema } from "@/schemas";
@@ -29,13 +36,7 @@ export default function CreateWorkout() {
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
 
   function handleExerciseSelect(newExercises: Exercise[]) {
-    setSelectedExercises((prev) => {
-      const uniqueExercises = [...prev, ...newExercises].filter(
-        (exercise, index, self) =>
-          index === self.findIndex((e) => e.id === exercise.id)
-      );
-      return uniqueExercises;
-    });
+    setSelectedExercises((prev) => [...prev, ...newExercises]); // ✅ Allow duplicates
   }
 
   function onSubmit(values: z.infer<typeof WorkoutSchema>) {
@@ -48,7 +49,7 @@ export default function CreateWorkout() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-[600px] mx-auto p-6 overflow-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -64,7 +65,6 @@ export default function CreateWorkout() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="description"
@@ -80,39 +80,52 @@ export default function CreateWorkout() {
                 <FormMessage />
               </FormItem>
             )}
+          />{" "}
+          <WorkoutSelectExerciseDrawer
+            onExerciseSelect={handleExerciseSelect}
           />
-
-          <div className="space-y-2">
-            <FormLabel>Selected Exercises</FormLabel>
-            {selectedExercises.length === 0 ? (
-              <p className="text-muted-foreground">No exercises selected.</p>
-            ) : (
-              <ul className="space-y-1">
-                {selectedExercises.map((exercise) => (
-                  <li
-                    key={exercise.id}
-                    className="flex justify-between p-2 bg-secondary rounded"
-                  >
-                    {exercise.name}
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() =>
-                        setSelectedExercises((prev) =>
-                          prev.filter((e) => e.id !== exercise.id)
-                        )
-                      }
-                    >
-                      Remove
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
-
+          {selectedExercises.length > 0 ? (
+            <div className="p-2 border rounded-lg">
+              <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-460px)]">
+                <Table className="">
+                  <TableCaption>Selected exercises</TableCaption>
+                  <TableBody className="">
+                    {selectedExercises.map((exercise, index) => (
+                      <TableRow
+                        key={index} // ✅ Uses index instead of `exercise.id` to allow duplicates
+                        className="w-full"
+                      >
+                        <TableCell className="w-full flex justify-between items-center ">
+                          <div className="">
+                            <div className="text-lg font-semibold">
+                              {exercise.name}
+                            </div>
+                            <span className="text-muted-foreground">
+                              {exercise.equipment}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="destructive"
+                            onClick={() =>
+                              setSelectedExercises((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
           <Button type="submit" className="w-full">
             Create Workout
           </Button>

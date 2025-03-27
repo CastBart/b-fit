@@ -37,7 +37,7 @@ export default function ExerciseTable({ mode, exercises, onDelete, onSelect }: E
               key={exercise.id}
               id={`exercise-table-row-${exercise.id}`}
               onClick={() => handleRowClick(exercise)}
-              className={`${mode === "select" ? "cursor-pointer hover:bg-secondary" : ""} ${
+              className={`${mode === "select" ? "cursor-pointer" : ""} ${
                 selectedExercises.includes(exercise) ? "bg-primary/20" : ""
               }`}
             >
