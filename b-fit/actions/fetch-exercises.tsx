@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import {
@@ -18,16 +18,21 @@ export async function fetchUserExercises(): Promise<Exercise[]> {
   }
 
   const exercises = await db.exercise.findMany({
-    where: { userId: session.user.id },
+    where: {
+      OR: [{ userId: session.user.id }, { ownership: "BFit" }],
+    },
   });
 
   return exercises.map((exercise) => ({
     id: exercise.id,
-    owner: ExerciseOwnership.Custom,
+    owner: getEnumValueByKey(ExerciseOwnership, exercise.ownership),
     name: exercise.name,
-    equipment: getEnumValueByKey(ExerciseEquipment, exercise.equipment), // ✅ Now returns an enum value
-    primaryMuscle: getEnumValueByKey(MuscleGroup, exercise.primaryMuscle), // ✅ Now returns an enum value
-    auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, exercise.auxiliaryMuscles), // ✅ Returns an array of enum values
-    type: getEnumValueByKey(ExerciseType, exercise.exerciseType), // ✅ Now returns an enum value
+    equipment: getEnumValueByKey(ExerciseEquipment, exercise.equipment),
+    primaryMuscle: getEnumValueByKey(MuscleGroup, exercise.primaryMuscle),
+    auxiliaryMuscles: getEnumValuesByKeys(
+      MuscleGroup,
+      exercise.auxiliaryMuscles
+    ),
+    type: getEnumValueByKey(ExerciseType, exercise.exerciseType),
   }));
 }

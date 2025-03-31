@@ -60,6 +60,7 @@ export async function createExercise(
         auxiliaryMuscles: auxiliaryMusclesEnumKeys,
         exerciseType: exerciseTypeEnumKey,
         userId: session.user.id, // Linking exercise to the logged-in user
+        ownership: "Custom"
       },
     });
 

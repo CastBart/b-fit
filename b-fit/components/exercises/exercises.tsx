@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { deleteExercise } from "@/actions/delete-exercise";
-import exercisesData from "@/lib/exercise-list";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
@@ -21,12 +21,20 @@ interface ExercisesProps {
   onExerciseSelect?: (exercise: Exercise) => void; // ✅ Callback for when an exercise is selected
 }
 
-export default function Exercises({
-  mode,
-  onExerciseSelect,
-}: ExercisesProps) {
-  const [userExercises, setUserExercises] = useState<Exercise[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
+export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
+  const queryClient = useQueryClient(); // ✅ Get Query Client
+
+  // ✅ Fetch exercises using React Query
+  const {
+    data: userExercises = [],
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["exercises"],
+    queryFn: () => fetchUserExercises(),
+  });
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     equipment: [] as ExerciseEquipment[],
@@ -34,76 +42,71 @@ export default function Exercises({
     type: [] as ExerciseType[],
   });
 
-  useEffect(() => {
-    async function loadUserExercises() {
-      const exercises = await fetchUserExercises();
-      setUserExercises(exercises);
+  // ✅ Filter logic remains the same
+  const filteredExercises = userExercises.filter((exercise) => {
+    if (
+      searchTerm &&
+      !exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) {
+      return false;
     }
-    loadUserExercises();
-  }, []);
+    if (
+      filters.equipment.length > 0 &&
+      !filters.equipment.includes(exercise.equipment)
+    ) {
+      return false;
+    }
+    if (
+      filters.muscle.length > 0 &&
+      !(
+        filters.muscle.includes(exercise.primaryMuscle) ||
+        exercise.auxiliaryMuscles.some((muscle) =>
+          filters.muscle.includes(muscle)
+        )
+      )
+    ) {
+      return false;
+    }
+    if (filters.type.length > 0 && !filters.type.includes(exercise.type)) {
+      return false;
+    }
+    return true;
+  });
 
-  const allExercises = [...exercisesData, ...userExercises];
-
-  useEffect(() => {
-    let updatedExercises = allExercises;
-
-    if (searchTerm) {
-      updatedExercises = updatedExercises.filter((exercise) =>
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // ✅ Mutation for deleting exercises
+  const mutation = useMutation({
+    mutationFn: deleteExercise,
+    onSuccess: (_, exerciseId) => {
+      queryClient.setQueryData(["exercises"], (oldExercises?: Exercise[]) =>
+        oldExercises ? oldExercises.filter((e) => e.id !== exerciseId) : []
       );
-    }
+      toast.success(`Exercise deleted.`);
+    },
+  });
 
-    if (filters.equipment.length > 0) {
-      updatedExercises = updatedExercises.filter((exercise) =>
-        filters.equipment.includes(exercise.equipment)
-      );
-    }
-
-    if (filters.muscle.length > 0) {
-      updatedExercises = updatedExercises.filter(
-        (exercise) =>
-          filters.muscle.includes(exercise.primaryMuscle) ||
-          exercise.auxiliaryMuscles.some((muscle) =>
-            filters.muscle.includes(muscle)
-          )
-      );
-    }
-
-    if (filters.type.length > 0) {
-      updatedExercises = updatedExercises.filter((exercise) =>
-        filters.type.includes(exercise.type)
-      );
-    }
-
-    setFilteredExercises(updatedExercises);
-  }, [searchTerm, filters, userExercises]);
-
-  /**
-   * Delete exercise to handle delete of exercises.
-   * TODO: Change toast into a dialog
-   */
+  // ✅ Handle delete with React Query
   function handleDelete(exerciseId: string, exerciseName: string) {
     toast(`Delete "${exerciseName}"?`, {
       description:
         "Are you sure you want to delete this exercise? This action cannot be undone.",
       position: "bottom-center",
-      duration: 100000,
+      duration: 10000,
       action: {
         label: "Confirm Delete",
-        onClick: async () => {
-          await deleteExercise(exerciseId);
-          setUserExercises((prev) => prev.filter((e) => e.id !== exerciseId));
-          toast.success(`"${exerciseName}" has been deleted.`);
-        },
+        onClick: () => mutation.mutate(exerciseId),
       },
       className: "pointer-events-auto",
     });
   }
+  if (isPending) return <p>Loading exercises...</p>;
+  if (isError) return <p>Error loading exercises.</p>;
 
   return (
     <>
       <CreateExerciseDrawer
-        onExerciseCreated={() => fetchUserExercises().then(setUserExercises)}
+        onExerciseCreated={() =>
+          queryClient.invalidateQueries({ queryKey: ["exercises"] })
+        }
       />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
       <ExerciseFilterDrawer

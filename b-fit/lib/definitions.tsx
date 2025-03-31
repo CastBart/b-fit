@@ -94,7 +94,7 @@ enum ExerciseType {
   Large = "Large exercise",
 }
 enum ExerciseOwnership{
-  BFit = "B-Fit",
+  BFit = "BFit",
   Custom = "Custom"
 }
 // fucntion to convert frontend enums values into backend

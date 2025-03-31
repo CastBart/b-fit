@@ -137,6 +137,11 @@ enum ExerciseType {
   Large
 }
 
+enum ExerciseOwnership {
+  BFit
+  Custom
+}
+
 // ───────────────────────────
 // EXERCISES
 // ───────────────────────────
@@ -144,12 +149,13 @@ enum ExerciseType {
 model Exercise {
   id               String            @id @default(cuid())
   name             String
+  ownership        ExerciseOwnership
   equipment        ExerciseEquipment
   primaryMuscle    MuscleGroup
   auxiliaryMuscles MuscleGroup[]     @default([])
   exerciseType     ExerciseType
-  userId           String
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String?
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
