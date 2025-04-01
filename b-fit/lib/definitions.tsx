@@ -25,15 +25,15 @@ export interface User {
   updatedAt: Date;
 }
 
-
-
 export type Pages = {
   [key: string]: Page;
 };
 // Start Page Definitions
 import { ForwardRefExoticComponent, RefAttributes, SVGProps } from "react";
 import { HomeIcon } from "@heroicons/react/24/solid";
-export type HeroIcon = ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, "ref"> & RefAttributes<SVGSVGElement>>;
+export type HeroIcon = ForwardRefExoticComponent<
+  Omit<SVGProps<SVGSVGElement>, "ref"> & RefAttributes<SVGSVGElement>
+>;
 export type Page = {
   name: string;
   link: string;
@@ -42,11 +42,11 @@ export type Page = {
 };
 //Webiste Links
 export const websiteLinks: Pages = {
-  home: { name: "Home", link: "/", icon: HomeIcon},
-  welcome: {name: "Welcome", link: "/welcome", icon: HomeIcon},
-  login: { name: "Login", link: "/login", icon: HomeIcon},
-  register: {name: "Register", link: "/register", icon: HomeIcon},
-  services: { name: "Services", link: "/services", icon: HomeIcon},
+  home: { name: "Home", link: "/", icon: HomeIcon },
+  welcome: { name: "Welcome", link: "/welcome", icon: HomeIcon },
+  login: { name: "Login", link: "/login", icon: HomeIcon },
+  register: { name: "Register", link: "/register", icon: HomeIcon },
+  services: { name: "Services", link: "/services", icon: HomeIcon },
 };
 
 // Exercise Types
@@ -93,13 +93,18 @@ enum ExerciseType {
   Medium = "Medium exercise",
   Large = "Large exercise",
 }
-enum ExerciseOwnership{
+enum ExerciseOwnership {
   BFit = "BFit",
-  Custom = "Custom"
+  Custom = "Custom",
 }
 // fucntion to convert frontend enums values into backend
-export function getEnumKeyByValue<T extends Record<string, string>>(enumObj: T, value: string): keyof T | undefined {
-  return Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined;
+export function getEnumKeyByValue<T extends Record<string, string>>(
+  enumObj: T,
+  value: string
+): keyof T | undefined {
+  return Object.keys(enumObj).find(
+    (key) => enumObj[key as keyof T] === value
+  ) as keyof T | undefined;
 }
 
 // fucntion to convert multi frontend enums values into backend
@@ -108,19 +113,28 @@ export function getEnumKeysByValues<T extends Record<string, string>>(
   values: string[]
 ): (keyof T)[] {
   return values
-    .map((value) => Object.keys(enumObj).find((key) => enumObj[key as keyof T] === value) as keyof T | undefined)
+    .map(
+      (value) =>
+        Object.keys(enumObj).find(
+          (key) => enumObj[key as keyof T] === value
+        ) as keyof T | undefined
+    )
     .filter((key): key is keyof T => key !== undefined); // Filters out undefined values
 }
 
-export function getEnumValueByKey<T extends Record<string, string>>(enumObj: T, key: string): T[keyof T] {
+export function getEnumValueByKey<T extends Record<string, string>>(
+  enumObj: T,
+  key: string
+): T[keyof T] {
   return (enumObj[key as keyof T] || key) as T[keyof T]; // Ensures the return type is from the enum
 }
 
-export function getEnumValuesByKeys<T extends Record<string, string>>(enumObj: T, keys: string[]): T[keyof T][] {
+export function getEnumValuesByKeys<T extends Record<string, string>>(
+  enumObj: T,
+  keys: string[]
+): T[keyof T][] {
   return keys.map((key) => (enumObj[key as keyof T] || key) as T[keyof T]);
 }
-
-
 
 // Exercise Interface
 export interface Exercise {
@@ -135,4 +149,13 @@ export interface Exercise {
 }
 
 // Export enums for use in other files
-export { ExerciseEquipment, MuscleGroup, ExerciseType, ExerciseOwnership};
+export { ExerciseEquipment, MuscleGroup, ExerciseType, ExerciseOwnership };
+
+export interface Workout {
+  id: string;
+  name: string;
+  description?: string;
+  userId: string;
+  createdAt: string;
+  exercises: Exercise[]; // Store full exercise details
+}

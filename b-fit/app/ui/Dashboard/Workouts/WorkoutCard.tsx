@@ -1,6 +1,6 @@
 type WorkoutCardProps = {
   title: string;
-  description: string;
+  description?: string;
 };
 
 export default function WorkoutCard({ title, description }: WorkoutCardProps)  {
