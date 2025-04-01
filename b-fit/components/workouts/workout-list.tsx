@@ -12,7 +12,7 @@ export default function WorkoutList() {
     error,
   } = useQuery({
     queryKey: ["workouts"],
-    queryFn: fetchUserWorkouts,
+    queryFn: () => fetchUserWorkouts(),
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 

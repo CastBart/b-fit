@@ -9,7 +9,7 @@ export default async function Page() {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["workouts"],
-    queryFn: fetchUserWorkouts,
+    queryFn: () => fetchUserWorkouts(),
   });
 
   return (
