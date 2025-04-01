@@ -1,8 +1,16 @@
 import WorkoutCard from "@/app/ui/Dashboard/Workouts/WorkoutCard";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
+import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { getQueryClient } from "@/lib/getQueryClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
 export default async function Page() {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["exercises"],
+    queryFn: () => fetchUserExercises(),
+  });
   const workouts = [
     { title: "Workout 1", description: "Description for Workout 1" },
     { title: "Workout 2", description: "Description for Workout 2" },

@@ -6,6 +6,7 @@ import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/query-provider"; // ✅ Import the QueryProvider
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export default async function Layout({
   children,
@@ -23,6 +24,7 @@ export default async function Layout({
             <DashboardHeader />
             {children}
             <Toaster />
+            <ReactQueryDevtools initialIsOpen={false}/>
           </main>
         </SidebarProvider>
       </QueryProvider>
