@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserWorkouts } from "@/actions/fetch-workouts";
+import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 import WorkoutCard from "@/app/ui/Dashboard/Workouts/WorkoutCard";
 
 export default function WorkoutList() {
@@ -24,6 +24,7 @@ export default function WorkoutList() {
       {workouts.map((workout) => (
         <WorkoutCard
           key={workout.id}
+          id={workout.id}
           title={workout.name}
           description={workout.description}
         />

@@ -20,20 +20,31 @@ export default function DashboardHeader() {
     "/dashboard": "Dashboard",
   };
 
-  // Find the exact match for the current path, or default to "Dashboard"
-  const title = routeTitles[pathname] || "Dashboard";
+  // Handle dynamic workout ID titles
+  let title = "Dashboard";
+  if (pathname.includes("/dashboard/workouts/")) {
+    title = "Workout Details";
+  } else {
+    title = routeTitles[pathname] || "Dashboard";
+  }
 
   // Define back navigation behavior
-  const backRoutes: Record<string, string> = {
-    "/dashboard/plans": "/dashboard",
-    "/dashboard/exercises": "/dashboard",
-    "/dashboard/workouts": "/dashboard",
-    "/dashboard/caloriecalculator": "/dashboard",
-    "/dashboard/plans/create": "/dashboard/plans",
-    "/dashboard/workouts/create": "/dashboard/workouts",
-  };
+  let backPath: string | null = null;
 
-  const backPath = backRoutes[pathname]; // Get correct back destination
+  if (pathname.includes("/dashboard/workouts/")) {
+    backPath = "/dashboard/workouts"; // Ensure back button goes to workouts list
+  } else {
+    const backRoutes: Record<string, string> = {
+      "/dashboard/plans": "/dashboard",
+      "/dashboard/exercises": "/dashboard",
+      "/dashboard/workouts": "/dashboard",
+      "/dashboard/caloriecalculator": "/dashboard",
+      "/dashboard/plans/create": "/dashboard/plans",
+      "/dashboard/workouts/create": "/dashboard/workouts",
+    };
+
+    backPath = backRoutes[pathname] || null;
+  }
 
   return (
     <div className="sticky top-0 left-0 z-50 flex flex-col bg-background">

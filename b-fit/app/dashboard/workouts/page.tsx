@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/getQueryClient";
-import { fetchUserWorkouts } from "@/actions/fetch-workouts";
+import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 import WorkoutList from "@/components/workouts/workout-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

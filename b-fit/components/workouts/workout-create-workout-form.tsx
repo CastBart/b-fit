@@ -15,17 +15,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
 import { toast } from "sonner";
-import { Exercise } from "@/lib/definitions";
+import { ExerciseNode } from "@/lib/exercise-linked-list";
 import { WorkoutSchema } from "@/schemas";
-import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-select-exercise-drawer";
+import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
+import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
+import { Exercise } from "@/lib/definitions";
 
 export default function CreateWorkoutForm() {
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -34,27 +29,49 @@ export default function CreateWorkoutForm() {
   });
 
   const [isPending, startTransition] = useTransition();
-  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+  const [head, setHead] = useState<ExerciseNode | null>(null);
 
   function handleExerciseSelect(newExercises: Exercise[]) {
-    const updatedExercises = [...selectedExercises, ...newExercises]; // ✅ Allow duplicates
-    setSelectedExercises(updatedExercises);
-    form.setValue("exercises", updatedExercises, { shouldValidate: true }); // ✅ Sync with form
+    console.log("Confirmed Exercise List Received:", newExercises);
+
+    const newNodes = newExercises.map((exercise) => new ExerciseNode(exercise));
+    console.log("New Exercise Nodes: ", newNodes);
+
+    if (!head) {
+      setHead(newNodes[0]); // Set the first node as head
+    } else {
+      let lastNode = head;
+      while (lastNode.next) {
+        lastNode = lastNode.next;
+      }
+      lastNode.next = newNodes[0]; // Link the new nodes to the last node
+    }
+
+    // Ensure all new nodes are properly linked
+    for (let i = 0; i < newNodes.length - 1; i++) {
+      newNodes[i].next = newNodes[i + 1];
+    }
+
+    setHead((prevHead) => prevHead ?? newNodes[0]); // Ensure state updates properly
+  }
+
+  function getExerciseArray(
+    node: ExerciseNode | null
+  ): { id: string; name: string }[] {
+    const exercises = [];
+    while (node) {
+      exercises.push({ id: node.id, name: node.name }); // ✅ Extract only id & name
+      node = node.next;
+    }
+    return exercises;
   }
 
   function onSubmit(values: z.infer<typeof WorkoutSchema>) {
-    if (selectedExercises.length === 0) {
-      form.setError("exercises", {
-        type: "manual",
-        message: "At least one exercise is required",
-      });
-      return;
-    }
 
     startTransition(async () => {
       const response = await createWorkout({
         ...values,
-        exercises: selectedExercises,
+        exercises: getExerciseArray(head),
       });
 
       if (response.error) {
@@ -66,7 +83,7 @@ export default function CreateWorkoutForm() {
           description: `Workout "${values.name}" has been saved.`,
         });
         form.reset();
-        setSelectedExercises([]); // Reset selected exercises after submitting
+        setHead(null);
       }
     });
   }
@@ -113,54 +130,11 @@ export default function CreateWorkoutForm() {
       </Form>
 
       <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
-
-      {selectedExercises.length > 0 ? (
-        <div className="p-2 border rounded-lg">
-          <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-460px)]">
-            <Table>
-              <TableCaption>Selected exercises</TableCaption>
-              <TableBody>
-                {selectedExercises.map((exercise, index) => (
-                  <TableRow key={index} className="w-full">
-                    <TableCell className="w-full flex justify-between items-center">
-                      <div>
-                        <div className="text-lg font-semibold">
-                          {exercise.name}
-                        </div>
-                        <span className="text-muted-foreground">
-                          {exercise.equipment}
-                        </span>
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          const updatedExercises = selectedExercises.filter(
-                            (_, i) => i !== index
-                          );
-                          setSelectedExercises(updatedExercises);
-                          form.setValue("exercises", updatedExercises, {
-                            shouldValidate: true,
-                          }); // ✅ Update form validation
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
+      <SelectedExercisesList head={head} setHead={setHead} form={form} />
 
       {/* 🔹 Display validation message for exercises */}
       {form.formState.errors.exercises && (
-        <p className="text-sm text-red-500">
+        <p className="text-sm text-destructive">
           {form.formState.errors.exercises.message}
         </p>
       )}
@@ -170,10 +144,9 @@ export default function CreateWorkoutForm() {
         form="create-workout-form"
         className="w-full"
         onClick={() => {
-          form.setValue("exercises", selectedExercises, {
+          form.setValue("exercises", getExerciseArray(head), {
             shouldValidate: true,
           });
-          form.handleSubmit(onSubmit);
         }}
       >
         Create Workout

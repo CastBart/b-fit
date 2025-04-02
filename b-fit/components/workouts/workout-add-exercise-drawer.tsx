@@ -28,10 +28,10 @@ export default function WorkoutSelectExerciseDrawer({
   }
 
   function handleConfirmSelection() {
+    console.log("Confirmed Exercise List: ", selectedExercises)
     onExerciseSelect(selectedExercises); // Pass selected exercises to parent
     setSelectedExercises([]); // ✅ Clear the selection after adding
   }
-
   return (
     <Drawer>
       <DrawerTrigger asChild>
