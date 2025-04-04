@@ -44,6 +44,11 @@ export default function CreateWorkoutForm() {
       })
     );
 
+    // Link new nodes together
+    for (let i = 0; i < newNodes.length - 1; i++) {
+      newNodes[i].next = newNodes[i + 1];
+    }
+
     if (!head) {
       setHead(newNodes[0]);
     } else {
@@ -52,13 +57,10 @@ export default function CreateWorkoutForm() {
         lastNode = lastNode.next;
       }
       lastNode.next = newNodes[0];
-    }
 
-    for (let i = 0; i < newNodes.length - 1; i++) {
-      newNodes[i].next = newNodes[i + 1];
+      // 👇 This line forces React to detect a change and re-render
+      setHead({ ...head });
     }
-
-    setHead((prevHead) => prevHead ?? newNodes[0]);
   }
 
   function getLinkedExerciseArray(node: ExerciseNode | null) {
