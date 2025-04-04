@@ -3,6 +3,7 @@ import {
   ExerciseEquipment,
   ExerciseType,
   MuscleGroup,
+  WorkoutExercise,
 } from "@/lib/definitions";
 
 export const LoginSchema = z.object({
@@ -50,9 +51,22 @@ export const CreateExerciseSchema = z.object({
 });
 
 // ✅ Define validation schema
+// export const WorkoutSchema = z.object({
+//   name: z.string().min(3, "Workout name must be at least 3 characters"),
+//   description: z.string().optional(),
+//   exercises: z.array(z.object({ id: z.string(), name: z.string() })).min(1, "At least one exercise must be selected"),
+// });
+
+const WorkoutExerciseSchema = z.object({
+  exerciseID: z.string(),
+  nextId: z.string().optional(),
+  prevId: z.string().optional(),
+});
+
+// Define WorkoutSchema
 export const WorkoutSchema = z.object({
   name: z.string().min(3, "Workout name must be at least 3 characters"),
   description: z.string().optional(),
-  exercises: z.array(z.object({ id: z.string(), name: z.string() })).min(1, "At least one exercise must be selected"),
+  exercises: z.array(WorkoutExerciseSchema).min(1, "At least one exercise must be selected"),
 });
 

@@ -23,14 +23,44 @@ import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exerc
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
 import { Exercise } from "@/lib/definitions";
 
-export default function CreateWorkoutForm() {
+interface EditWorkoutFormProps {
+  workoutHead: ExerciseNode | null;
+  workoutName: string;
+  workoutDescription: string | undefined;
+}
+
+export default function EditWorkoutForm({
+  workoutHead,
+  workoutName,
+  workoutDescription,
+}: EditWorkoutFormProps) {
+  // Convert workoutHead (linked list) into an array of exercises for form default values
+  function getLinkedExerciseArray(node: ExerciseNode | null) {
+    const exercises = [];
+    let prevNode: ExerciseNode | null = null;
+    while (node) {
+      exercises.push({
+        exerciseID: node.id,
+        prevId: prevNode ? prevNode.instanceId : undefined,
+        nextId: node.next ? node.next.instanceId : undefined,
+      });
+      prevNode = node;
+      node = node.next;
+    }
+    return exercises;
+  }
+
   const form = useForm<z.infer<typeof WorkoutSchema>>({
     resolver: zodResolver(WorkoutSchema),
-    defaultValues: { name: "", description: "", exercises: [] },
+    defaultValues: {
+      name: workoutName,
+      description: workoutDescription,
+      exercises: getLinkedExerciseArray(workoutHead), // Set exercises default values here
+    },
   });
 
   const [isPending, startTransition] = useTransition();
-  const [head, setHead] = useState<ExerciseNode | null>(null);
+  const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
 
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
@@ -61,21 +91,6 @@ export default function CreateWorkoutForm() {
     setHead((prevHead) => prevHead ?? newNodes[0]);
   }
 
-  function getLinkedExerciseArray(node: ExerciseNode | null) {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.instanceId : undefined,
-        nexId: node.next ? node.next.instanceId : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
-  }
-
   function onSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
       const response = await createWorkout({
@@ -103,7 +118,7 @@ export default function CreateWorkoutForm() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4"
-          id="create-workout-form"
+          id="edit-workout-form"
         >
           <FormField
             control={form.control}
@@ -149,7 +164,7 @@ export default function CreateWorkoutForm() {
 
       <Button
         type="submit"
-        form="create-workout-form"
+        form="edit-workout-form"
         className="w-full"
         onClick={() => {
           form.setValue("exercises", getLinkedExerciseArray(head), {
@@ -157,7 +172,7 @@ export default function CreateWorkoutForm() {
           });
         }}
       >
-        Create Workout
+        Save Workout
       </Button>
     </div>
   );

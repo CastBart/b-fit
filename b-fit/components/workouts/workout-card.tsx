@@ -13,15 +13,12 @@ export default function WorkoutCard({
   description,
 }: WorkoutCardProps) {
   return (
-    <div className="bg-gray-800 text-white rounded-lg p-6 text-center">
+    <Link
+      href={`/dashboard/workouts/${id}`}
+      className="rounded-lg p-6 text-center border bg-secondary text-secondary-foreground hover:bg-primary/90"
+    >
       <h3 className="text-xl font-semibold mb-4">{title}</h3>
       <p className="mb-4">{description}</p>
-      <Button
-        asChild
-        className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
-      >
-        <Link href={`/dashboard/workouts/${id}`}>Details</Link>
-      </Button>
-    </div>
+    </Link>
   );
 }

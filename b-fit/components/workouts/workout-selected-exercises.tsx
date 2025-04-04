@@ -11,41 +11,48 @@ import {
 import { ExerciseNode } from "@/lib/exercise-linked-list";
 import { UseFormReturn } from "react-hook-form";
 
+interface SelectedExerciseListProps {
+  head: ExerciseNode | null;
+  setHead: (head: ExerciseNode | null) => void;
+  form?: UseFormReturn<any>;
+}
+
 export default function SelectedExercisesList({
   head,
   setHead,
   form,
-}: {
-  head: ExerciseNode | null;
-  setHead: (head: ExerciseNode | null) => void;
-  form: UseFormReturn<any>; // Ensure it works with your form
-}) {
+}: SelectedExerciseListProps) {
   function removeExercise(id: string) {
     console.log("Removing Exercise: ", id);
-    let dummy = new ExerciseNode({
-      id: "dummy",
-      name: "",
-      equipment: "",
-      primaryMuscle: "",
-      auxiliaryMuscles: [],
-      type: "",
-    });
 
-    dummy.next = head;
-    let prev = dummy;
+    // Create a dummy node that points to the head of the list
+    let dummy: ExerciseNode = {
+      id: "dummy",
+      instanceId: "",
+      name: "", // Set an empty string for name or default value
+      equipment: "", // Default value for equipment
+      primaryMuscle: "", // Default value for primaryMuscle
+      auxiliaryMuscles: [], // Default empty array for auxiliaryMuscles
+      type: "", // Default value for type
+      next: head, // Link to the head of the list
+    };
+
+    let prev: ExerciseNode = dummy;
     let current = head;
 
+    // Traverse the list and find the node to remove
     while (current) {
       if (current.instanceId === id) {
-        prev.next = current.next;
+        prev.next = current.next; // Remove the node by linking previous to next
         break;
       }
       prev = current;
       current = current.next;
     }
 
+    // Set the new head after removal
     const newHead = dummy.next ? { ...dummy.next } : null; // Ensure a new reference
-    setHead(newHead);
+    setHead(newHead); // Update the head
     updateForm(newHead);
   }
 
@@ -56,7 +63,7 @@ export default function SelectedExercisesList({
       exercises.push(current);
       current = current.next;
     }
-    form.setValue("exercises", exercises);
+    form?.setValue("exercises", exercises);
   }
 
   return (
@@ -69,21 +76,19 @@ export default function SelectedExercisesList({
               let rows = [];
               let current = head;
               while (current) {
-                const exerciseInstanceId = current.instanceId; // ✅ Capture ID in the loop
+                const exerciseId = current.instanceId;
 
                 rows.push(
-                  <TableRow key={exerciseInstanceId}>
+                  <TableRow key={exerciseId}>
                     <TableCell>
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="text-lg font-semibold">
-                            {current.name}
-                          </div>
+                          <div className="text-lg font-semibold">{current.name}</div>
                         </div>
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => removeExercise(exerciseInstanceId)} // ✅ Uses captured ID
+                          onClick={() => removeExercise(exerciseId)}
                         >
                           Remove
                         </Button>

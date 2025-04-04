@@ -159,3 +159,11 @@ export interface Workout {
   createdAt: string;
   exercises: Exercise[]; // Store full exercise details
 }
+
+export interface WorkoutExercise{
+  exerciseID: string;
+  nexId?: string;
+  prevId?: string;
+}
+
+

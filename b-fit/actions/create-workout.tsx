@@ -8,7 +8,6 @@ import { revalidatePath } from "next/cache";
 
 export async function createWorkout(values: z.infer<typeof WorkoutSchema>) {
   try {
-    // 🔹 Validate input using Zod schema
     const validatedData = WorkoutSchema.safeParse(values);
     if (!validatedData.success) {
       return { error: "Invalid workout data" };
@@ -21,26 +20,27 @@ export async function createWorkout(values: z.infer<typeof WorkoutSchema>) {
 
     const userId = session.user.id;
 
-    // 🔹 Create workout first
     const workout = await db.workout.create({
       data: {
         name: validatedData.data.name,
         description: validatedData.data.description || null,
-        userId: userId, // ✅ Ensure userId is always a string
+        userId: userId,
       },
     });
 
-    // 🔹 Now link the exercises in `WorkoutExercise`
-    if (validatedData.data.exercises.length > 0) {
-      await db.workoutExercise.createMany({
-        data: validatedData.data.exercises.map((exercise) => ({
-          workoutId: workout.id, // ✅ Link to the newly created workout
-          exerciseId: exercise.id, // ✅ Link to existing exercises
-        })),
+    // 🔹 Create WorkoutExercises in batch
+    for (const exercise of validatedData.data.exercises) {
+      await db.workoutExercise.create({
+        data: {
+          workoutId: workout.id,
+          exerciseId: exercise.exerciseID,
+          previousId: exercise.prevId || null,
+          nextId: exercise.nextId || null,
+        },
       });
     }
 
-    revalidatePath("/dashboard/workouts"); // ✅ Refresh workouts list
+    revalidatePath(`/dashboard/workouts/${workout.id}`);
 
     return { success: "Workout created!", workout };
   } catch (error) {

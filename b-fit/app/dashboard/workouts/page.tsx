@@ -5,7 +5,7 @@ import WorkoutList from "@/components/workouts/workout-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default async function Page() {
+export default async function WorkoutCreatePage() {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["workouts"],

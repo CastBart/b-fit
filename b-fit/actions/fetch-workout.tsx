@@ -2,49 +2,61 @@
 
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
-import { Workout, Exercise } from "@/lib/definitions";
-import {
-  getEnumValueByKey,
-  getEnumValuesByKeys,
-} from "@/lib/definitions";
-import {
-  ExerciseEquipment,
-  MuscleGroup,
-  ExerciseType,
-  ExerciseOwnership,
-} from "@/lib/definitions";
 
-export async function fetchWorkoutById(workoutId: string): Promise<Workout | null> {
-  const session = await auth();
-  if (!session?.user) return null;
+export async function getWorkoutWithExercises(workoutId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { error: "Unauthorized: User not logged in" };
+    }
 
-  const workout = await db.workout.findUnique({
-    where: { id: workoutId, userId: session.user.id }, // Ensure user owns the workout
-    include: {
-      exercises: {
-        include: {
-          exercise: true, // Fetch full exercise data
+    const workout = await db.workout.findUnique({
+      where: { id: workoutId, userId: session.user.id },
+      include: {
+        exercises: {
+          include: { exercise: true },
         },
       },
-    },
-  });
+    });
 
-  if (!workout) return null;
+    if (!workout) {
+      return { error: "Workout not found" };
+    }
 
-  return {
-    id: workout.id,
-    name: workout.name,
-    description: workout.description || "",
-    userId: workout.userId,
-    createdAt: workout.createdAt.toISOString(),
-    exercises: workout.exercises.map((we) => ({
-      id: we.exercise.id,
-      owner: getEnumValueByKey(ExerciseOwnership, we.exercise.ownership),
-      name: we.exercise.name,
-      equipment: getEnumValueByKey(ExerciseEquipment, we.exercise.equipment),
-      primaryMuscle: getEnumValueByKey(MuscleGroup, we.exercise.primaryMuscle),
-      auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, we.exercise.auxiliaryMuscles),
-      type: getEnumValueByKey(ExerciseType, we.exercise.exerciseType),
-    })),
-  };
+    // 🔁 Reconstruct the ordered linked list of exercises
+    const nodeMap = new Map<string, typeof workout.exercises[number]>();
+    let head: typeof workout.exercises[number] | null = null;
+
+    for (const ex of workout.exercises) {
+      nodeMap.set(ex.id, ex);
+    }
+
+    // Find the head of the list (where previousId is null)
+    for (const ex of workout.exercises) {
+      if (!ex.previousId) {
+        head = ex;
+        break;
+      }
+    }
+
+    // Traverse the list in order
+    const orderedExercises = [];
+    let current = head;
+
+    while (current) {
+      orderedExercises.push(current);
+      current = current.nextId ? nodeMap.get(current.nextId) ?? null : null;
+    }
+
+    return {
+      success: true,
+      workout: {
+        ...workout,
+        exercises: orderedExercises,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching workout:", error);
+    return { error: "Something went wrong. Please try again." };
+  }
 }
