@@ -1,6 +1,5 @@
 "use client";
 
-import { createWorkout } from "@/actions/create-workout";
 import { useTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,45 +21,55 @@ import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
 import { Exercise } from "@/lib/definitions";
+import { createWorkout } from "@/actions/create-workout";
+import { updateWorkout } from "@/actions/update-workout";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-interface EditWorkoutFormProps {
-  workoutHead: ExerciseNode | null;
-  workoutName: string;
-  workoutDescription: string | undefined;
-}
+type WorkoutFormProps = {
+  mode: "create" | "edit";
+  workoutId?: string;
+  defaultName?: string;
+  defaultDescription?: string;
+  workoutHead?: ExerciseNode | null;
+};
 
-export default function EditWorkoutForm({
-  workoutHead,
-  workoutName,
-  workoutDescription,
-}: EditWorkoutFormProps) {
-  // Convert workoutHead (linked list) into an array of exercises for form default values
- function getLinkedExerciseArray(node: ExerciseNode | null): z.infer<typeof WorkoutSchema>["exercises"] {
-     const exercises = [];
-     let prevNode: ExerciseNode | null = null;
-     while (node) {
-       exercises.push({
-         exerciseID: node.id,
-         prevId: prevNode ? prevNode.id : undefined,
-         nextId: node.next ? node.next.id : undefined,
-       });
-       prevNode = node;
-       node = node.next;
-     }
-     return exercises;
-   }
+export default function WorkoutForm({
+  mode,
+  workoutId,
+  defaultName = "",
+  defaultDescription = "",
+  workoutHead = null,
+}: WorkoutFormProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
     resolver: zodResolver(WorkoutSchema),
     defaultValues: {
-      name: workoutName,
-      description: workoutDescription,
-      exercises: getLinkedExerciseArray(workoutHead), // Set exercises default values here
+      name: defaultName,
+      description: defaultDescription,
+      exercises: getLinkedExerciseArray(workoutHead),
     },
   });
 
-  const [isPending, startTransition] = useTransition();
-  const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
+  function getLinkedExerciseArray(
+    node: ExerciseNode | null
+  ): z.infer<typeof WorkoutSchema>["exercises"] {
+    const exercises = [];
+    let prevNode: ExerciseNode | null = null;
+    while (node) {
+      exercises.push({
+        exerciseID: node.id,
+        prevId: prevNode ? prevNode.id : undefined,
+        nextId: node.next ? node.next.id : undefined,
+      });
+      prevNode = node;
+      node = node.next;
+    }
+    return exercises;
+  }
 
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
@@ -74,7 +83,6 @@ export default function EditWorkoutForm({
       })
     );
 
-    // Link new nodes together
     for (let i = 0; i < newNodes.length - 1; i++) {
       newNodes[i].next = newNodes[i + 1];
     }
@@ -87,29 +95,40 @@ export default function EditWorkoutForm({
         lastNode = lastNode.next;
       }
       lastNode.next = newNodes[0];
-
-      // 👇 This line forces React to detect a change and re-render
       setHead({ ...head });
     }
   }
 
-  function onSubmit(values: z.infer<typeof WorkoutSchema>) {
+  function handleSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
-      const response = await createWorkout({
+      const linkedExercises = getLinkedExerciseArray(head);
+
+      const dataToSend = {
         ...values,
-        exercises: getLinkedExerciseArray(head),
-      });
+        exercises: linkedExercises,
+        ...(mode === "edit" && workoutId ? { id: workoutId } : {}),
+      };
+
+      const response =
+        mode === "create"
+          ? await createWorkout(dataToSend)
+          : await updateWorkout(dataToSend);
 
       if (response.error) {
-        toast.error("Failed to create workout", {
-          description: response.error,
-        });
+        toast.error(
+          mode === "create"
+            ? "Failed to create workout"
+            : "Failed to update workout",
+          { description: response.error }
+        );
       } else {
-        toast.success("Workout created!", {
-          description: `Workout "${values.name}" has been saved.`,
-        });
-        form.reset();
-        setHead(null);
+        toast.success(
+          mode === "create" ? "Workout created!" : "Workout updated!",
+          {
+            description: `Workout "${values.name}" has been saved.`,
+          }
+        );
+        router.push("/dashboard/workouts"); // ✅ Redirect on success
       }
     });
   }
@@ -118,18 +137,22 @@ export default function EditWorkoutForm({
     <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleSubmit)}
           className="space-y-4"
-          id="edit-workout-form"
+          id={`${mode}-workout-form`}
         >
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Workout Name</FormLabel>
+                <FormLabel className="hidden">Workout Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter workout name" />
+                  <Input
+                    {...field}
+                    placeholder="Enter workout name"
+                    className="border-none pl-0 text-2xl md:text-2xl sm:text-2xl lg:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,7 +164,7 @@ export default function EditWorkoutForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel className="hidden">Description</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
@@ -156,7 +179,6 @@ export default function EditWorkoutForm({
       </Form>
 
       <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
-      <SelectedExercisesList head={head} setHead={setHead} form={form} />
 
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
@@ -164,17 +186,29 @@ export default function EditWorkoutForm({
         </p>
       )}
 
+      <SelectedExercisesList head={head} setHead={setHead} form={form} />
+
       <Button
         type="submit"
-        form="edit-workout-form"
+        form={`${mode}-workout-form`}
         className="w-full"
         onClick={() => {
           form.setValue("exercises", getLinkedExerciseArray(head), {
             shouldValidate: true,
           });
         }}
+        disabled={isPending}
       >
-        Save Workout
+        {isPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            Saving...
+          </>
+        ) : mode === "create" ? (
+          "Create Workout"
+        ) : (
+          "Update Workout"
+        )}
       </Button>
     </div>
   );

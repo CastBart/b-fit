@@ -68,7 +68,7 @@ export default function SelectedExercisesList({
 
   return (
     <div className="p-2 border rounded-lg">
-      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-460px)]">
+      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-520px)]">
         <Table>
           <TableCaption>Selected exercises</TableCaption>
           <TableBody>

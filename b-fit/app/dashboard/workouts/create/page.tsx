@@ -4,6 +4,8 @@ import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
+import WorkoutForm from "@/components/workouts/workout-form";
+
 export default async function CreateWorkoutPage() {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
@@ -12,7 +14,7 @@ export default async function CreateWorkoutPage() {
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <CreateWorkoutForm />
+      <WorkoutForm mode="create"/>
     </HydrationBoundary>
   );
 }
