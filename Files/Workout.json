@@ -1,0 +1,18 @@
+[
+  {
+    "id": "cm91c1jug0003vuqkobpif8hk",
+    "name": "First Workout",
+    "description": "Example",
+    "userId": "cm91bxarq0000vuqkzytv7zmv",
+    "createdAt": "2025-04-03 12:29:05.07",
+    "updatedAt": "2025-04-03 12:29:05.07"
+  },
+  {
+    "id": "cm93wgmo8000dvu1wofwamj56",
+    "name": "Second Workout",
+    "description": "Example 2",
+    "userId": "cm91bxarq0000vuqkzytv7zmv",
+    "createdAt": "2025-04-05 07:36:13.257",
+    "updatedAt": "2025-04-05 07:36:13.257"
+  }
+]

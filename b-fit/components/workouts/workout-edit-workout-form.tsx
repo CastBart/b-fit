@@ -35,20 +35,20 @@ export default function EditWorkoutForm({
   workoutDescription,
 }: EditWorkoutFormProps) {
   // Convert workoutHead (linked list) into an array of exercises for form default values
-  function getLinkedExerciseArray(node: ExerciseNode | null) {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.instanceId : undefined,
-        nextId: node.next ? node.next.instanceId : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
-  }
+ function getLinkedExerciseArray(node: ExerciseNode | null): z.infer<typeof WorkoutSchema>["exercises"] {
+     const exercises = [];
+     let prevNode: ExerciseNode | null = null;
+     while (node) {
+       exercises.push({
+         exerciseID: node.id,
+         prevId: prevNode ? prevNode.id : undefined,
+         nextId: node.next ? node.next.id : undefined,
+       });
+       prevNode = node;
+       node = node.next;
+     }
+     return exercises;
+   }
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
     resolver: zodResolver(WorkoutSchema),

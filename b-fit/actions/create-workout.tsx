@@ -28,19 +28,32 @@ export async function createWorkout(values: z.infer<typeof WorkoutSchema>) {
       },
     });
 
-    // 🔹 Create WorkoutExercises in batch
-    for (const exercise of validatedData.data.exercises) {
-      await db.workoutExercise.create({
+    const tempIdToDbId: Record<string, string> = {};
+
+    // First pass: create all exercises without prev/next
+    for (const node of validatedData.data.exercises) {
+      const created = await db.workoutExercise.create({
         data: {
           workoutId: workout.id,
-          exerciseId: exercise.exerciseID,
-          previousId: exercise.prevId || null,
-          nextId: exercise.nextId || null,
+          exerciseId: node.exerciseID,
+        },
+      });
+
+      tempIdToDbId[node.exerciseID] = created.id;
+    }
+
+    // Second pass: update with prev/next using mapped DB IDs
+    for (const node of validatedData.data.exercises) {
+      await db.workoutExercise.update({
+        where: { id: tempIdToDbId[node.exerciseID] },
+        data: {
+          previousId: node.prevId ? tempIdToDbId[node.prevId] : null,
+          nextId: node.nextId ? tempIdToDbId[node.nextId] : null,
         },
       });
     }
 
-    revalidatePath(`/dashboard/workouts/${workout.id}`);
+    revalidatePath(`/dashboard/workouts`);
 
     return { success: "Workout created!", workout };
   } catch (error) {

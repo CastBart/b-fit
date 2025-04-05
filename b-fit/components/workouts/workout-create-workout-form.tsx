@@ -63,14 +63,14 @@ export default function CreateWorkoutForm() {
     }
   }
 
-  function getLinkedExerciseArray(node: ExerciseNode | null) {
+  function getLinkedExerciseArray(node: ExerciseNode | null): z.infer<typeof WorkoutSchema>["exercises"] {
     const exercises = [];
     let prevNode: ExerciseNode | null = null;
     while (node) {
       exercises.push({
         exerciseID: node.id,
-        prevId: prevNode ? prevNode.instanceId : undefined,
-        nexId: node.next ? node.next.instanceId : undefined,
+        prevId: prevNode ? prevNode.id : undefined,
+        nextId: node.next ? node.next.id : undefined,
       });
       prevNode = node;
       node = node.next;
@@ -80,6 +80,7 @@ export default function CreateWorkoutForm() {
 
   function onSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
+      console.log("Exercises going to submit: ", getLinkedExerciseArray(head));
       const response = await createWorkout({
         ...values,
         exercises: getLinkedExerciseArray(head),
@@ -141,7 +142,6 @@ export default function CreateWorkoutForm() {
       </Form>
 
       <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
-      <SelectedExercisesList head={head} setHead={setHead} form={form} />
 
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
@@ -149,6 +149,7 @@ export default function CreateWorkoutForm() {
         </p>
       )}
 
+      <SelectedExercisesList head={head} setHead={setHead} form={form} />
       <Button
         type="submit"
         form="create-workout-form"
@@ -160,6 +161,14 @@ export default function CreateWorkoutForm() {
         }}
       >
         Create Workout
+      </Button>
+      <Button
+        type="button"
+        onClick={() => {
+          console.log(getLinkedExerciseArray(head));
+        }}
+      >
+        Test
       </Button>
     </div>
   );

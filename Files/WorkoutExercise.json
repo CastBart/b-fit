@@ -1,0 +1,37 @@
+[
+  {
+    "id": "cm93wgn0m000fvu1whfixkub2",
+    "workoutId": "cm93wgmo8000dvu1wofwamj56",
+    "exerciseId": "cm91bnv4v0000vul8kdtulv7x",
+    "nextId": null,
+    "previousId": null
+  },
+  {
+    "id": "cm93wgnd1000hvu1w3z06v9rf",
+    "workoutId": "cm93wgmo8000dvu1wofwamj56",
+    "exerciseId": "cm91bnvth0001vul8apo21p6l",
+    "nextId": null,
+    "previousId": "cm93wgn0m000fvu1whfixkub2"
+  },
+  {
+    "id": "cm93wgnp7000jvu1wggzfi597",
+    "workoutId": "cm93wgmo8000dvu1wofwamj56",
+    "exerciseId": "cm91bnwgy0002vul8xafbmvce",
+    "nextId": null,
+    "previousId": "cm93wgnd1000hvu1w3z06v9rf"
+  },
+  {
+    "id": "cm93wgo1d000lvu1w29y5iu3g",
+    "workoutId": "cm93wgmo8000dvu1wofwamj56",
+    "exerciseId": "cm91bnx3k0003vul8qu1c8rlg",
+    "nextId": null,
+    "previousId": "cm93wgnp7000jvu1wggzfi597"
+  },
+  {
+    "id": "cm93wgodj000nvu1wdtwnn5h6",
+    "workoutId": "cm93wgmo8000dvu1wofwamj56",
+    "exerciseId": "cm91bnxpn0004vul8x81xtmwb",
+    "nextId": null,
+    "previousId": "cm93wgo1d000lvu1w29y5iu3g"
+  }
+]
