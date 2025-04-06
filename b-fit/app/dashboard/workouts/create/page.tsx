@@ -1,5 +1,3 @@
-import CreateWorkoutForm from "@/components/workouts/workout-create-workout-form";
-
 import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

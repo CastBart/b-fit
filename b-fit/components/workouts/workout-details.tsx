@@ -1,13 +1,13 @@
 "use client";
 
-import { useWorkout } from "@/hooks/queries/use-workout";
+import { useWorkoutDetails } from "@/hooks/queries/use-workout-details";
 import { notFound } from "next/navigation";
 import { ExerciseNode } from "@/lib/exercise-linked-list";
 import WorkoutForm from "@/components/workouts/workout-form";
 import { Loader2 } from "lucide-react";
 
 export default function WorkoutDetailsClient({ workoutId }: { workoutId: string }) {
-  const { data, isLoading } = useWorkout(workoutId);
+  const { data, isLoading } = useWorkoutDetails(workoutId);
 
   if (isLoading) {
     return (

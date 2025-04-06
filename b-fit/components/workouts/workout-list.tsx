@@ -3,18 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 import WorkoutCard from "@/components/workouts/workout-card";
+import { useWorkouts } from "@/hooks/queries/use-workouts";
 
 export default function WorkoutList() {
-  const {
-    data: workouts = [],
-    isPending,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["workouts"],
-    queryFn: () => fetchUserWorkouts(),
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
+  const { data: workouts = [], isPending, isError, error } = useWorkouts();
 
   if (isPending) return <p>Loading workouts...</p>;
   if (isError) return <p>Error loading workouts: {error.message}</p>;
