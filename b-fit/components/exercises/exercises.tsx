@@ -15,6 +15,7 @@ import {
 } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import { toast } from "sonner"; // ✅ Import toast for confirmation
+import { useExercises } from "@/hooks/queries/use-exercises";
 
 interface ExercisesProps {
   mode: "view" | "select"; // ✅ "view" for exercise details, "select" for adding to a list
@@ -22,18 +23,8 @@ interface ExercisesProps {
 }
 
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
-  const queryClient = useQueryClient(); // ✅ Get Query Client
+  const { exercises, isPending, isError, error, handleDelete, refetch } = useExercises();
 
-  // ✅ Fetch exercises using React Query
-  const {
-    data: userExercises = [],
-    isPending,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["exercises"],
-    queryFn: () => fetchUserExercises(),
-  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -43,7 +34,7 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
   });
 
   // ✅ Filter logic remains the same
-  const filteredExercises = userExercises.filter((exercise) => {
+  const filteredExercises = exercises.filter((exercise) => {
     if (
       searchTerm &&
       !exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -73,40 +64,13 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
     return true;
   });
 
-  // ✅ Mutation for deleting exercises
-  const mutation = useMutation({
-    mutationFn: deleteExercise,
-    onSuccess: (_, exerciseId) => {
-      queryClient.setQueryData(["exercises"], (oldExercises?: Exercise[]) =>
-        oldExercises ? oldExercises.filter((e) => e.id !== exerciseId) : []
-      );
-      toast.success(`Exercise deleted.`);
-    },
-  });
-
-  // ✅ Handle delete with React Query
-  function handleDelete(exerciseId: string, exerciseName: string) {
-    toast(`Delete "${exerciseName}"?`, {
-      description:
-        "Are you sure you want to delete this exercise? This action cannot be undone.",
-      position: "bottom-center",
-      duration: 10000,
-      action: {
-        label: "Confirm Delete",
-        onClick: () => mutation.mutate(exerciseId),
-      },
-      className: "pointer-events-auto",
-    });
-  }
   if (isPending) return <p>Loading exercises...</p>;
-  if (isError) return <p>Error loading exercises.</p>;
+  if (isError) return <p>{`Error loading exercises: ${error}`}</p>;
 
   return (
     <>
       <CreateExerciseDrawer
-        onExerciseCreated={() =>
-          queryClient.invalidateQueries({ queryKey: ["exercises"] })
-        }
+        onExerciseCreated={refetch}
       />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
       <ExerciseFilterDrawer
