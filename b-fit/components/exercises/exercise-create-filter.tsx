@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
@@ -78,6 +79,7 @@ export default function ExerciseCreateFilter<T extends string>({
                 <DialogContent className="custom-dialog" id={`${name}-dialog-content`}>
                   <DialogHeader className="gap-2">
                     <DialogTitle className="text-center">{title}</DialogTitle>
+                    <DialogDescription className="hidden">Use the options below to select the {title} of your exercise</DialogDescription>
                     <Separator className="h-1" />
                   </DialogHeader>
                   <div className="grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar" id={`${name}-filter-oprions`}>

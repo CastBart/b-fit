@@ -2,7 +2,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { getWorkoutWithExercises } from "@/actions/fetch-workout";
-import WorkoutDetailsClient from "@/components/workouts/workout-details";
+import WorkoutDetails from "@/components/workouts/workout-details";
 
 export default async function WorkoutDetailsPage({ params }: { params: { id: string } }) {
   const queryClient = getQueryClient();
@@ -14,7 +14,7 @@ export default async function WorkoutDetailsPage({ params }: { params: { id: str
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <WorkoutDetailsClient workoutId={params.id} />
+      <WorkoutDetails workoutId={params.id} />
     </HydrationBoundary>
   );
 }

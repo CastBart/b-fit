@@ -3,9 +3,10 @@ import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { deleteExercise } from "@/actions/delete-exercise";
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
+import { getQueryClient } from "@/lib/getQueryClient";
 
 export function useExercises() {
-  const queryClient = useQueryClient();
+  const queryClient = getQueryClient();
 
   const {
     data: exercises = [],

@@ -16,6 +16,7 @@ import {
   ExerciseType,
 } from "@/lib/definitions";
 import { Separator } from "../ui/separator";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface ExerciseFilterProps<T> {
   title: string;
@@ -49,6 +50,7 @@ export default function ExerciseFilter<
             className="text-center"
             id={`${title.toLowerCase().replace(/ /g, "-")}-dialog-title`}
           >{`${title} Filters`}</DialogTitle>
+          <DialogDescription className="hidden">Use the options below to filter by exercise {title}</DialogDescription>
           <Separator className="h-1" />
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2 max-h-[500px] px-2 overflow-y-auto custom-scrollbar">

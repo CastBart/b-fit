@@ -25,6 +25,8 @@ import { createWorkout } from "@/actions/create-workout";
 import { updateWorkout } from "@/actions/update-workout";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useWorkout } from "@/hooks/queries/use-workout";
+
 
 type WorkoutFormProps = {
   mode: "create" | "edit";
@@ -44,6 +46,8 @@ export default function WorkoutForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
+  const workoutQuery = mode === "edit" && workoutId ? useWorkout(workoutId) : null;
+
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
     resolver: zodResolver(WorkoutSchema),
@@ -102,36 +106,38 @@ export default function WorkoutForm({
   function handleSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
       const linkedExercises = getLinkedExerciseArray(head);
-
-      const dataToSend = {
+  
+      // Shared workout data
+      const workoutData = {
         ...values,
         exercises: linkedExercises,
-        ...(mode === "edit" && workoutId ? { id: workoutId } : {}),
       };
-
-      const response =
-        mode === "create"
-          ? await createWorkout(dataToSend)
-          : await updateWorkout(dataToSend);
-
-      if (response.error) {
-        toast.error(
-          mode === "create"
-            ? "Failed to create workout"
-            : "Failed to update workout",
-          { description: response.error }
-        );
-      } else {
-        toast.success(
-          mode === "create" ? "Workout created!" : "Workout updated!",
-          {
-            description: `Workout "${values.name}" has been saved.`,
-          }
-        );
-        router.push("/dashboard/workouts"); // ✅ Redirect on success
+  
+      if (mode === "create") {
+        // CREATE MODE
+        const response = await createWorkout(workoutData);
+  
+        if (response.error) {
+          toast.error("Failed to create workout", {
+            description: response.error,
+          });
+          return;
+        }
+  
+        toast.success("Workout created!", {
+          description: `Workout "${values.name}" has been saved.`,
+        });
+  
+      } else if (mode === "edit" && workoutId) {
+        // EDIT MODE error and success is managed there.
+        workoutQuery?.handleUpdate(workoutData)
+  
       }
+  
+      router.push("/dashboard/workouts");
     });
   }
+  
 
   return (
     <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">

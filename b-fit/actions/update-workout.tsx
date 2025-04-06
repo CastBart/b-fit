@@ -6,10 +6,10 @@ import { auth } from "@/auth";
 import { WorkoutSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
-export async function updateWorkout(values: z.infer<typeof WorkoutSchema>) {
+export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSchema>) {
   try {
-    const validatedData = WorkoutSchema.safeParse(values);
-    if (!validatedData.success) {
+    const validated = WorkoutSchema.safeParse(values);
+    if (!validated.success) {
       return { error: "Invalid workout data" };
     }
 
@@ -20,32 +20,60 @@ export async function updateWorkout(values: z.infer<typeof WorkoutSchema>) {
 
     const userId = session.user.id;
 
-    const workout = await db.workout.create({
+    // ✅ Update workout metadata (name, description)
+    const updatedWorkout = await db.workout.update({
+      where: { id , userId: userId },
       data: {
-        name: validatedData.data.name,
-        description: validatedData.data.description || null,
-        userId: userId,
+        name: validated.data.name,
+        description: validated.data.description || null,
       },
     });
 
+    const currentWorkoutExercises = await db.workoutExercise.findMany({
+      where: { workoutId: id },
+    });
+
+    const incomingExerciseIds = validated.data.exercises.map((e) => e.exerciseID);
+
+    const toDelete = currentWorkoutExercises.filter(
+      (e) => !incomingExerciseIds.includes(e.exerciseId)
+    );
+
+    // ✅ Delete removed exercises
+    await db.workoutExercise.deleteMany({
+      where: {
+        id: { in: toDelete.map((e) => e.id) },
+      },
+    });
+
+    // We'll map temp IDs to DB IDs for linking prev/next
     const tempIdToDbId: Record<string, string> = {};
+    const dbIdToExerciseId: Record<string, string> = {};
 
-    // First pass: create all exercises without prev/next
-    for (const node of validatedData.data.exercises) {
-      const created = await db.workoutExercise.create({
-        data: {
-          workoutId: workout.id,
-          exerciseId: node.exerciseID,
-        },
-      });
-
-      tempIdToDbId[node.exerciseID] = created.id;
+    // ✅ Create missing exercises
+    for (const node of validated.data.exercises) {
+      const existing = currentWorkoutExercises.find((e) => e.exerciseId === node.exerciseID);
+      if (existing) {
+        // Already exists, store its ID
+        tempIdToDbId[node.exerciseID] = existing.id;
+        dbIdToExerciseId[existing.id] = node.exerciseID;
+      } else {
+        const created = await db.workoutExercise.create({
+          data: {
+            workoutId: id,
+            exerciseId: node.exerciseID,
+          },
+        });
+        tempIdToDbId[node.exerciseID] = created.id;
+        dbIdToExerciseId[created.id] = node.exerciseID;
+      }
     }
 
-    // Second pass: update with prev/next using mapped DB IDs
-    for (const node of validatedData.data.exercises) {
+    // ✅ Update links (prev/next)
+    for (const node of validated.data.exercises) {
+      const dbId = tempIdToDbId[node.exerciseID];
       await db.workoutExercise.update({
-        where: { id: tempIdToDbId[node.exerciseID] },
+        where: { id: dbId },
         data: {
           previousId: node.prevId ? tempIdToDbId[node.prevId] : null,
           nextId: node.nextId ? tempIdToDbId[node.nextId] : null,
@@ -55,9 +83,9 @@ export async function updateWorkout(values: z.infer<typeof WorkoutSchema>) {
 
     revalidatePath(`/dashboard/workouts`);
 
-    return { success: "Workout created!", workout };
+    return { success: "Workout updated!", workout: updatedWorkout };
   } catch (error) {
-    console.error("Error creating workout:", error);
+    console.error("Error updating workout:", error);
     return { error: "Something went wrong. Please try again." };
   }
 }
