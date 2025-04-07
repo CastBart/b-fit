@@ -26,7 +26,7 @@ import { updateWorkout } from "@/actions/update-workout";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useWorkout } from "@/hooks/queries/use-workout";
-
+import { useWorkouts } from "@/hooks/queries/use-workouts";
 
 type WorkoutFormProps = {
   mode: "create" | "edit";
@@ -46,8 +46,8 @@ export default function WorkoutForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const workoutQuery = mode === "edit" && workoutId ? useWorkout(workoutId) : null;
-
+  const workoutQuery = useWorkout(workoutId ?? "");
+  const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
     resolver: zodResolver(WorkoutSchema),
@@ -106,38 +106,28 @@ export default function WorkoutForm({
   function handleSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
       const linkedExercises = getLinkedExerciseArray(head);
-  
+
       // Shared workout data
       const workoutData = {
         ...values,
         exercises: linkedExercises,
       };
-  
+
       if (mode === "create") {
         // CREATE MODE
-        const response = await createWorkout(workoutData);
-  
-        if (response.error) {
-          toast.error("Failed to create workout", {
-            description: response.error,
-          });
-          return;
-        }
-  
+        createWorkout(workoutData);
+
         toast.success("Workout created!", {
           description: `Workout "${values.name}" has been saved.`,
         });
-  
       } else if (mode === "edit" && workoutId) {
         // EDIT MODE error and success is managed there.
-        workoutQuery?.handleUpdate(workoutData)
-  
+        workoutQuery?.handleUpdate(workoutData);
       }
-  
+
       router.push("/dashboard/workouts");
     });
   }
-  
 
   return (
     <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">
@@ -203,12 +193,12 @@ export default function WorkoutForm({
             shouldValidate: true,
           });
         }}
-        disabled={isPending}
+        disabled={isPending || isCreating}
       >
-        {isPending ? (
+        {isPending || isCreating ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            Saving...
+            {mode === "create" ? "Creating..." : "Updating..."}
           </>
         ) : mode === "create" ? (
           "Create Workout"
