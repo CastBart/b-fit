@@ -44,7 +44,7 @@ export type Page = {
 export const websiteLinks: Pages = {
   home: { name: "Home", link: "/", icon: HomeIcon },
   welcome: { name: "Welcome", link: "/welcome", icon: HomeIcon },
-  login: { name: "Login", link: "/login", icon: HomeIcon },
+  login: { name: "Login", link: "/auth/login", icon: HomeIcon },
   register: { name: "Register", link: "/register", icon: HomeIcon },
   services: { name: "Services", link: "/services", icon: HomeIcon },
 };
