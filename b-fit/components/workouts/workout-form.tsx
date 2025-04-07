@@ -106,28 +106,31 @@ export default function WorkoutForm({
   function handleSubmit(values: z.infer<typeof WorkoutSchema>) {
     startTransition(async () => {
       const linkedExercises = getLinkedExerciseArray(head);
-
-      // Shared workout data
+  
       const workoutData = {
         ...values,
         exercises: linkedExercises,
       };
-
+  
       if (mode === "create") {
-        // CREATE MODE
-        createWorkout(workoutData);
-
-        toast.success("Workout created!", {
-          description: `Workout "${values.name}" has been saved.`,
+        await new Promise<void>((resolve) => {
+          createWorkout(workoutData, {
+            onSuccess: () => {
+              resolve();
+              router.push("/dashboard/workouts");
+            },
+            onError: () => {
+              resolve(); // Still resolve to exit transition on failure
+            },
+          });
         });
       } else if (mode === "edit" && workoutId) {
-        // EDIT MODE error and success is managed there.
         workoutQuery?.handleUpdate(workoutData);
+        router.push("/dashboard/workouts");
       }
-
-      router.push("/dashboard/workouts");
     });
   }
+  
 
   return (
     <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">

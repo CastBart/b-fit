@@ -1,16 +1,30 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
-import { createWorkout } from "@/actions/create-workout";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { WorkoutSchema } from "@/schemas";
 import { getQueryClient } from "@/lib/getQueryClient";
+import type { Workout } from "@/lib/definitions";
 
 export const useWorkouts = () => {
   const queryClient = getQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (data: z.infer<typeof WorkoutSchema>) => createWorkout(data),
+    mutationFn: async (data: z.infer<typeof WorkoutSchema>) => {
+      const res = await fetch("/api/workouts/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || "Failed to create workout.");
+      }
+
+      return result;
+    },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
 
@@ -25,9 +39,18 @@ export const useWorkouts = () => {
     },
   });
 
-  const workoutsQuery = useQuery({
+  const workoutsQuery = useQuery<Workout[]>({
     queryKey: ["workouts"],
-    queryFn: fetchUserWorkouts,
+    queryFn: async () => {
+      const res = await fetch("/api/workouts");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch workouts.");
+      }
+
+      return data;
+    },
     staleTime: 1000 * 60 * 5,
   });
 
