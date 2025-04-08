@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getWorkoutWithExercises } from "@/actions/fetch-workout";
 import { updateWorkout } from "@/actions/update-workout";
 import { deleteWorkout } from "@/actions/delete-workout";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { WorkoutSchema } from "@/schemas";
@@ -13,6 +14,8 @@ type UpdateWorkoutParams = {
 };
 
 export function useWorkout(id: string) {
+  
+  const router = useRouter();
   const queryClient = getQueryClient();
 
   // Fetch the workout
@@ -29,8 +32,23 @@ export function useWorkout(id: string) {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: UpdateWorkoutParams) =>
-      updateWorkout(id, data),
+    mutationFn: async ({ id, data }: UpdateWorkoutParams) => {
+      const res = await fetch(`/api/workouts/${id}/update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(result.error || "Failed to update workout.");
+      }
+  
+      return result;
+    },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["workout", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
@@ -45,11 +63,24 @@ export function useWorkout(id: string) {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: deleteWorkout,
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/workouts/${id}/delete`, {
+        method: "DELETE",
+      });
+  
+      const result = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(result.error || "Failed to delete workout.");
+      }
+  
+      return result;
+    },
     onSuccess: (_, deletedId) => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
       queryClient.removeQueries({ queryKey: ["workout", deletedId] });
       toast.success("Workout deleted.");
+      router.push("/dashboard/workouts");
     },
     onError: () => {
       toast.error("Failed to delete workout.");
@@ -64,17 +95,17 @@ export function useWorkout(id: string) {
 
   // Trigger delete with confirmation
   function handleDelete(name: string) {
-    // toast(`Delete "${name}"?`, {
-    //   description:
-    //     "Are you sure you want to delete this workout? This action cannot be undone.",
-    //   position: "bottom-center",
-    //   duration: 10000,
-    //   action: {
-    //     label: "Confirm Delete",
-    //     onClick: () => deleteMutation.mutate(id),
-    //   },
-    //   className: "pointer-events-auto",
-    // });
+    toast(`Delete "${name}"?`, {
+      description:
+        "Are you sure you want to delete this workout? This action cannot be undone.",
+      position: "bottom-center",
+      duration: 10000,
+      action: {
+        label: "Confirm Delete",
+        onClick: () => deleteMutation.mutate(id),
+      },
+      className: "pointer-events-auto",
+    });
   }
 
   return {

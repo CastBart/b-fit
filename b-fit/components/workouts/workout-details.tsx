@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ExerciseNode } from "@/lib/exercise-linked-list";
 import WorkoutForm from "@/components/workouts/workout-form";
 import { Loader2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function WorkoutDetailsClient({ workoutId }: { workoutId: string }) {
   const { data, isLoading } = useWorkout(workoutId);
