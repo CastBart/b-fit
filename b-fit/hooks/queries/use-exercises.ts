@@ -1,9 +1,12 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { deleteExercise } from "@/actions/delete-exercise";
+import { createExercise } from "@/actions/create-exercise"; 
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
 import { getQueryClient } from "@/lib/getQueryClient";
+import { CreateExerciseSchema } from "@/schemas";
+import * as z from "zod";
 
 export function useExercises() {
   const queryClient = getQueryClient();
@@ -16,6 +19,30 @@ export function useExercises() {
   } = useQuery({
     queryKey: ["exercises"],
     queryFn: () => fetchUserExercises(),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (newExercise: z.infer<typeof CreateExerciseSchema>) => {
+      const response = await fetch("/api/exercises", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newExercise),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create exercise");
+      }
+  
+      return data.exercise;
+    },
+    onSuccess: (exercise) => {
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      toast.success(`Exercise "${exercise.exerciseName}" created.`);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   const deleteMutation = useMutation({
@@ -47,6 +74,7 @@ export function useExercises() {
     isPending,
     isError,
     error,
+    createExercise: createMutation.mutate,
     handleDelete,
     refetch: () => queryClient.invalidateQueries({ queryKey: ["exercises"] }),
   };

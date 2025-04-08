@@ -36,14 +36,12 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateExerciseSchema } from "@/schemas/index";
+import { useExercises } from "@/hooks/queries/use-exercises";
 
-interface CreateExerciseDrawerProps {
-  onExerciseCreated: () => void;
-}
 
-export default function CreateExerciseDrawer({
-  onExerciseCreated,
-}: CreateExerciseDrawerProps) {
+
+export default function CreateExerciseDrawer() {
+  const { createExercise } = useExercises();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
@@ -65,23 +63,14 @@ export default function CreateExerciseDrawer({
   });
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
-    setError("");
-
-    startTransition(() => {
-      createExercise(values).then((data) => {
-        setError(data.error);
-
-        if (data.exercise) {
-          form.reset();
-          setOpen(false);
-          onExerciseCreated();
-          toast("New Exercise!", {
-            description: `You have added ${data.exercise.exerciseName} to your library!`,
-            duration: 2300,
-            position: "top-center",
-          });
-        }
-      });
+    createExercise(values, {
+      onSuccess: () => {
+        form.reset();
+        setOpen(false);
+      },
+      onError: (err) => {
+        setError(err.message); // <-- this will show inside FormError
+      },
     });
   }
 
