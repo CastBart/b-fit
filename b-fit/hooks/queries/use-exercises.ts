@@ -23,7 +23,7 @@ export function useExercises() {
 
   const createMutation = useMutation({
     mutationFn: async (newExercise: z.infer<typeof CreateExerciseSchema>) => {
-      const response = await fetch("/api/exercises", {
+      const response = await fetch("/api/exercises/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExercise),

@@ -38,8 +38,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateExerciseSchema } from "@/schemas/index";
 import { useExercises } from "@/hooks/queries/use-exercises";
 
-
-
 export default function CreateExerciseDrawer() {
   const { createExercise } = useExercises();
   const [open, setOpen] = useState(false);
@@ -61,6 +59,13 @@ export default function CreateExerciseDrawer() {
       exerciseType: "" as ExerciseType,
     },
   });
+  function handleDrawerChange(isOpen: boolean) {
+    if (!isOpen) {
+      form.reset(); // Reset form values
+      setError(""); // Clear any form error
+    }
+    setOpen(isOpen); // Keep drawer state in sync
+  }
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
     createExercise(values, {
@@ -75,7 +80,11 @@ export default function CreateExerciseDrawer() {
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
+    <Drawer
+      open={open}
+      onOpenChange={handleDrawerChange}
+      shouldScaleBackground={false}
+    >
       <DrawerTrigger
         asChild
         id="create-exercise-drawer-trigger"
@@ -187,14 +196,7 @@ export default function CreateExerciseDrawer() {
           <FormError message={error} />
           <div className="w-full flex justify-between gap-4">
             <DrawerClose asChild className="w-full">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  form.reset(); // 🔹 Reset the form when Cancel is clicked
-                  setError("");
-                }}
-              >
+              <Button type="button" variant="secondary">
                 Cancel
               </Button>
             </DrawerClose>
