@@ -215,6 +215,10 @@ strong {
     width: 600px;
     height: auto;
   }
+  .add-exercise-drawer {
+    height: 100vh;
+    width: 600px;
+  }
 }
 
 @media (max-width: 640px) and (orientation: portrait) { /* Mobile Portrait */
@@ -226,6 +230,10 @@ strong {
     width: 100vw;
     max-height: 90vh;
   }
+  .add-exercise-drawer {
+    height: 100vh;
+    width: 100vw;
+  }
 }
 
 @media (max-width: 1024px) and (orientation: landscape) { /* Mobile Landscape */
@@ -236,6 +244,10 @@ strong {
   .custom-dialog {
     width: 100vw;
     height: 100vh;
+  }
+  .add-exercise-drawer {
+    height: 100vh;
+    width: 100vw;
   }
 
   .custom-dialog .grid-container {
