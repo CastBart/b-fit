@@ -21,12 +21,17 @@ import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
 import { Exercise } from "@/lib/definitions";
-import { createWorkout } from "@/actions/create-workout";
-import { updateWorkout } from "@/actions/update-workout";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useWorkout } from "@/hooks/queries/use-workout";
 import { useWorkouts } from "@/hooks/queries/use-workouts";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 
 type WorkoutFormProps = {
   mode: "create" | "edit";
@@ -107,25 +112,27 @@ export default function WorkoutForm({
     startTransition(async () => {
       const linkedExercises = getLinkedExerciseArray(head);
 
-      // Shared workout data
       const workoutData = {
         ...values,
         exercises: linkedExercises,
       };
 
       if (mode === "create") {
-        // CREATE MODE
-        createWorkout(workoutData);
-
-        toast.success("Workout created!", {
-          description: `Workout "${values.name}" has been saved.`,
+        await new Promise<void>((resolve) => {
+          createWorkout(workoutData, {
+            onSuccess: () => {
+              resolve();
+              router.push("/dashboard/workouts");
+            },
+            onError: () => {
+              resolve(); // Still resolve to exit transition on failure
+            },
+          });
         });
       } else if (mode === "edit" && workoutId) {
-        // EDIT MODE error and success is managed there.
         workoutQuery?.handleUpdate(workoutData);
+        router.push("/dashboard/workouts");
       }
-
-      router.push("/dashboard/workouts");
     });
   }
 
@@ -144,11 +151,18 @@ export default function WorkoutForm({
               <FormItem>
                 <FormLabel className="hidden">Workout Name</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Enter workout name"
-                    className="border-none pl-0 text-2xl md:text-2xl sm:text-2xl lg:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
-                  />
+                  <div className="flex items-center justify-between">
+                    <Input
+                      {...field}
+                      placeholder="Enter workout name"
+                      className="border-none pl-0 text-2xl md:text-2xl sm:text-2xl lg:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
+                    />
+                    {mode === "edit" && (
+                      <EditDropdown
+                        onDelete={() => workoutQuery.handleDelete(defaultName)}
+                      />
+                    )}
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -207,5 +221,47 @@ export default function WorkoutForm({
         )}
       </Button>
     </div>
+  );
+}
+
+function EditDropdown({ onDelete }: { onDelete: () => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <EllipsisHorizontalIcon className="h-7 w-7 cursor-pointer" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem asChild>
+          <Button className="w-full" variant={"destructive"} onClick={onDelete}>
+            Delete
+          </Button>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+interface SelectionButtonProps {
+  label: string;
+  value: string | string[];
+}
+
+function SelectionButton({ label, value }: SelectionButtonProps) {
+  return (
+    <Button className="w-full min-h-[48px] h-full" variant="secondary">
+      <div className="flex items-start justify-between w-full">
+        <div>{label}</div>
+        <div className="text-right text-muted-foreground">
+          {Array.isArray(value) ? (
+            value.length > 0 ? (
+              value.map((item, index) => <div key={index}>{item}</div>)
+            ) : (
+              <div>None</div>
+            )
+          ) : (
+            <div>{value}</div>
+          )}
+        </div>
+      </div>
+    </Button>
   );
 }

@@ -20,6 +20,7 @@ export default function WorkoutSelectExerciseDrawer({
   onExerciseSelect: (exercises: Exercise[]) => void;
 }) {
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+  const [open, setOpen] = useState(false); //drawer open/close state
 
   function handleExerciseSelect(exercise: Exercise) {
     setSelectedExercises((prev) => {
@@ -30,14 +31,23 @@ export default function WorkoutSelectExerciseDrawer({
   function handleConfirmSelection() {
     console.log("Confirmed Exercise List: ", selectedExercises)
     onExerciseSelect(selectedExercises); // Pass selected exercises to parent
-    setSelectedExercises([]); // ✅ Clear the selection after adding
+   // setSelectedExercises([]); // ✅ Clear the selection after adding
   }
+
+  function handleDrawerChange(isOpen: boolean) {
+    if (!isOpen) {
+      // Drawer is being closed (either via button or clicking outside)
+      setSelectedExercises([]);
+    }
+    setOpen(isOpen);
+  }
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={handleDrawerChange}>
       <DrawerTrigger asChild>
         <Button>Add Exercise</Button>
       </DrawerTrigger>
-      <DrawerContent className="custom-drawer justify-self-center p-4">
+      <DrawerContent className="add-exercise-drawer justify-self-center p-4">
         <DrawerHeader>
           <DrawerTitle className="text-center text-3xl">Exercises</DrawerTitle>
           <DrawerDescription className="hidden">

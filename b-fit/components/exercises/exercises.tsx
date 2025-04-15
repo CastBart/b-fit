@@ -23,7 +23,7 @@ interface ExercisesProps {
 }
 
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
-  const { exercises, isPending, isError, error, handleDelete, refetch } = useExercises();
+  const { exercises, isPending, isError, error, handleDelete, createExercise, refetch } = useExercises();
 
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,13 +65,11 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
   });
 
   if (isPending) return <p>Loading exercises...</p>;
-  if (isError) return <p>{`Error loading exercises: ${error}`}</p>;
+  if (isError) return <p>Error loading exercises: {String(error)}</p>;
 
   return (
     <>
-      <CreateExerciseDrawer
-        onExerciseCreated={refetch}
-      />
+      <CreateExerciseDrawer />
       <ExerciseSearch setSearchTerm={setSearchTerm} />
       <ExerciseFilterDrawer
         numOfExercises={filteredExercises.length}
