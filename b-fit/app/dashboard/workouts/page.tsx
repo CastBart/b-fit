@@ -4,25 +4,14 @@ import WorkoutList from "@/components/workouts/workout-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Workout } from "@/lib/definitions";
+import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 
 export default async function WorkoutCreatePage() {
   const queryClient = getQueryClient();
-
+  // 
   await queryClient.prefetchQuery<Workout[]>({
     queryKey: ["workouts"],
-    queryFn: async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/workouts`, {
-        headers: {
-          // Include cookies to preserve session if needed
-          cookie: "", // if required, use `headers().get('cookie')` from `next/headers`
-        },
-        cache: "no-store", // force fresh data
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to fetch workouts");
-      return data;
-    },
+    queryFn: () => fetchUserWorkouts()
   });
 
   return (
