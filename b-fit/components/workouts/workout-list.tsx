@@ -19,12 +19,12 @@ export default function WorkoutList() {
   );
 
   return (
-    <div className="space-y-6">
+    <>
       {/* Search Input */}
-      <Search setSearchTerm={setSearchQuery}/>
+      <Search setSearchTerm={setSearchQuery} />
 
       {/* Workouts Grid */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-4 pr-2 overflow-y-auto custom-scrollbar">
         {filteredWorkouts.length > 0 ? (
           filteredWorkouts.map((workout) => (
             <WorkoutCard key={workout.id} workout={workout} />
@@ -33,6 +33,6 @@ export default function WorkoutList() {
           <p className="text-muted-foreground">No workouts found.</p>
         )}
       </div>
-    </div>
+    </>
   );
 }
