@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
-import { createExerciseNode, ExerciseNode } from "@/lib/exercise-linked-list";
+import { createExerciseNode, ExerciseNode, getLinkedExerciseArray } from "@/lib/exercise-linked-list";
 import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
@@ -51,7 +51,7 @@ export default function WorkoutForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const workoutQuery = useWorkout(workoutId ?? "");
+  const {isUpdating, handleUpdate, handleDelete} = useWorkout(workoutId ?? "");
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -63,22 +63,7 @@ export default function WorkoutForm({
     },
   });
 
-  function getLinkedExerciseArray(
-    node: ExerciseNode | null
-  ): z.infer<typeof WorkoutSchema>["exercises"] {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.id : undefined,
-        nextId: node.next ? node.next.id : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
-  }
+  
 
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
@@ -130,8 +115,7 @@ export default function WorkoutForm({
           });
         });
       } else if (mode === "edit" && workoutId) {
-        workoutQuery?.handleUpdate(workoutData);
-        router.push("/dashboard/workouts");
+        handleUpdate(workoutData);
       }
     });
   }
@@ -159,7 +143,7 @@ export default function WorkoutForm({
                     />
                     {mode === "edit" && (
                       <EditDropdown
-                        onDelete={() => workoutQuery.handleDelete(defaultName)}
+                        onDelete={() => handleDelete(defaultName)}
                       />
                     )}
                   </div>
@@ -207,9 +191,9 @@ export default function WorkoutForm({
             shouldValidate: true,
           });
         }}
-        disabled={isPending || isCreating}
+        disabled={isUpdating || isCreating}
       >
-        {isPending || isCreating ? (
+        {isUpdating || isCreating ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
             {mode === "create" ? "Creating..." : "Updating..."}
@@ -220,6 +204,9 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
+      <Button onClick={()=>{
+        console.log("Exercises: ", getLinkedExerciseArray(head))
+      }}>Head</Button>
     </div>
   );
 }

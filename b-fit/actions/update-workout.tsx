@@ -20,9 +20,9 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
 
     const userId = session.user.id;
 
-    // ✅ Update workout metadata (name, description)
+    // ✅ Update workout metadata
     const updatedWorkout = await db.workout.update({
-      where: { id , userId: userId },
+      where: { id, userId },
       data: {
         name: validated.data.name,
         description: validated.data.description || null,
@@ -46,7 +46,6 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
       },
     });
 
-    // We'll map temp IDs to DB IDs for linking prev/next
     const tempIdToDbId: Record<string, string> = {};
     const dbIdToExerciseId: Record<string, string> = {};
 
@@ -54,7 +53,6 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
     for (const node of validated.data.exercises) {
       const existing = currentWorkoutExercises.find((e) => e.exerciseId === node.exerciseID);
       if (existing) {
-        // Already exists, store its ID
         tempIdToDbId[node.exerciseID] = existing.id;
         dbIdToExerciseId[existing.id] = node.exerciseID;
       } else {
@@ -69,7 +67,16 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
       }
     }
 
-    // ✅ Update links (prev/next)
+    // ✅ STEP 1: Null out all links to avoid constraint errors
+    await db.workoutExercise.updateMany({
+      where: { workoutId: id },
+      data: {
+        previousId: null,
+        nextId: null,
+      },
+    });
+
+    // ✅ STEP 2: Reconnect in new order
     for (const node of validated.data.exercises) {
       const dbId = tempIdToDbId[node.exerciseID];
       await db.workoutExercise.update({
@@ -81,7 +88,7 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
       });
     }
 
-    revalidatePath(`/dashboard/workouts`);
+    // revalidatePath(`/dashboard/workouts`);
 
     return { success: "Workout updated!", workout: updatedWorkout };
   } catch (error) {
