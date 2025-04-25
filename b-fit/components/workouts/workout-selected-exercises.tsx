@@ -91,11 +91,13 @@ export default function SelectedExercisesList({
     const clonedNodes: ExerciseNode[] = nodes.map((node) => ({
       ...node,
       next: null,
+      prev: null,
     }));
 
-    // Link clones into a new list
-    for (let i = 0; i < clonedNodes.length - 1; i++) {
-      clonedNodes[i].next = clonedNodes[i + 1];
+    // Link clones into a doubly linked list
+    for (let i = 0; i < clonedNodes.length; i++) {
+      if (i > 0) clonedNodes[i].prev = clonedNodes[i - 1];
+      if (i < clonedNodes.length - 1) clonedNodes[i].next = clonedNodes[i + 1];
     }
 
     return clonedNodes[0] || null;
@@ -231,9 +233,56 @@ interface OptionsDrawerProps {
 }
 
 function OptionsDrawer({ selectedExercise, onClose }: OptionsDrawerProps) {
+  const [exercise, setExercise] = useState<ExerciseNode | null>(null);
+  return (
+    <>
+      <Drawer
+        open={!!selectedExercise}
+        onOpenChange={onClose}
+        shouldScaleBackground={false}
+      >
+        <DrawerContent className="w-[600px] justify-self-center">
+          <DrawerHeader>
+            <div className="flex flex-col gap-2">
+              <DrawerTitle className="text-center text-3xl">
+                {selectedExercise?.name}
+              </DrawerTitle>
+              <DrawerDescription className="hidden">
+                View exercise options
+              </DrawerDescription>
+              <Separator className="h-1"></Separator>
+            </div>
+          </DrawerHeader>
+          <div className="px-4">
+            <Button
+              onClick={() => setExercise(selectedExercise)}
+              className="w-full min-h-[48px] h-full"
+              variant="secondary"
+            >
+              Super Set
+            </Button>
+          </div>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="secondary">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      <SupersetDrawer exercise={exercise} onClose={() => setExercise(null)} />
+    </>
+  );
+}
+
+interface SupersetDrawerProps {
+  exercise: ExerciseNode | null;
+  onClose: () => void;
+}
+
+function SupersetDrawer({ exercise, onClose }: SupersetDrawerProps) {
   return (
     <Drawer
-      open={!!selectedExercise}
+      open={!!exercise}
       onOpenChange={onClose}
       shouldScaleBackground={false}
     >
@@ -241,7 +290,7 @@ function OptionsDrawer({ selectedExercise, onClose }: OptionsDrawerProps) {
         <DrawerHeader>
           <div className="flex flex-col gap-2">
             <DrawerTitle className="text-center text-3xl">
-              {selectedExercise?.name}
+              Supper Set
             </DrawerTitle>
             <DrawerDescription className="hidden">
               View exercise options
@@ -249,22 +298,13 @@ function OptionsDrawer({ selectedExercise, onClose }: OptionsDrawerProps) {
             <Separator className="h-1"></Separator>
           </div>
         </DrawerHeader>
-        <div>{selectedExercise?.name}</div>
+        <div className="px-4">testing drawer</div>
         <DrawerFooter>
-          <DrawerClose asChild id="exercise-filters-drawer-close">
+          <DrawerClose asChild>
             <Button variant="secondary">Close</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
-}
-
-interface SupersetDrawerProps{
-  exercise: ExerciseNode | null;
-  onClose: () => void;
-}
-
-function SupersetDrawer({exercise, onClose }:SupersetDrawerProps){
-
 }

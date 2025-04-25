@@ -36,6 +36,7 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
       auxiliaryMuscles: workoutExercise.exercise.auxiliaryMuscles,
       type: workoutExercise.exercise.exerciseType,
       next: null,
+      prev: null,
     };
 
     exerciseMap[workoutExercise.id] = node;
@@ -45,8 +46,11 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
   }
 
   for (const workoutExercise of workout.exercises) {
+    const current = exerciseMap[workoutExercise.id];
     if (workoutExercise.nextId) {
-      exerciseMap[workoutExercise.id].next = exerciseMap[workoutExercise.nextId];
+      const nextNode = exerciseMap[workoutExercise.nextId];
+      current.next = nextNode;
+      nextNode.prev = current; // set the reverse link
     }
   }
 
