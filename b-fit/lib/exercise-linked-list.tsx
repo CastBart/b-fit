@@ -11,15 +11,17 @@ export type ExerciseNode = {
   auxiliaryMuscles: string[];
   type: string;
   next: ExerciseNode | null;
+  prev: ExerciseNode | null;
 };
 
-type ExerciseBaseData = Omit<ExerciseNode, "instanceId" | "next">;
+type ExerciseBaseData = Omit<ExerciseNode, "instanceId" | "next" | "prev">;
 
 export function createExerciseNode(data: ExerciseBaseData): ExerciseNode {
   return {
     ...data,
     instanceId: uuidv4(),
     next: null,
+    prev: null,
   };
 }
 
@@ -27,15 +29,16 @@ export function getLinkedExerciseArray(
   node: ExerciseNode | null
 ): z.infer<typeof WorkoutSchema>["exercises"] {
   const exercises = [];
-  let prevNode: ExerciseNode | null = null;
+
   while (node) {
     exercises.push({
       exerciseID: node.id,
-      prevId: prevNode ? prevNode.id : undefined,
-      nextId: node.next ? node.next.id : undefined,
+      prevId: node.prev ? node.prev.instanceId : undefined,
+      nextId: node.next ? node.next.instanceId : undefined,
     });
-    prevNode = node;
+
     node = node.next;
   }
+
   return exercises;
 }

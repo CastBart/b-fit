@@ -91,13 +91,15 @@ export default function SelectedExercisesList({
     const clonedNodes: ExerciseNode[] = nodes.map((node) => ({
       ...node,
       next: null,
+      prev: null,
     }));
-
-    // Link clones into a new list
-    for (let i = 0; i < clonedNodes.length - 1; i++) {
-      clonedNodes[i].next = clonedNodes[i + 1];
+  
+    // Link clones into a doubly linked list
+    for (let i = 0; i < clonedNodes.length; i++) {
+      if (i > 0) clonedNodes[i].prev = clonedNodes[i - 1];
+      if (i < clonedNodes.length - 1) clonedNodes[i].next = clonedNodes[i + 1];
     }
-
+  
     return clonedNodes[0] || null;
   }
 

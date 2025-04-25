@@ -76,19 +76,27 @@ export default function WorkoutForm({
         type: exercise.type,
       })
     );
-
-    for (let i = 0; i < newNodes.length - 1; i++) {
-      newNodes[i].next = newNodes[i + 1];
+  
+    // Link the new nodes together (both next and prev)
+    for (let i = 0; i < newNodes.length; i++) {
+      if (i > 0) newNodes[i].prev = newNodes[i - 1];
+      if (i < newNodes.length - 1) newNodes[i].next = newNodes[i + 1];
     }
-
+  
     if (!head) {
+      // If no head, start new chain
       setHead(newNodes[0]);
     } else {
+      // Otherwise, append to end of current chain
       let lastNode = head;
       while (lastNode.next) {
         lastNode = lastNode.next;
       }
+  
       lastNode.next = newNodes[0];
+      newNodes[0].prev = lastNode;
+  
+      // Force state update
       setHead({ ...head });
     }
   }
