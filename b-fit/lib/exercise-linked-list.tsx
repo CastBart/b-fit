@@ -24,18 +24,18 @@ export function createExerciseNode(data: ExerciseBaseData): ExerciseNode {
 }
 
 export function getLinkedExerciseArray(
-    node: ExerciseNode | null
-  ): z.infer<typeof WorkoutSchema>["exercises"] {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.id : undefined,
-        nextId: node.next ? node.next.id : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
+  node: ExerciseNode | null
+): z.infer<typeof WorkoutSchema>["exercises"] {
+  const exercises = [];
+  let prevNode: ExerciseNode | null = null;
+  while (node) {
+    exercises.push({
+      exerciseID: node.id,
+      prevId: prevNode ? prevNode.id : undefined,
+      nextId: node.next ? node.next.id : undefined,
+    });
+    prevNode = node;
+    node = node.next;
   }
+  return exercises;
+}

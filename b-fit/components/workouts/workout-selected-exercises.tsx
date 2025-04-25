@@ -38,13 +38,14 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Separator } from "../ui/separator";
 import {
   ExerciseNode,
   getLinkedExerciseArray,
 } from "@/lib/exercise-linked-list";
 import { GripVertical } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 
 interface SelectedExerciseListProps {
   head: ExerciseNode | null;
@@ -72,6 +73,9 @@ export default function SelectedExercisesList({
     })
   );
 
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseNode | null>(
+    null
+  );
   const exerciseNodes = useMemo(() => {
     const list: ExerciseNode[] = [];
     let current = head;
@@ -125,6 +129,13 @@ export default function SelectedExercisesList({
     setHead(newHead);
     form?.setValue("exercises", getLinkedExerciseArray(newHead));
   }
+  /**
+   * Function to handle the click event of the row. Opens the option drawer and passes the exercise node of the clicked item.
+   * @param exercise of type Exercise
+   */
+  function handleRowClick(exercise: ExerciseNode) {
+    setSelectedExercise(exercise);
+  }
 
   return (
     <div className="p-2 border rounded-lg">
@@ -148,6 +159,7 @@ export default function SelectedExercisesList({
                     id={exercise.instanceId}
                     name={exercise.name}
                     onRemove={() => removeExercise(exercise.instanceId)}
+                    onClick={() => setSelectedExercise(exercise)}
                   />
                 ))}
               </TableBody>
@@ -155,6 +167,10 @@ export default function SelectedExercisesList({
           </SortableContext>
         </DndContext>
       </div>
+      <OptionsDrawer
+        selectedExercise={selectedExercise}
+        onClose={() => setSelectedExercise(null)}
+      />
     </div>
   );
 }
@@ -163,10 +179,12 @@ function DraggableExerciseRow({
   id,
   name,
   onRemove,
+  onClick,
 }: {
   id: string;
   name: string;
   onRemove: () => void;
+  onClick: () => void;
 }) {
   const {
     attributes,
@@ -186,6 +204,7 @@ function DraggableExerciseRow({
 
   return (
     <TableRow
+      onClick={onClick}
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -206,16 +225,46 @@ function DraggableExerciseRow({
   );
 }
 
-// interface OptionsDrawerProps{
-//   selectedExercise:
-// }
+interface OptionsDrawerProps {
+  selectedExercise: ExerciseNode | null;
+  onClose: () => void;
+}
 
-// function OptionsDrawer(){
-//   return (
-//     <Drawer>
-//       <DrawerContent>
+function OptionsDrawer({ selectedExercise, onClose }: OptionsDrawerProps) {
+  return (
+    <Drawer
+      open={!!selectedExercise}
+      onOpenChange={onClose}
+      shouldScaleBackground={false}
+    >
+      <DrawerContent className="w-[600px] justify-self-center">
+        <DrawerHeader>
+          <div className="flex flex-col gap-2">
+            <DrawerTitle className="text-center text-3xl">
+              {selectedExercise?.name}
+            </DrawerTitle>
+            <DrawerDescription className="hidden">
+              View exercise options
+            </DrawerDescription>
+            <Separator className="h-1"></Separator>
+          </div>
+        </DrawerHeader>
+        <div>{selectedExercise?.name}</div>
+        <DrawerFooter>
+          <DrawerClose asChild id="exercise-filters-drawer-close">
+            <Button variant="secondary">Close</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+}
 
-//       </DrawerContent>
-//     </Drawer>
-//   )
-// }
+interface SupersetDrawerProps{
+  exercise: ExerciseNode | null;
+  onClose: () => void;
+}
+
+function SupersetDrawer({exercise, onClose }:SupersetDrawerProps){
+
+}
