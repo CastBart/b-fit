@@ -46,6 +46,7 @@ import {
 import { GripVertical } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { useState, useMemo } from "react";
+import { SupersetManager } from "@/lib/superset-manager";
 
 interface SelectedExerciseListProps {
   head: ExerciseNode | null;
@@ -76,6 +77,10 @@ export default function SelectedExercisesList({
   const [selectedExercise, setSelectedExercise] = useState<ExerciseNode | null>(
     null
   );
+  const [supersetExercise, setSupersetExercise] = useState<ExerciseNode | null>(
+    null
+  );
+
   const exerciseNodes = useMemo(() => {
     const list: ExerciseNode[] = [];
     let current = head;
@@ -85,6 +90,10 @@ export default function SelectedExercisesList({
     }
     return list;
   }, [head]);
+
+  const [supersetManager, setSupersetManager] = useState(
+    () => new SupersetManager()
+  );
 
   function updateLinkedList(nodes: ExerciseNode[]): ExerciseNode | null {
     // Clone nodes to avoid mutation
@@ -122,6 +131,7 @@ export default function SelectedExercisesList({
   }
 
   function removeExercise(id: string) {
+    setSelectedExercise(null);
     console.log(
       "exerciseNodes",
       exerciseNodes.map((e) => e.instanceId)
@@ -130,13 +140,6 @@ export default function SelectedExercisesList({
     const newHead = updateLinkedList(filtered);
     setHead(newHead);
     form?.setValue("exercises", getLinkedExerciseArray(newHead));
-  }
-  /**
-   * Function to handle the click event of the row. Opens the option drawer and passes the exercise node of the clicked item.
-   * @param exercise of type Exercise
-   */
-  function handleRowClick(exercise: ExerciseNode) {
-    setSelectedExercise(exercise);
   }
 
   return (
@@ -158,9 +161,8 @@ export default function SelectedExercisesList({
                 {exerciseNodes.map((exercise) => (
                   <DraggableExerciseRow
                     key={exercise.instanceId}
-                    id={exercise.instanceId}
+                    exercise={exercise}
                     name={exercise.name}
-                    onRemove={() => removeExercise(exercise.instanceId)}
                     onClick={() => setSelectedExercise(exercise)}
                   />
                 ))}
@@ -169,25 +171,61 @@ export default function SelectedExercisesList({
           </SortableContext>
         </DndContext>
       </div>
+      {/* Options Drawer */}
       <OptionsDrawer
         selectedExercise={selectedExercise}
         onClose={() => setSelectedExercise(null)}
+        onSuperSet={() => {
+          if (selectedExercise) {
+            setSupersetExercise(selectedExercise);
+            setSelectedExercise(null); // close OptionsDrawer
+          }
+        }}
+        onRemove={() => {
+          selectedExercise && removeExercise(selectedExercise.instanceId);
+        }}
+      />
+      {/* Superset Drawer */}
+      <SupersetDrawer
+        exercise={supersetExercise}
+        onClose={() => setSupersetExercise(null)}
+        onSelect={(target) => {
+          if (supersetExercise && target) {
+            console.log("Before supersetManager", {
+              target,
+              supersetExercise,
+              exerciseNodes,
+            });
+            supersetManager.addToGroup(target, supersetExercise);
+            console.log("After supersetManager", {
+              target,
+              supersetExercise,
+              exerciseNodes,
+            });
+            setHead(updateLinkedList(exerciseNodes));
+            form?.setValue(
+              "exercises",
+              getLinkedExerciseArray(updateLinkedList(exerciseNodes))
+            );
+          }
+          setSupersetExercise(null);
+        }}
       />
     </div>
   );
 }
 
-function DraggableExerciseRow({
-  id,
-  name,
-  onRemove,
-  onClick,
-}: {
-  id: string;
+interface DraggableExerciseRowProps {
+  exercise: ExerciseNode;
   name: string;
-  onRemove: () => void;
   onClick: () => void;
-}) {
+}
+
+function DraggableExerciseRow({
+  exercise,
+  name,
+  onClick,
+}: DraggableExerciseRowProps) {
   const {
     attributes,
     listeners,
@@ -195,7 +233,7 @@ function DraggableExerciseRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id: exercise.instanceId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -216,11 +254,15 @@ function DraggableExerciseRow({
       }`}
     >
       <TableCell>
-        <div className="flex items-center justify-between">
-          <div className={`text-lg w-full h-full font-semibold  `}>{name}</div>
-          <Button size="sm" variant="destructive" onClick={onRemove}>
-            Remove
-          </Button>
+        {/* <div className="flex items-center justify-between">
+          <div className={`text-lg w-full h-full font-semibold`}>{name}</div>
+        </div> */}
+        <div className="relative">
+          {exercise.supersetGroupId && (
+            <div className="absolute left-0 top-0 h-full w-1 bg-primary rounded-full" />
+          )}
+
+          <div className="pl-4 py-2">{exercise.name}</div>
         </div>
       </TableCell>
     </TableRow>
@@ -230,56 +272,68 @@ function DraggableExerciseRow({
 interface OptionsDrawerProps {
   selectedExercise: ExerciseNode | null;
   onClose: () => void;
+  onSuperSet: () => void;
+  onRemove: () => void;
 }
 
-function OptionsDrawer({ selectedExercise, onClose }: OptionsDrawerProps) {
-  const [exercise, setExercise] = useState<ExerciseNode | null>(null);
+function OptionsDrawer({
+  selectedExercise,
+  onClose,
+  onSuperSet,
+  onRemove,
+}: OptionsDrawerProps) {
   return (
-    <>
-      <Drawer
-        open={!!selectedExercise}
-        onOpenChange={onClose}
-        shouldScaleBackground={false}
-      >
-        <DrawerContent className="w-[600px] justify-self-center">
-          <DrawerHeader>
-            <div className="flex flex-col gap-2">
-              <DrawerTitle className="text-center text-3xl">
-                {selectedExercise?.name}
-              </DrawerTitle>
-              <DrawerDescription className="hidden">
-                View exercise options
-              </DrawerDescription>
-              <Separator className="h-1"></Separator>
-            </div>
-          </DrawerHeader>
-          <div className="px-4">
-            <Button
-              onClick={() => setExercise(selectedExercise)}
-              className="w-full min-h-[48px] h-full"
-              variant="secondary"
-            >
-              Super Set
-            </Button>
+    <Drawer
+      open={!!selectedExercise}
+      onOpenChange={onClose}
+      shouldScaleBackground={false}
+    >
+      <DrawerContent className="w-[600px] justify-self-center">
+        <DrawerHeader>
+          <div className="flex flex-col gap-2">
+            <DrawerTitle className="text-center text-3xl">
+              {selectedExercise?.name}
+            </DrawerTitle>
+            <DrawerDescription className="hidden">
+              View exercise options
+            </DrawerDescription>
+            <Separator className="h-1" />
           </div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button variant="secondary">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-      <SupersetDrawer exercise={exercise} onClose={() => setExercise(null)} />
-    </>
+        </DrawerHeader>
+        <div className="px-4 space-y-4">
+          <Button
+            onClick={onSuperSet}
+            className="w-full min-h-[48px]"
+            variant="secondary"
+          >
+            Super Set
+          </Button>
+          <Button
+            size="sm"
+            className="w-full"
+            variant="destructive"
+            onClick={onRemove}
+          >
+            Remove
+          </Button>
+        </div>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="secondary">Close</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
 interface SupersetDrawerProps {
   exercise: ExerciseNode | null;
   onClose: () => void;
+  onSelect: (target: ExerciseNode) => void;
 }
 
-function SupersetDrawer({ exercise, onClose }: SupersetDrawerProps) {
+function SupersetDrawer({ exercise, onClose, onSelect }: SupersetDrawerProps) {
   return (
     <Drawer
       open={!!exercise}
@@ -290,15 +344,34 @@ function SupersetDrawer({ exercise, onClose }: SupersetDrawerProps) {
         <DrawerHeader>
           <div className="flex flex-col gap-2">
             <DrawerTitle className="text-center text-3xl">
-              Supper Set
+              Super Set
             </DrawerTitle>
             <DrawerDescription className="hidden">
-              View exercise options
+              Select an exercise
             </DrawerDescription>
-            <Separator className="h-1"></Separator>
+            <Separator className="h-1" />
           </div>
         </DrawerHeader>
-        <div className="px-4">testing drawer</div>
+        <div className="px-4 space-y-4">
+          {exercise?.next && (
+            <Button
+              onClick={() => onSelect(exercise.next!)}
+              className="w-full min-h-[48px]"
+              variant="secondary"
+            >
+              Next Exercise
+            </Button>
+          )}
+          {exercise?.prev && (
+            <Button
+              onClick={() => onSelect(exercise.prev!)}
+              className="w-full min-h-[48px]"
+              variant="secondary"
+            >
+              Previous Exercise
+            </Button>
+          )}
+        </div>
         <DrawerFooter>
           <DrawerClose asChild>
             <Button variant="secondary">Close</Button>

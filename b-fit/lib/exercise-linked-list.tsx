@@ -12,6 +12,7 @@ export type ExerciseNode = {
   type: string;
   next: ExerciseNode | null;
   prev: ExerciseNode | null;
+  supersetGroupId?: string | null;
 };
 
 type ExerciseBaseData = Omit<ExerciseNode, "instanceId" | "next" | "prev">;
