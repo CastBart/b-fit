@@ -19,41 +19,53 @@ export async function createWorkout(values: z.infer<typeof WorkoutSchema>) {
     }
 
     const userId = session.user.id;
+    const exercises = validatedData.data.exercises;
 
-    const workout = await db.workout.create({
-      data: {
-        name: validatedData.data.name,
-        description: validatedData.data.description || null,
-        userId: userId,
-      },
+    // Use transaction here
+    const workout = await db.$transaction(async (tx) => {
+      // 1. Create workout
+      const workout = await tx.workout.create({
+        data: {
+          name: validatedData.data.name,
+          description: validatedData.data.description || null,
+          userId: userId,
+        },
+      });
+
+      // 2. Create exercises (no prev/next)
+      const createdWorkoutExercises = await Promise.all(
+        exercises.map((node) =>
+          tx.workoutExercise.create({
+            data: {
+              workoutId: workout.id,
+              exerciseId: node.exerciseID,
+            },
+          })
+        )
+      );
+
+      // 3. Map instanceId → created DB id
+      const instanceIdToDbId: Record<string, string> = {};
+      exercises.forEach((node, idx) => {
+        instanceIdToDbId[node.instanceId] = createdWorkoutExercises[idx].id;
+      });
+
+      // 4. Update prev/next connections
+      await Promise.all(
+        exercises.map((node) =>
+          tx.workoutExercise.update({
+            where: { id: instanceIdToDbId[node.instanceId] },
+            data: {
+              previousId: node.prevId ? instanceIdToDbId[node.prevId] : null,
+              nextId: node.nextId ? instanceIdToDbId[node.nextId] : null,
+            },
+          })
+        )
+      );
+
+      // 5. Return workout (created)
+      return workout;
     });
-
-    const tempIdToDbId: Record<string, string> = {};
-
-    // First pass: create all exercises without prev/next
-    for (const node of validatedData.data.exercises) {
-      const created = await db.workoutExercise.create({
-        data: {
-          workoutId: workout.id,
-          exerciseId: node.exerciseID,
-        },
-      });
-
-      tempIdToDbId[node.exerciseID] = created.id;
-    }
-
-    // Second pass: update with prev/next using mapped DB IDs
-    for (const node of validatedData.data.exercises) {
-      await db.workoutExercise.update({
-        where: { id: tempIdToDbId[node.exerciseID] },
-        data: {
-          previousId: node.prevId ? tempIdToDbId[node.prevId] : null,
-          nextId: node.nextId ? tempIdToDbId[node.nextId] : null,
-        },
-      });
-    }
-
-    revalidatePath(`/dashboard/workouts`);
 
     return { success: "Workout created!", workout };
   } catch (error) {

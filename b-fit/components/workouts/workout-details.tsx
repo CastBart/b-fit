@@ -37,8 +37,9 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
       type: workoutExercise.exercise.exerciseType,
       next: null,
       prev: null,
+      supersetGroupId: null,
     };
-
+    
     exerciseMap[workoutExercise.id] = node;
     if (!workoutExercise.previousId) {
       head = node;

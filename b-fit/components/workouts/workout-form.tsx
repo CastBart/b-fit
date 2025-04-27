@@ -74,6 +74,7 @@ export default function WorkoutForm({
         primaryMuscle: exercise.primaryMuscle,
         auxiliaryMuscles: exercise.auxiliaryMuscles,
         type: exercise.type,
+        supersetGroupId: null,
       })
     );
   

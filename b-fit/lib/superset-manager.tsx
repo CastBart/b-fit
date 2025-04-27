@@ -1,77 +1,194 @@
-import { v4 as uuidv4 } from "uuid";
 import { ExerciseNode } from "./exercise-linked-list";
 
-type SupersetGroup = {
-  id: string;
-  exercises: ExerciseNode[];
-};
-
 export class SupersetManager {
-  private groups: Record<string, SupersetGroup> = {};
+  groups: Record<string, { exercises: ExerciseNode[] }> = {};
 
-  createGroup(nodes: ExerciseNode[]) {
-    if (nodes.length < 2) return; // no point creating for 1
+  constructor(public head: ExerciseNode) {}
 
-    const id = uuidv4();
-
-    nodes.forEach((node) => {
-      node.supersetGroupId = id;
-    });
-
-    this.groups[id] = {
-      id,
-      exercises: [...nodes],
-    };
+  // Helper: Create a new group
+  private createGroup(nodes: ExerciseNode[]): string {
+    const groupId = crypto.randomUUID();
+    nodes.forEach((node) => (node.supersetGroupId = groupId));
+    this.groups[groupId] = { exercises: [...nodes] };
+    return groupId;
   }
-  addToGroup(target: ExerciseNode, newNode: ExerciseNode) {
-    const groupId = target.supersetGroupId;
-    if (!groupId || !this.groups[groupId]) return;
-  
-    const group = this.groups[groupId];
-  
-    // Prevent adding duplicates
-    const alreadyInGroup = group.exercises.some(
-      (n) => n.instanceId === newNode.instanceId
+
+  canSupersetWithNext(node: ExerciseNode) {
+    return (
+      node.next !== null &&
+      ((node.supersetGroupId === null && node.next.supersetGroupId === null) ||
+        node.supersetGroupId !== node.next.supersetGroupId)
     );
-    if (alreadyInGroup) return;
-  
-    newNode.supersetGroupId = groupId;
-    group.exercises.push(newNode);
   }
-
-  getGroupById(id: string): SupersetGroup | null {
-    return this.groups[id] ?? null;
-  }
-
-  getGroupForNode(node: ExerciseNode): ExerciseNode[] {
-    if (!node.supersetGroupId) return [];
-    return this.groups[node.supersetGroupId]?.exercises ?? [];
-  }
-
-  removeFromGroup(node: ExerciseNode) {
-    const groupId = node.supersetGroupId;
-    if (!groupId) return;
-
-    const group = this.groups[groupId];
-    if (!group) return;
-
-    group.exercises = group.exercises.filter(
-      (n) => n.instanceId !== node.instanceId
+  canSupersetWithPrev(node: ExerciseNode) {
+    return (
+      node.prev !== null &&
+      ((node.supersetGroupId === null && node.prev.supersetGroupId === null) ||
+        node.supersetGroupId !== node.prev.supersetGroupId)
     );
-    node.supersetGroupId = null;
+  }
+  canRemoveSupersetWithPrev(node: ExerciseNode) {
+    return (
+      node.prev &&
+      node.prev.supersetGroupId &&
+      node.prev.supersetGroupId === node.supersetGroupId
+    );
+  }
 
-    // Optionally delete the group if it's too small to be a superset
-    if (group.exercises.length < 2) {
-      group.exercises.forEach((n) => (n.supersetGroupId = null));
-      delete this.groups[groupId];
+  canRemoveSupersetWithNext(node: ExerciseNode) {
+    return (
+      node.next &&
+      node.next.supersetGroupId &&
+      node.next.supersetGroupId === node.supersetGroupId
+    );
+  }
+
+  supersetWithNext(node: ExerciseNode) {
+    if (!node.next) return;
+
+    if (node.supersetGroupId && node.next.supersetGroupId) {
+      // Both nodes already in different groups — merge groups
+      const groupId = node.supersetGroupId;
+      const nextGroupId = node.next.supersetGroupId;
+
+      if (groupId === nextGroupId) return; // Already same group
+
+      const currentGroup = this.groups[groupId];
+      const nextGroup = this.groups[nextGroupId];
+
+      nextGroup.exercises.forEach((n) => {
+        n.supersetGroupId = groupId;
+        currentGroup.exercises.push(n);
+      });
+
+      delete this.groups[nextGroupId];
+    } else if (node.supersetGroupId) {
+      // Only node has a group — add next to it
+      node.next.supersetGroupId = node.supersetGroupId;
+      this.groups[node.supersetGroupId].exercises.push(node.next);
+    } else if (node.next.supersetGroupId) {
+      // Only next has a group — add node to it
+      node.supersetGroupId = node.next.supersetGroupId;
+      this.groups[node.next.supersetGroupId].exercises.push(node);
+    } else {
+      // Neither in group — create new group
+      this.createGroup([node, node.next]);
     }
   }
 
-  deleteGroup(groupId: string) {
+  supersetWithPrev(node: ExerciseNode) {
+    if (!node.prev) return;
+
+    if (node.supersetGroupId && node.prev.supersetGroupId) {
+      // Both nodes already in different groups — merge groups
+      const groupId = node.supersetGroupId;
+      const prevGroupId = node.prev.supersetGroupId;
+
+      if (groupId === prevGroupId) return; // Already same group
+
+      const currentGroup = this.groups[groupId];
+      const prevGroup = this.groups[prevGroupId];
+
+      prevGroup.exercises.forEach((n) => {
+        n.supersetGroupId = groupId;
+        currentGroup.exercises.push(n);
+      });
+
+      delete this.groups[prevGroupId];
+    } else if (node.supersetGroupId) {
+      // Only node has a group — add prev to it
+      node.prev.supersetGroupId = node.supersetGroupId;
+      this.groups[node.supersetGroupId].exercises.push(node.prev);
+    } else if (node.prev.supersetGroupId) {
+      // Only prev has a group — add node to it
+      node.supersetGroupId = node.prev.supersetGroupId;
+      this.groups[node.prev.supersetGroupId].exercises.push(node);
+    } else {
+      // Neither in group — create new group
+      this.createGroup([node.prev, node]);
+    }
+  }
+
+  removeSupersetWithPrev(node: ExerciseNode) {
+    if (!node.prev || node.prev.supersetGroupId !== node.supersetGroupId) return;
+  
+    const groupId = node.supersetGroupId;
+    if (!groupId) return;
     const group = this.groups[groupId];
     if (!group) return;
+  
+    const isOnlyTwo = group.exercises.length === 2;
+    if (isOnlyTwo) {
+      node.supersetGroupId = null;
+      node.prev.supersetGroupId = null;
+      delete this.groups[groupId];
+    } else {
+      const index = group.exercises.indexOf(node.prev);
+  
+      const leftPart = group.exercises.slice(0, index);
+      const rightPart = group.exercises.slice(index + 1); // Skip node.prev
+  
+      // Handle left part
+      if (leftPart.length === 1) {
+        leftPart[0].supersetGroupId = null;
+      } else if (leftPart.length > 1) {
+        group.exercises = leftPart;
+      }
+  
+      // Handle right part
+      if (rightPart.length === 1) {
+        rightPart[0].supersetGroupId = null;
+      } else if (rightPart.length > 1) {
+        this.createGroup(rightPart);
+      }
+  
+      // If leftPart had only one node, delete the original group
+      if (leftPart.length === 1) {
+        delete this.groups[groupId];
+      }
+    }
+  }
 
-    group.exercises.forEach((n) => (n.supersetGroupId = null));
-    delete this.groups[groupId];
+  removeSupersetWithNext(node: ExerciseNode) {
+    if (!node.next || node.next.supersetGroupId !== node.supersetGroupId)
+      return;
+
+    const groupId = node.supersetGroupId;
+    if (!groupId) return;
+    const group = this.groups[groupId];
+
+    if (!group) return;
+
+    const isOnlyTwo = group.exercises.length === 2;
+    if (isOnlyTwo) {
+      node.supersetGroupId = null;
+      node.next.supersetGroupId = null;
+      delete this.groups[groupId];
+    } else {
+      // More than two — split the group
+      const index = group.exercises.indexOf(node.next);
+
+      const leftPart = group.exercises.slice(0, index);
+      const rightPart = group.exercises.slice(index);
+
+      // Handle left part
+      if (leftPart.length === 1) {
+        leftPart[0].supersetGroupId = null;
+      } else {
+        group.exercises = leftPart;
+      }
+
+      // Handle right part
+      if (rightPart.length === 1) {
+        rightPart[0].supersetGroupId = null;
+      } else {
+        this.createGroup(rightPart);
+      }
+
+      // If leftPart had only one node, delete the original group
+      if (leftPart.length === 1) {
+        delete this.groups[groupId];
+      }
+    }
   }
 }
