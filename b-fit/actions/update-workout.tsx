@@ -55,6 +55,7 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
             data: {
               workoutId: id,
               exerciseId: node.exerciseID,
+              supersetGroupId: node.supersetGroupId || null,
             },
           });
           workoutExerciseMap[node.instanceId] = created.id;
@@ -81,6 +82,7 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
             data: {
               previousId: node.prevId ? workoutExerciseMap[node.prevId] : null,
               nextId: node.nextId ? workoutExerciseMap[node.nextId] : null,
+              supersetGroupId: node.supersetGroupId || null,
             },
           })
         )

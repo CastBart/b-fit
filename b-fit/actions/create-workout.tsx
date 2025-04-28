@@ -39,6 +39,7 @@ export async function createWorkout(values: z.infer<typeof WorkoutSchema>) {
             data: {
               workoutId: workout.id,
               exerciseId: node.exerciseID,
+              supersetGroupId: node.supersetGroupId || null,
             },
           })
         )

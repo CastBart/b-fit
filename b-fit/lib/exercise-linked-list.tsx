@@ -28,7 +28,7 @@ export function createExerciseNode(data: ExerciseBaseData): ExerciseNode {
 
 export function getLinkedExerciseArray(
   node: ExerciseNode | null
-): { exerciseID: string; instanceId: string; prevId?: string; nextId?: string }[] {
+): { exerciseID: string; instanceId: string; prevId?: string; nextId?: string; supersetGroupId?: string }[] {
   const exercises = [];
 
   while (node) {
@@ -37,6 +37,7 @@ export function getLinkedExerciseArray(
       instanceId: node.instanceId,    // temp instance id (uuidv4)
       prevId: node.prev ? node.prev.instanceId : undefined,
       nextId: node.next ? node.next.instanceId : undefined,
+      supersetGroupId: node.supersetGroupId ? node.supersetGroupId : undefined,
     });
 
     node = node.next;

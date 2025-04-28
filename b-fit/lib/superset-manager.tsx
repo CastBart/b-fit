@@ -3,7 +3,23 @@ import { ExerciseNode } from "./exercise-linked-list";
 export class SupersetManager {
   groups: Record<string, { exercises: ExerciseNode[] }> = {};
 
-  constructor(public head: ExerciseNode) {}
+  constructor(public head: ExerciseNode) {
+    let current: ExerciseNode | null = head;
+    const visited = new Set<ExerciseNode>();
+
+    while (current) {
+      if (current.supersetGroupId) {
+        if (!this.groups[current.supersetGroupId]) {
+          this.groups[current.supersetGroupId] = { exercises: [] };
+        }
+        if (!visited.has(current)) {
+          this.groups[current.supersetGroupId].exercises.push(current);
+          visited.add(current);
+        }
+      }
+      current = current.next;
+    }
+  }
 
   // Helper: Create a new group
   private createGroup(nodes: ExerciseNode[]): string {
@@ -78,7 +94,7 @@ export class SupersetManager {
 
   supersetWithPrev(node: ExerciseNode) {
     if (!node.prev) return;
-
+    debugger;
     if (node.supersetGroupId && node.prev.supersetGroupId) {
       // Both nodes already in different groups — merge groups
       const groupId = node.supersetGroupId;
@@ -111,38 +127,45 @@ export class SupersetManager {
 
   removeSupersetWithPrev(node: ExerciseNode) {
     if (!node.prev || node.prev.supersetGroupId !== node.supersetGroupId) return;
-  
+    debugger
     const groupId = node.supersetGroupId;
     if (!groupId) return;
+  
     const group = this.groups[groupId];
     if (!group) return;
   
+    // Ensure the group contains at least two nodes
     const isOnlyTwo = group.exercises.length === 2;
     if (isOnlyTwo) {
+      // If only two exercises in the group, remove the group entirely
       node.supersetGroupId = null;
       node.prev.supersetGroupId = null;
       delete this.groups[groupId];
     } else {
-      const index = group.exercises.indexOf(node.prev);
+      // Find the index of the node being removed
+      const index = group.exercises.indexOf(node);
   
+      if (index === -1) return; // Safety check in case the previous node isn't in the group
+  
+      // Split the group into left and right parts
       const leftPart = group.exercises.slice(0, index);
-      const rightPart = group.exercises.slice(index + 1); // Skip node.prev
+      const rightPart = group.exercises.slice(index); // Skip node.prev
   
-      // Handle left part
+      // Handle the left part (all nodes up to and including the node being removed)
       if (leftPart.length === 1) {
-        leftPart[0].supersetGroupId = null;
+        leftPart[0].supersetGroupId = null; // Only one node, remove group ID
       } else if (leftPart.length > 1) {
-        group.exercises = leftPart;
+        group.exercises = leftPart; // Retain the left part of the group
       }
   
-      // Handle right part
+      // Handle the right part (all nodes after the node being removed)
       if (rightPart.length === 1) {
-        rightPart[0].supersetGroupId = null;
+        rightPart[0].supersetGroupId = null; // Only one node, remove group ID
       } else if (rightPart.length > 1) {
-        this.createGroup(rightPart);
+        this.createGroup(rightPart); // Create a new group for the right part
       }
   
-      // If leftPart had only one node, delete the original group
+      // If left part had only one node, delete the original group
       if (leftPart.length === 1) {
         delete this.groups[groupId];
       }

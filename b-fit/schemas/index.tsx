@@ -55,7 +55,8 @@ const WorkoutExerciseSchema = z.object({
   exerciseID: z.string(),
   nextId: z.string().optional(),
   prevId: z.string().optional(),
-  instanceId: z.string()
+  instanceId: z.string(),
+  supersetGroupId: z.string().optional(),
 });
 
 // Define WorkoutSchema

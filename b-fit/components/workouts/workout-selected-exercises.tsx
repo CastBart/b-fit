@@ -141,16 +141,16 @@ export default function SelectedExercisesList({
     setHead(newHead);
     form?.setValue("exercises", getLinkedExerciseArray(newHead));
   }
-  const handleSuperSetSelect = (target: ExerciseNode) => {
-    if (supersetExercise && target && supersetManager) {
-      // supersetManager.addToGroup(target, supersetExercise);
-      const newHead = updateLinkedList(exerciseNodes);
+  function handleSuperSetSelect() {
+    // if (supersetExercise && target && supersetManager) {
+    // supersetManager.addToGroup(target, supersetExercise);
+    const newHead = updateLinkedList(exerciseNodes);
 
-      setHead(newHead);
-      form?.setValue("exercises", getLinkedExerciseArray(newHead));
-    }
+    setHead(newHead);
+    form?.setValue("exercises", getLinkedExerciseArray(newHead));
+    // }
     setSupersetExercise(null);
-  };
+  }
 
   return (
     <div className="p-2 border rounded-lg">
@@ -172,7 +172,6 @@ export default function SelectedExercisesList({
                   <DraggableExerciseRow
                     key={exercise.instanceId}
                     exercise={exercise}
-                    name={exercise.name}
                     onClick={() => setSelectedExercise(exercise)}
                   />
                 ))}
@@ -209,13 +208,11 @@ export default function SelectedExercisesList({
 
 interface DraggableExerciseRowProps {
   exercise: ExerciseNode;
-  name: string;
   onClick: () => void;
 }
 
 function DraggableExerciseRow({
   exercise,
-  name,
   onClick,
 }: DraggableExerciseRowProps) {
   const {
@@ -246,9 +243,6 @@ function DraggableExerciseRow({
       }`}
     >
       <TableCell>
-        {/* <div className="flex items-center justify-between">
-          <div className={`text-lg w-full h-full font-semibold`}>{name}</div>
-        </div> */}
         <div className="relative">
           {exercise.supersetGroupId && (
             <div className="absolute left-0 top-0 h-full w-1 bg-primary rounded-full" />
@@ -324,7 +318,7 @@ function OptionsDrawer({
 interface SupersetDrawerProps {
   exercise: ExerciseNode | null;
   onClose: () => void;
-  onSelect: (target: ExerciseNode) => void;
+  onSelect: () => void;
   supersetManager: SupersetManager | null;
 }
 
@@ -359,7 +353,10 @@ function SupersetDrawer({
               <Button
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
-                onClick={() => supersetManager.supersetWithPrev(exercise!)}
+                onClick={() => {
+                  supersetManager.supersetWithPrev(exercise);
+                  onSelect();
+                }}
               >
                 Superset with Previous
               </Button>
@@ -368,7 +365,10 @@ function SupersetDrawer({
               <Button
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
-                onClick={() => supersetManager.removeSupersetWithPrev(exercise)}
+                onClick={() => {
+                  supersetManager.removeSupersetWithPrev(exercise);
+                  onSelect();
+                }}
               >
                 Remove from Previous Superset
               </Button>
@@ -377,7 +377,10 @@ function SupersetDrawer({
               <Button
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
-                onClick={() => supersetManager.supersetWithNext(exercise!)}
+                onClick={() => {
+                  supersetManager.supersetWithNext(exercise);
+                  onSelect();
+                }}
               >
                 Superset with Next
               </Button>
@@ -386,7 +389,10 @@ function SupersetDrawer({
               <Button
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
-                onClick={() => supersetManager.removeSupersetWithNext(exercise)}
+                onClick={() => {
+                  supersetManager.removeSupersetWithNext(exercise);
+                  onSelect();
+                }}
               >
                 Remove from Next Superset
               </Button>
