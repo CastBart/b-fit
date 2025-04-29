@@ -1,5 +1,5 @@
 "use client";
-
+import { clsx } from "clsx";
 import {
   DndContext,
   closestCenter,
@@ -230,6 +230,17 @@ function DraggableExerciseRow({
     zIndex: isDragging ? 999 : undefined,
     opacity: isDragging ? 0.7 : 1,
   };
+  // Determine node position inside the superset
+  const isInSuperset = !!exercise.supersetGroupId;
+  const isFirst =
+    isInSuperset &&
+    (!exercise.prev ||
+      exercise.prev.supersetGroupId !== exercise.supersetGroupId);
+  const isLast =
+    isInSuperset &&
+    (!exercise.next ||
+      exercise.next.supersetGroupId !== exercise.supersetGroupId);
+  const isMiddle = isInSuperset && !isFirst && !isLast;
 
   return (
     <TableRow
@@ -238,18 +249,24 @@ function DraggableExerciseRow({
       style={style}
       {...attributes}
       {...listeners}
-      className={`transition-opacity duration-150 ease-in-out touch-none ${
-        isDragging ? "cursor-grabbing" : ""
-      }`}
+      className={`transition-opacity duration-150 ease-in-out touch-none ${isDragging ? "cursor-grabbing" : ""}`}
     >
-      <TableCell>
-        <div className="relative">
-          {exercise.supersetGroupId && (
-            <div className="absolute left-0 top-0 h-full w-1 bg-primary rounded-full" />
-          )}
+      <TableCell className="relative">
+        {isInSuperset && (
+          <div className="absolute -top-1 -bottom-1 w-1">
+            {/* Core vertical line */}
+            <div
+              className={clsx(
+                "w-full absolute top-0 bottom-0 bg-primary",
+                isFirst && "rounded-t-full top-3 ",
+                isLast && "rounded-b-full bottom-3"
+              )}
+            />
+          </div>
+        )}
 
-          <div className="pl-4 py-2">{exercise.name}</div>
-        </div>
+        {/* Content with padding */}
+        <div className="pl-8 py-2">{exercise.name}</div>
       </TableCell>
     </TableRow>
   );
