@@ -121,7 +121,6 @@ export default function SelectedExercisesList({
 
     const reordered = arrayMove(exerciseNodes, oldIndex, newIndex);
 
-    // ✅ Update linked list first
     const newHead = updateLinkedList(reordered);
 
     let movedNode: ExerciseNode | null = newHead;
@@ -131,18 +130,7 @@ export default function SelectedExercisesList({
     if (!movedNode) return;
 
     const manager = new SupersetManager(newHead!);
-
-    // ✅ Now these operations will work with correct .prev/.next pointers
-    // if (manager.canRemoveSupersetWithPrev(movedNode)) {
-    //   manager.removeSupersetWithPrev(movedNode);
-    // }
-
-    // if (manager.canRemoveSupersetWithNext(movedNode)) {
-    //   manager.removeSupersetWithNext(movedNode);
-    // }
     manager.reassignSupersetGroups(movedNode);
-    //manager.validateAllGroups();
-    console.log("Head: ", newHead)
 
     // Update state
     setHead(newHead);
@@ -173,7 +161,7 @@ export default function SelectedExercisesList({
 
   return (
     <div className="p-2 border rounded-lg">
-      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-520px)]">
+      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-420px)]">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

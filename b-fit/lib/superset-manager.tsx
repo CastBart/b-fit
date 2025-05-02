@@ -29,25 +29,6 @@ export class SupersetManager {
     return groupId;
   }
 
-  // check if exercises from a group are beside each other.
-  private isGroupContiguous(group: ExerciseNode[]): boolean {
-    for (let i = 0; i < group.length - 1; i++) {
-      if (group[i].next !== group[i + 1]) return false;
-    }
-    return true;
-  }
-
-  // Remove non-contiguous superset groups
-  public validateAllGroups() {
-    for (const groupId in this.groups) {
-      const group = this.groups[groupId].exercises;
-      if (!this.isGroupContiguous(group)) {
-        group.forEach((node) => (node.supersetGroupId = null));
-        delete this.groups[groupId];
-      }
-    }
-  }
-
   reassignSupersetGroups(movedNode: ExerciseNode) {
   const movedNodeGroup = movedNode.supersetGroupId;
   const prev = movedNode.prev;
@@ -80,7 +61,7 @@ export class SupersetManager {
     const prevIndex = group.exercises.indexOf(prev!);
     group.exercises.splice(prevIndex + 1, 0, movedNode);
   } else if (prevGroup && movedNodeGroup === prevGroup) {
-    // Only previous is in a group
+    // Only previous is in a group 
     const group = this.groups[prevGroup];
     movedNode.supersetGroupId = prevGroup;
     const prevIndex = group.exercises.indexOf(prev!);
