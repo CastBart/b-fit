@@ -114,20 +114,39 @@ export default function SelectedExercisesList({
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = exerciseNodes.findIndex(
-        (item) => item.instanceId === active.id
-      );
-      const newIndex = exerciseNodes.findIndex(
-        (item) => item.instanceId === over?.id
-      );
+    if (!over || active.id === over.id) return;
+    debugger;
+    const oldIndex = exerciseNodes.findIndex((n) => n.instanceId === active.id);
+    const newIndex = exerciseNodes.findIndex((n) => n.instanceId === over.id);
 
-      const newOrder = arrayMove(exerciseNodes, oldIndex, newIndex);
-      const newHead = updateLinkedList(newOrder);
+    const reordered = arrayMove(exerciseNodes, oldIndex, newIndex);
 
-      setHead(newHead);
-      form?.setValue("exercises", getLinkedExerciseArray(newHead));
+    // ✅ Update linked list first
+    const newHead = updateLinkedList(reordered);
+
+    let movedNode: ExerciseNode | null = newHead;
+    while (movedNode && movedNode.instanceId !== active.id) {
+      movedNode = movedNode.next;
     }
+    if (!movedNode) return;
+
+    const manager = new SupersetManager(newHead!);
+
+    // ✅ Now these operations will work with correct .prev/.next pointers
+    // if (manager.canRemoveSupersetWithPrev(movedNode)) {
+    //   manager.removeSupersetWithPrev(movedNode);
+    // }
+
+    // if (manager.canRemoveSupersetWithNext(movedNode)) {
+    //   manager.removeSupersetWithNext(movedNode);
+    // }
+    manager.reassignSupersetGroups(movedNode);
+    //manager.validateAllGroups();
+    console.log("Head: ", newHead)
+
+    // Update state
+    setHead(newHead);
+    form?.setValue("exercises", getLinkedExerciseArray(newHead));
   }
 
   function removeExercise(id: string) {

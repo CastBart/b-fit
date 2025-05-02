@@ -29,6 +29,72 @@ export class SupersetManager {
     return groupId;
   }
 
+  // check if exercises from a group are beside each other.
+  private isGroupContiguous(group: ExerciseNode[]): boolean {
+    for (let i = 0; i < group.length - 1; i++) {
+      if (group[i].next !== group[i + 1]) return false;
+    }
+    return true;
+  }
+
+  // Remove non-contiguous superset groups
+  public validateAllGroups() {
+    for (const groupId in this.groups) {
+      const group = this.groups[groupId].exercises;
+      if (!this.isGroupContiguous(group)) {
+        group.forEach((node) => (node.supersetGroupId = null));
+        delete this.groups[groupId];
+      }
+    }
+  }
+
+  reassignSupersetGroups(movedNode: ExerciseNode) {
+  const movedNodeGroup = movedNode.supersetGroupId;
+  const prev = movedNode.prev;
+  const next = movedNode.next;
+  const prevGroup = prev?.supersetGroupId || null;
+  const nextGroup = next?.supersetGroupId || null;
+
+  // 1. Remove from current group if no longer adjacent to any member of its original group
+  if (
+    movedNodeGroup &&
+    prev?.supersetGroupId !== movedNodeGroup &&
+    next?.supersetGroupId !== movedNodeGroup
+  ) {
+    const group = this.groups[movedNodeGroup];
+    if (group) {
+      group.exercises = group.exercises.filter((n) => n !== movedNode);
+      if (group.exercises.length < 2) {
+        group.exercises.forEach((n) => (n.supersetGroupId = null));
+        delete this.groups[movedNodeGroup];
+      }
+    }
+    movedNode.supersetGroupId = null;
+  }
+
+  // 2. Reassign based on adjacency
+  if (prevGroup && nextGroup && prevGroup === nextGroup) {
+    // Between two nodes in the same group
+    const group = this.groups[prevGroup];
+    movedNode.supersetGroupId = prevGroup;
+    const prevIndex = group.exercises.indexOf(prev!);
+    group.exercises.splice(prevIndex + 1, 0, movedNode);
+  } else if (prevGroup && movedNodeGroup === prevGroup) {
+    // Only previous is in a group
+    const group = this.groups[prevGroup];
+    movedNode.supersetGroupId = prevGroup;
+    const prevIndex = group.exercises.indexOf(prev!);
+    group.exercises.splice(prevIndex + 1, 0, movedNode);
+  } else if (nextGroup && movedNodeGroup === nextGroup) {
+    // Only next is in a group
+    const group = this.groups[nextGroup];
+    movedNode.supersetGroupId = nextGroup;
+    const nextIndex = group.exercises.indexOf(next!);
+    group.exercises.splice(nextIndex, 0, movedNode);
+  }
+}
+
+
   canSupersetWithNext(node: ExerciseNode) {
     return (
       node.next !== null &&
@@ -126,14 +192,15 @@ export class SupersetManager {
   }
 
   removeSupersetWithPrev(node: ExerciseNode) {
-    if (!node.prev || node.prev.supersetGroupId !== node.supersetGroupId) return;
-    debugger
+    if (!node.prev || node.prev.supersetGroupId !== node.supersetGroupId)
+      return;
+    debugger;
     const groupId = node.supersetGroupId;
     if (!groupId) return;
-  
+
     const group = this.groups[groupId];
     if (!group) return;
-  
+
     // Ensure the group contains at least two nodes
     const isOnlyTwo = group.exercises.length === 2;
     if (isOnlyTwo) {
@@ -144,27 +211,27 @@ export class SupersetManager {
     } else {
       // Find the index of the node being removed
       const index = group.exercises.indexOf(node);
-  
+
       if (index === -1) return; // Safety check in case the previous node isn't in the group
-  
+
       // Split the group into left and right parts
       const leftPart = group.exercises.slice(0, index);
       const rightPart = group.exercises.slice(index); // Skip node.prev
-  
+
       // Handle the left part (all nodes up to and including the node being removed)
       if (leftPart.length === 1) {
         leftPart[0].supersetGroupId = null; // Only one node, remove group ID
       } else if (leftPart.length > 1) {
         group.exercises = leftPart; // Retain the left part of the group
       }
-  
+
       // Handle the right part (all nodes after the node being removed)
       if (rightPart.length === 1) {
         rightPart[0].supersetGroupId = null; // Only one node, remove group ID
       } else if (rightPart.length > 1) {
         this.createGroup(rightPart); // Create a new group for the right part
       }
-  
+
       // If left part had only one node, delete the original group
       if (leftPart.length === 1) {
         delete this.groups[groupId];
