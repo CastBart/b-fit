@@ -4,7 +4,6 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { WorkoutSchema } from "@/schemas";
-import { revalidatePath } from "next/cache";
 
 export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSchema>) {
   try {
@@ -15,84 +14,84 @@ export async function updateWorkout(id: string, values: z.infer<typeof WorkoutSc
 
     const session = await auth();
     if (!session?.user?.id) {
-      return { error: "Unauthorized: User not logged in" };
+      return { error: "Unauthorized" };
     }
 
-    const userId = session.user.id;
+    const exercises = validated.data.exercises;
 
-    // ✅ Update workout metadata
-    const updatedWorkout = await db.workout.update({
-      where: { id, userId },
-      data: {
-        name: validated.data.name,
-        description: validated.data.description || null,
-      },
-    });
-
-    const currentWorkoutExercises = await db.workoutExercise.findMany({
-      where: { workoutId: id },
-    });
-
-    const incomingExerciseIds = validated.data.exercises.map((e) => e.exerciseID);
-
-    const toDelete = currentWorkoutExercises.filter(
-      (e) => !incomingExerciseIds.includes(e.exerciseId)
-    );
-
-    // ✅ Delete removed exercises
-    await db.workoutExercise.deleteMany({
-      where: {
-        id: { in: toDelete.map((e) => e.id) },
-      },
-    });
-
-    const tempIdToDbId: Record<string, string> = {};
-    const dbIdToExerciseId: Record<string, string> = {};
-
-    // ✅ Create missing exercises
-    for (const node of validated.data.exercises) {
-      const existing = currentWorkoutExercises.find((e) => e.exerciseId === node.exerciseID);
-      if (existing) {
-        tempIdToDbId[node.exerciseID] = existing.id;
-        dbIdToExerciseId[existing.id] = node.exerciseID;
-      } else {
-        const created = await db.workoutExercise.create({
-          data: {
-            workoutId: id,
-            exerciseId: node.exerciseID,
-          },
-        });
-        tempIdToDbId[node.exerciseID] = created.id;
-        dbIdToExerciseId[created.id] = node.exerciseID;
-      }
-    }
-
-    // ✅ STEP 1: Null out all links to avoid constraint errors
-    await db.workoutExercise.updateMany({
-      where: { workoutId: id },
-      data: {
-        previousId: null,
-        nextId: null,
-      },
-    });
-
-    // ✅ STEP 2: Reconnect in new order
-    for (const node of validated.data.exercises) {
-      const dbId = tempIdToDbId[node.exerciseID];
-      await db.workoutExercise.update({
-        where: { id: dbId },
+    await db.$transaction(async (tx) => {
+      await tx.workout.update({
+        where: { id, userId: session.user.id },
         data: {
-          previousId: node.prevId ? tempIdToDbId[node.prevId] : null,
-          nextId: node.nextId ? tempIdToDbId[node.nextId] : null,
+          name: validated.data.name,
+          description: validated.data.description || null,
         },
       });
-    }
 
-    // revalidatePath(`/dashboard/workouts`);
+      const currentWorkoutExercises = await tx.workoutExercise.findMany({
+        where: { workoutId: id },
+      });
 
-    return { success: "Workout updated!", workout: updatedWorkout };
+      const existingWorkoutExerciseIds = new Set(currentWorkoutExercises.map((e) => e.id));
+
+      const workoutExerciseMap: Record<string, string> = {};
+
+      // Step 1: Upsert (update existing, create new)
+      for (const node of exercises) {
+        if (existingWorkoutExerciseIds.has(node.instanceId)) {
+          // Update existing
+          await tx.workoutExercise.update({
+            where: { id: node.instanceId },
+            data: {
+              exerciseId: node.exerciseID,
+              previousId: null,
+              nextId: null,
+            },
+          });
+          workoutExerciseMap[node.instanceId] = node.instanceId;
+        } else {
+          // Create new
+          const created = await tx.workoutExercise.create({
+            data: {
+              workoutId: id,
+              exerciseId: node.exerciseID,
+              supersetGroupId: node.supersetGroupId || null,
+            },
+          });
+          workoutExerciseMap[node.instanceId] = created.id;
+        }
+      }
+
+      // Step 2: Delete removed exercises
+      const incomingInstanceIds = new Set(exercises.map((e) => e.instanceId));
+      const toDelete = currentWorkoutExercises.filter(
+        (e) => !incomingInstanceIds.has(e.id)
+      );
+
+      if (toDelete.length > 0) {
+        await tx.workoutExercise.deleteMany({
+          where: { id: { in: toDelete.map((e) => e.id) } },
+        });
+      }
+
+      // Step 3: Reconnect previousId and nextId
+      await Promise.all(
+        exercises.map((node) =>
+          tx.workoutExercise.update({
+            where: { id: workoutExerciseMap[node.instanceId] },
+            data: {
+              previousId: node.prevId ? workoutExerciseMap[node.prevId] : null,
+              nextId: node.nextId ? workoutExerciseMap[node.nextId] : null,
+              supersetGroupId: node.supersetGroupId || null,
+            },
+          })
+        )
+      );
+    });
+
+    return { success: "Workout updated!" };
   } catch (error) {
-    console.error("Error updating workout:", error);
-    return { error: "Something went wrong. Please try again." };
+    console.error(error);
+    return { error: "Something went wrong." };
   }
 }

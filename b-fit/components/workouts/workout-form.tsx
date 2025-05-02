@@ -74,6 +74,7 @@ export default function WorkoutForm({
         primaryMuscle: exercise.primaryMuscle,
         auxiliaryMuscles: exercise.auxiliaryMuscles,
         type: exercise.type,
+        supersetGroupId: null,
       })
     );
   
@@ -129,11 +130,11 @@ export default function WorkoutForm({
   }
 
   return (
-    <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">
+    <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
+          className="space-y-2"
           id={`${mode}-workout-form`}
         >
           <FormField
@@ -212,9 +213,9 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
-      <Button onClick={()=>{
+      {/* <Button onClick={()=>{
         console.log("Exercises: ", getLinkedExerciseArray(head))
-      }}>Head</Button>
+      }}>Head</Button> */}
     </div>
   );
 }

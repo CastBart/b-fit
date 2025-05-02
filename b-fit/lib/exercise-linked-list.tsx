@@ -12,7 +12,7 @@ export type ExerciseNode = {
   type: string;
   next: ExerciseNode | null;
   prev: ExerciseNode | null;
-  supersetGroupId?: string | null;
+  supersetGroupId: string | null;
 };
 
 type ExerciseBaseData = Omit<ExerciseNode, "instanceId" | "next" | "prev">;
@@ -28,14 +28,16 @@ export function createExerciseNode(data: ExerciseBaseData): ExerciseNode {
 
 export function getLinkedExerciseArray(
   node: ExerciseNode | null
-): z.infer<typeof WorkoutSchema>["exercises"] {
+): { exerciseID: string; instanceId: string; prevId?: string; nextId?: string; supersetGroupId?: string }[] {
   const exercises = [];
 
   while (node) {
     exercises.push({
-      exerciseID: node.id,
+      exerciseID: node.id,            // real exercise id
+      instanceId: node.instanceId,    // temp instance id (uuidv4)
       prevId: node.prev ? node.prev.instanceId : undefined,
       nextId: node.next ? node.next.instanceId : undefined,
+      supersetGroupId: node.supersetGroupId ? node.supersetGroupId : undefined,
     });
 
     node = node.next;
@@ -43,3 +45,4 @@ export function getLinkedExerciseArray(
 
   return exercises;
 }
+
