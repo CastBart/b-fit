@@ -25,7 +25,7 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
   // Build the linked list
   let head: ExerciseNode | null = null;
   const exerciseMap: Record<string, ExerciseNode> = {};
-
+  // first pass - create nodes after db fetch
   for (const workoutExercise of workout.exercises) {
     const node: ExerciseNode = {
       id: workoutExercise.exercise.id,
@@ -36,17 +36,22 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
       auxiliaryMuscles: workoutExercise.exercise.auxiliaryMuscles,
       type: workoutExercise.exercise.exerciseType,
       next: null,
+      prev: null,
+      supersetGroupId: workoutExercise.supersetGroupId || null,
     };
-
+    // find head
     exerciseMap[workoutExercise.id] = node;
     if (!workoutExercise.previousId) {
       head = node;
     }
   }
-
+  // second pass - link nodes
   for (const workoutExercise of workout.exercises) {
+    const current = exerciseMap[workoutExercise.id];
     if (workoutExercise.nextId) {
-      exerciseMap[workoutExercise.id].next = exerciseMap[workoutExercise.nextId];
+      const nextNode = exerciseMap[workoutExercise.nextId];
+      current.next = nextNode;
+      nextNode.prev = current; // set the reverse link
     }
   }
 

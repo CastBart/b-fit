@@ -11,7 +11,6 @@ import {
   Exercise,
 } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
-import { toast } from "sonner"; // ✅ Import toast for confirmation
 import { useExercises } from "@/hooks/queries/use-exercises";
 
 interface ExercisesProps {

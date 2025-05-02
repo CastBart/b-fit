@@ -18,10 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import FormError from "../form-error";
 import {
   ExerciseEquipment,
@@ -29,9 +27,6 @@ import {
   ExerciseType,
 } from "@/lib/definitions";
 import ExerciseCreateFilter from "@/components/exercises/exercise-create-filter";
-
-import { createExercise } from "@/actions/create-exercise";
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

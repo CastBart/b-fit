@@ -36,7 +36,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
+  touch-action: manipulation;
   /* Gradient Background */
   background: linear-gradient(
     to bottom right,
@@ -86,7 +86,9 @@ strong {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #718096; /* Lighter gray on hover */
 }
-
+tr {
+  -webkit-tap-highlight-color: transparent;
+}
 @layer base {
   :root {
     --background: 210 70% 86%; /* Light blue background */

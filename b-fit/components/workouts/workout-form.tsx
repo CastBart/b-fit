@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
-import { createExerciseNode, ExerciseNode } from "@/lib/exercise-linked-list";
+import { createExerciseNode, ExerciseNode, getLinkedExerciseArray } from "@/lib/exercise-linked-list";
 import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
@@ -51,7 +51,7 @@ export default function WorkoutForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const workoutQuery = useWorkout(workoutId ?? "");
+  const {isUpdating, handleUpdate, handleDelete} = useWorkout(workoutId ?? "");
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -63,22 +63,7 @@ export default function WorkoutForm({
     },
   });
 
-  function getLinkedExerciseArray(
-    node: ExerciseNode | null
-  ): z.infer<typeof WorkoutSchema>["exercises"] {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.id : undefined,
-        nextId: node.next ? node.next.id : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
-  }
+  
 
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
@@ -89,21 +74,30 @@ export default function WorkoutForm({
         primaryMuscle: exercise.primaryMuscle,
         auxiliaryMuscles: exercise.auxiliaryMuscles,
         type: exercise.type,
+        supersetGroupId: null,
       })
     );
-
-    for (let i = 0; i < newNodes.length - 1; i++) {
-      newNodes[i].next = newNodes[i + 1];
+  
+    // Link the new nodes together (both next and prev)
+    for (let i = 0; i < newNodes.length; i++) {
+      if (i > 0) newNodes[i].prev = newNodes[i - 1];
+      if (i < newNodes.length - 1) newNodes[i].next = newNodes[i + 1];
     }
-
+  
     if (!head) {
+      // If no head, start new chain
       setHead(newNodes[0]);
     } else {
+      // Otherwise, append to end of current chain
       let lastNode = head;
       while (lastNode.next) {
         lastNode = lastNode.next;
       }
+  
       lastNode.next = newNodes[0];
+      newNodes[0].prev = lastNode;
+  
+      // Force state update
       setHead({ ...head });
     }
   }
@@ -130,18 +124,17 @@ export default function WorkoutForm({
           });
         });
       } else if (mode === "edit" && workoutId) {
-        workoutQuery?.handleUpdate(workoutData);
-        router.push("/dashboard/workouts");
+        handleUpdate(workoutData);
       }
     });
   }
 
   return (
-    <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">
+    <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
+          className="space-y-2"
           id={`${mode}-workout-form`}
         >
           <FormField
@@ -159,7 +152,7 @@ export default function WorkoutForm({
                     />
                     {mode === "edit" && (
                       <EditDropdown
-                        onDelete={() => workoutQuery.handleDelete(defaultName)}
+                        onDelete={() => handleDelete(defaultName)}
                       />
                     )}
                   </div>
@@ -207,9 +200,9 @@ export default function WorkoutForm({
             shouldValidate: true,
           });
         }}
-        disabled={isPending || isCreating}
+        disabled={isUpdating || isCreating}
       >
-        {isPending || isCreating ? (
+        {isUpdating || isCreating ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
             {mode === "create" ? "Creating..." : "Updating..."}
@@ -220,6 +213,9 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
+      {/* <Button onClick={()=>{
+        console.log("Exercises: ", getLinkedExerciseArray(head))
+      }}>Head</Button> */}
     </div>
   );
 }
