@@ -254,10 +254,10 @@ function DraggableExerciseRow({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className={`touch-none transition-opacity duration-150 ease-in-out  ${isDragging ? "cursor-grabbing" : ""}`}
+      // {...listeners}
+      className={`transition-opacity duration-150 ease-in-out  ${isDragging ? "cursor-grabbing" : ""}`}
     >
-      <TableCell  className="relative touch-none">
+      <TableCell className="relative ">
         {isInSuperset && (
           <div className="absolute -top-1 -bottom-1 w-1">
             {/* Core vertical line */}
@@ -270,9 +270,14 @@ function DraggableExerciseRow({
             />
           </div>
         )}
+        <div className="py-2 pl-4 flex items-center">
+          <div {...listeners} className="touch-none">
+            <GripVertical />
+          </div>
 
-        {/* Content with padding */}
-        <div className="pl-8 py-2">{exercise.name}</div>
+          {/* Content with padding */}
+          <div className="">{exercise.name}</div>
+        </div>
       </TableCell>
     </TableRow>
   );
