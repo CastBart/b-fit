@@ -141,7 +141,6 @@ export class SupersetManager {
 
   supersetWithPrev(node: ExerciseNode) {
     if (!node.prev) return;
-    debugger;
     if (node.supersetGroupId && node.prev.supersetGroupId) {
       // Both nodes already in different groups — merge groups
       const groupId = node.supersetGroupId;
@@ -175,7 +174,6 @@ export class SupersetManager {
   removeSupersetWithPrev(node: ExerciseNode) {
     if (!node.prev || node.prev.supersetGroupId !== node.supersetGroupId)
       return;
-    debugger;
     const groupId = node.supersetGroupId;
     if (!groupId) return;
 

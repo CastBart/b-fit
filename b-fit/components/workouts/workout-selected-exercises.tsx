@@ -115,7 +115,6 @@ export default function SelectedExercisesList({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    debugger;
     const oldIndex = exerciseNodes.findIndex((n) => n.instanceId === active.id);
     const newIndex = exerciseNodes.findIndex((n) => n.instanceId === over.id);
 
@@ -299,7 +298,7 @@ function OptionsDrawer({
         onOpenChange={onClose}
         shouldScaleBackground={false}
       >
-        <DrawerContent className="w-[600px] justify-self-center">
+        <DrawerContent className="lg:w-[600px] w-screen justify-self-center">
           <DrawerHeader>
             <div className="flex flex-col gap-2">
               <DrawerTitle className="text-center text-3xl">
@@ -360,7 +359,7 @@ function SupersetDrawer({
         onOpenChange={onClose}
         shouldScaleBackground={false}
       >
-        <DrawerContent className="w-[600px] justify-self-center">
+        <DrawerContent className="w-screen lg:w-[600px] justify-self-center">
           <DrawerHeader>
             <div className="flex flex-col gap-2">
               <DrawerTitle className="text-center text-3xl">
