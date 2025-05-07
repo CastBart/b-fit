@@ -256,9 +256,9 @@ function DraggableExerciseRow({
       style={style}
       {...attributes}
       {...listeners}
-      className={`transition-opacity duration-150 ease-in-out touch-none ${isDragging ? "cursor-grabbing" : ""}`}
+      className={`touch-none transition-opacity duration-150 ease-in-out  ${isDragging ? "cursor-grabbing" : ""}`}
     >
-      <TableCell className="relative">
+      <TableCell  className="relative touch-none">
         {isInSuperset && (
           <div className="absolute -top-1 -bottom-1 w-1">
             {/* Core vertical line */}
