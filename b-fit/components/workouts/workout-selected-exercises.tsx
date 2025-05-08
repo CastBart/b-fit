@@ -62,14 +62,14 @@ export default function SelectedExercisesList({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 5,
+        delay: 250,
+        tolerance: 10,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 5,
+        delay: 250,
+        tolerance: 10,
       },
     })
   );
@@ -270,8 +270,8 @@ function DraggableExerciseRow({
             />
           </div>
         )}
-        <div className="py-2 pl-4 flex items-center">
-          <div {...listeners} className="touch-none">
+        <div className="py-2 px-4 flex items-center">
+          <div {...listeners} className="touch-none hover:cursor-move">
             <GripVertical />
           </div>
 
