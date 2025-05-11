@@ -56,7 +56,7 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
+    <div className="max-w-2xl mx-auto  space-y-6">
       <WorkoutForm
         mode="edit"
         workoutId={workout.id}

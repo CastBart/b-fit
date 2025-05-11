@@ -97,6 +97,24 @@ enum ExerciseOwnership {
   BFit = "BFit",
   Custom = "Custom",
 }
+
+
+// Exercise Interface
+export interface Exercise {
+  id: string;
+  owner: ExerciseOwnership;
+  name: string;
+  equipment: ExerciseEquipment;
+  primaryMuscle: MuscleGroup; // Renamed for clarity
+  auxiliaryMuscles: MuscleGroup[]; // Changed to an array
+  type: ExerciseType; // Used an enum instead of a string union
+  notes?: string;
+  instructions?: string;
+}
+
+// Export enums for use in other files
+export { ExerciseEquipment, MuscleGroup, ExerciseType, ExerciseOwnership };
+
 // fucntion to convert frontend enums values into backend
 export function getEnumKeyByValue<T extends Record<string, string>>(
   enumObj: T,
@@ -135,21 +153,6 @@ export function getEnumValuesByKeys<T extends Record<string, string>>(
 ): T[keyof T][] {
   return keys.map((key) => (enumObj[key as keyof T] || key) as T[keyof T]);
 }
-
-// Exercise Interface
-export interface Exercise {
-  id: string;
-  owner: ExerciseOwnership;
-  name: string;
-  equipment: ExerciseEquipment;
-  primaryMuscle: MuscleGroup; // Renamed for clarity
-  auxiliaryMuscles: MuscleGroup[]; // Changed to an array
-  type: ExerciseType; // Used an enum instead of a string union
-  notes?: string;
-}
-
-// Export enums for use in other files
-export { ExerciseEquipment, MuscleGroup, ExerciseType, ExerciseOwnership };
 
 export interface Workout {
   id: string;

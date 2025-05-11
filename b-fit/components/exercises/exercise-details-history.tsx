@@ -9,10 +9,16 @@ export default function ExerciseDetailsHistory({
   exercise,
 }: ExerciseDetailsHistoryProps) {
   return (
-    <TabsContent value="history" className="">
-      <div className="text-xl font-bold py-2">{exercise.name}</div>
-      <div className="flex items-center justify-center">
-        <div>No Data</div>
+    <TabsContent value="history">
+      <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
+      <div className="space-y-2">
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
+        <div className="h-24">No Data</div>
       </div>
     </TabsContent>
   );
