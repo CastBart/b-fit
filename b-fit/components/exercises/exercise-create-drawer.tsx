@@ -91,7 +91,7 @@ export default function CreateExerciseDrawer() {
       <DrawerContent
         id="create-exercise-drawer-content"
         title="Create Exercise Drawer Content"
-        className="custom-drawer justify-self-center"
+        className="w-full max-h-screen lg:w-[600px] justify-self-center"
       >
         <DrawerHeader id="create-exercise-drawer-header">
           <div className="flex flex-col gap-2">
@@ -104,7 +104,7 @@ export default function CreateExerciseDrawer() {
             <Separator className="h-1" />
           </div>
         </DrawerHeader>
-        <div className="grid gap-4 px-4 min-h-[200px] overflow-y-auto custom-scrollbar">
+        <div className="grid gap-4 px-4 overflow-y-auto custom-scrollbar">
           <Form {...form}>
             <form
               id="create-exercise-form"

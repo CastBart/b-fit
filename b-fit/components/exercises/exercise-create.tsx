@@ -23,7 +23,7 @@ export default function CreateExercise() {
           <Button>Create</Button>
         </DrawerTrigger>
       </div>
-      <DrawerContent className="custom-drawer justify-self-center">
+      <DrawerContent className="w-full lg:w-[600px] justify-self-center">
         <DrawerHeader>
           <div className="flex flex-col gap-2">
             <DrawerTitle className="text-center text-3xl">
