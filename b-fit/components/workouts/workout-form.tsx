@@ -130,7 +130,7 @@ export default function WorkoutForm({
   }
 
   return (
-    <div className="max-w-[600px] mx-auto overflow-auto space-y-4">
+    <div className="max-w-[600px] mx-auto overflow-auto space-y-4 p-2">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
