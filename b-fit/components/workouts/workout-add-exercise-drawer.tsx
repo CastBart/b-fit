@@ -24,14 +24,12 @@ export default function WorkoutSelectExerciseDrawer({
 
   function handleExerciseSelect(exercise: Exercise) {
     setSelectedExercises((prev) => {
-      return prev.some((e) => e.id === exercise.id) ? prev : [...prev, exercise];
+      return prev.includes(exercise) ? prev.filter((e) => e !== exercise) : [...prev, exercise]
     });
   }
 
   function handleConfirmSelection() {
-    console.log("Confirmed Exercise List: ", selectedExercises)
     onExerciseSelect(selectedExercises); // Pass selected exercises to parent
-   // setSelectedExercises([]); // ✅ Clear the selection after adding
   }
 
   function handleDrawerChange(isOpen: boolean) {
