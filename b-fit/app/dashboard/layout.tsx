@@ -1,3 +1,4 @@
+
 import SideNav from "@/components/dashboard/sidenav";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
@@ -7,6 +8,7 @@ import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/query-provider"; // ✅ Import the QueryProvider
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { StoreProvider } from "@/components/store-provider";
 
 export default async function Layout({
   children,
@@ -17,6 +19,7 @@ export default async function Layout({
 
   return (
     <SessionProvider session={session}>
+      <StoreProvider>
       <QueryProvider>
         <SidebarProvider>
           <DashboardSidebar />
@@ -28,6 +31,7 @@ export default async function Layout({
           </main>
         </SidebarProvider>
       </QueryProvider>
+      </StoreProvider>
     </SessionProvider>
   );
 }

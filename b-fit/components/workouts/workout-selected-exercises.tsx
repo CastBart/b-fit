@@ -290,7 +290,7 @@ interface OptionsDrawerProps {
   onRemove: () => void;
 }
 
-function OptionsDrawer({
+export function OptionsDrawer({
   selectedExercise,
   onClose,
   onSuperSet,
@@ -350,7 +350,7 @@ interface SupersetDrawerProps {
   supersetManager: SupersetManager | null;
 }
 
-function SupersetDrawer({
+export function SupersetDrawer({
   exercise,
   onClose,
   onSelect,
