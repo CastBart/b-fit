@@ -24,6 +24,7 @@ import {
   SupersetDrawer,
 } from "@/components/workouts/workout-selected-exercises";
 import { SupersetManager } from "@/lib/superset-manager";
+import SessionSetTable from "@/components/session/session-set-table";
 
 export default function SessionPage() {
   const dispatch = useDispatch();
@@ -50,15 +51,11 @@ export default function SessionPage() {
     : null;
 
   function onSelectedExercise(exerciseID: string) {
-    //Determine headId by finding the node with no `prev`
-    // const headId = Object.values(exerciseMap).find((node) => !node.prev)?.id;
-    // if (!headId) return;
 
     // Unflatten the exercise map to get the linked list
     const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
 
     setSupersetManager(new SupersetManager(headNode));
-    // supersetManager = new SupersetManager(headNode)
     // Traverse to find the selected node
     let current: ExerciseNode | null = headNode;
     while (current) {
@@ -73,18 +70,14 @@ export default function SessionPage() {
     if (!supersetManager) return;
 
     const updatedList = flattenExerciseNodeList(supersetManager.head);
-    // const updatedMap = Object.fromEntries(
-    //   updatedList.map((node) => [node.id, node])
-    // );
 
     dispatch(
       updateExerciseMap({
         newMap: updatedList,
         newHead: supersetManager.head.id,
       })
-    ); // implement this in your slice
+    ); 
     setSupersetExercise(null);
-    // setSupersetManager(null);
   }
 
   if (!currentExercise || !exerciseProgress)
@@ -102,46 +95,7 @@ export default function SessionPage() {
       </div>
 
       {/* Sets Section */}
-      <div className="mt-4">
-        {exerciseProgress.sets.map((set) => (
-          <div key={set.setNumber} className="mb-2">
-            <span className="font-medium">Set {set.setNumber}</span>
-            <input
-              type="number"
-              value={set.reps}
-              onChange={(e) =>
-                dispatch(
-                  updateSet({
-                    exerciseId: currentExercise.id,
-                    setNumber: set.setNumber,
-                    reps: parseInt(e.target.value),
-                  })
-                )
-              }
-              placeholder="Reps"
-              className="ml-2 border px-2 py-1 w-20"
-            />
-            <input
-              type="number"
-              value={set.weight}
-              onChange={(e) =>
-                dispatch(
-                  updateSet({
-                    exerciseId: currentExercise.id,
-                    setNumber: set.setNumber,
-                    weight: parseFloat(e.target.value),
-                  })
-                )
-              }
-              placeholder="Weight"
-              className="ml-2 border px-2 py-1 w-24"
-            />
-            <span className="ml-2 text-sm text-gray-500">
-              {set.completed ? "✅ Completed" : "⏳ In Progress"}
-            </span>
-          </div>
-        ))}
-      </div>
+      <SessionSetTable />
 
       <div className="mt-4 flex gap-2">
         <button
@@ -209,15 +163,6 @@ export default function SessionPage() {
         onClose={() => setSelectedExercise(null)}
         onSuperSet={() => {
           if (selectedExercise) {
-            // const headId = Object.values(exerciseMap).find(
-            //   (node) => !node.prev
-            // )?.id;
-            // if (!headId) return;
-
-            // const headNode = unFlattenExerciseNodeList(exerciseMap, headId);
-            // const manager = new SupersetManager(headNode);
-
-            // setSupersetManager(manager);
             setSupersetExercise(selectedExercise);
             setSelectedExercise(null); // Hide options drawer
           }
