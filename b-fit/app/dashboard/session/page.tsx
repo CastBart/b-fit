@@ -1,4 +1,5 @@
 "use client";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import {
@@ -9,28 +10,96 @@ import {
   undoLastCompletedSet,
   addNote,
   goToExercise,
+  updateExerciseMap,
 } from "@/store/sessionSlice";
+import {
+  ExerciseNode,
+  flattenExerciseNodeList,
+  unFlattenExerciseNodeList,
+} from "@/lib/exercise-linked-list";
 import ExerciseCarousel from "@/components/session/exercise-carousel";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import {
+  OptionsDrawer,
+  SupersetDrawer,
+} from "@/components/workouts/workout-selected-exercises";
+import { SupersetManager } from "@/lib/superset-manager";
 
-export default function SessionPage(){
+export default function SessionPage() {
   const dispatch = useDispatch();
 
-  const {
-    workoutId,
-    exerciseMap,
-    progress,
-    activeExerciseId,
-  } = useSelector((state: RootState) => state.session);
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseNode | null>(
+    null
+  );
+  const [supersetExercise, setSupersetExercise] = useState<ExerciseNode | null>(
+    null
+  );
 
-  const currentExercise = activeExerciseId ? exerciseMap[activeExerciseId] : null;
-  const exerciseProgress = currentExercise ? progress[currentExercise.id] : null;
+  const [supersetManager, setSupersetManager] =
+    useState<SupersetManager | null>(null);
 
-  if (!currentExercise || !exerciseProgress) return <div>Loading exercise...</div>;
+  const { workoutId, exerciseMap, progress, activeExerciseId, headExerciseId } =
+    useSelector((state: RootState) => state.session);
+  // const [supersetManager, setSupersetManager] = useState();
+
+  const currentExercise = activeExerciseId
+    ? exerciseMap[activeExerciseId]
+    : null;
+  const exerciseProgress = currentExercise
+    ? progress[currentExercise.id]
+    : null;
+
+  function onSelectedExercise(exerciseID: string) {
+    //Determine headId by finding the node with no `prev`
+    // const headId = Object.values(exerciseMap).find((node) => !node.prev)?.id;
+    // if (!headId) return;
+
+    // Unflatten the exercise map to get the linked list
+    const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
+
+    setSupersetManager(new SupersetManager(headNode));
+    // supersetManager = new SupersetManager(headNode)
+    // Traverse to find the selected node
+    let current: ExerciseNode | null = headNode;
+    while (current) {
+      if (current.id === exerciseID) {
+        setSelectedExercise(current);
+        break;
+      }
+      current = current.next;
+    }
+  }
+  function handleSuperSetSelect() {
+    if (!supersetManager) return;
+
+    const updatedList = flattenExerciseNodeList(supersetManager.head);
+    // const updatedMap = Object.fromEntries(
+    //   updatedList.map((node) => [node.id, node])
+    // );
+
+    dispatch(
+      updateExerciseMap({
+        newMap: updatedList,
+        newHead: supersetManager.head.id,
+      })
+    ); // implement this in your slice
+    setSupersetExercise(null);
+    // setSupersetManager(null);
+  }
+
+  if (!currentExercise || !exerciseProgress)
+    return <div>Loading exercise...</div>;
   return (
     <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
-      <ExerciseCarousel exercises={exerciseMap}/>
+      <ExerciseCarousel exercises={exerciseMap} />
 
-      <h3 className="text-xl font-semibold">{currentExercise.name}</h3>
+      <div className="flex items-center space-x-2">
+        <h3 className="text-xl font-semibold">{currentExercise.name}</h3>
+        <EllipsisHorizontalIcon
+          className="w-7 h-7 cursor-pointer"
+          onClick={() => onSelectedExercise(activeExerciseId!)}
+        />
+      </div>
 
       {/* Sets Section */}
       <div className="mt-4">
@@ -76,9 +145,7 @@ export default function SessionPage(){
 
       <div className="mt-4 flex gap-2">
         <button
-          onClick={() =>
-            dispatch(addSet({ exerciseId: currentExercise.id }))
-          }
+          onClick={() => dispatch(addSet({ exerciseId: currentExercise.id }))}
           className="px-3 py-2 bg-blue-500 text-white rounded"
         >
           Add Set
@@ -122,24 +189,47 @@ export default function SessionPage(){
       <div className="mt-6 flex justify-between">
         <button
           disabled={!currentExercise.prev}
-          onClick={() =>
-            dispatch(goToExercise(currentExercise.prev!))
-          }
+          onClick={() => dispatch(goToExercise(currentExercise.prev!))}
           className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
         >
           Previous
         </button>
         <button
           disabled={!currentExercise.next}
-          onClick={() =>
-            dispatch(goToExercise(currentExercise.next!))
-          }
+          onClick={() => dispatch(goToExercise(currentExercise.next!))}
           className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
         >
           Next
         </button>
-
       </div>
+
+      {/* Option Drawer */}
+      <OptionsDrawer
+        selectedExercise={selectedExercise}
+        onClose={() => setSelectedExercise(null)}
+        onSuperSet={() => {
+          if (selectedExercise) {
+            // const headId = Object.values(exerciseMap).find(
+            //   (node) => !node.prev
+            // )?.id;
+            // if (!headId) return;
+
+            // const headNode = unFlattenExerciseNodeList(exerciseMap, headId);
+            // const manager = new SupersetManager(headNode);
+
+            // setSupersetManager(manager);
+            setSupersetExercise(selectedExercise);
+            setSelectedExercise(null); // Hide options drawer
+          }
+        }}
+        onRemove={() => {}}
+      />
+      <SupersetDrawer
+        exercise={supersetExercise}
+        onClose={() => setSupersetExercise(null)}
+        onSelect={handleSuperSetSelect}
+        supersetManager={supersetManager}
+      />
     </div>
   );
-};
+}

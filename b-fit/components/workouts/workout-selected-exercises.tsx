@@ -406,6 +406,7 @@ export function SupersetDrawer({
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
                 onClick={() => {
+                  debugger;
                   supersetManager.supersetWithNext(exercise);
                   onSelect();
                 }}

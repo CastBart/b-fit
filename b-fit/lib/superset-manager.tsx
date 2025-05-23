@@ -6,7 +6,23 @@ export class SupersetManager {
   constructor(public head: ExerciseNode) {
     let current: ExerciseNode | null = head;
     const visited = new Set<ExerciseNode>();
-
+    while (current) {
+      if (current.supersetGroupId) {
+        if (!this.groups[current.supersetGroupId]) {
+          this.groups[current.supersetGroupId] = { exercises: [] };
+        }
+        if (!visited.has(current)) {
+          this.groups[current.supersetGroupId].exercises.push(current);
+          visited.add(current);
+        }
+      }
+      current = current.next;
+    }
+  }
+  updateHeadNode(headNode: ExerciseNode) {
+    this.head = headNode;
+    let current: ExerciseNode | null = headNode;
+    const visited = new Set<ExerciseNode>();
     while (current) {
       if (current.supersetGroupId) {
         if (!this.groups[current.supersetGroupId]) {
@@ -30,51 +46,50 @@ export class SupersetManager {
   }
 
   reassignSupersetGroups(movedNode: ExerciseNode) {
-  const movedNodeGroup = movedNode.supersetGroupId;
-  const prev = movedNode.prev;
-  const next = movedNode.next;
-  const prevGroup = prev?.supersetGroupId || null;
-  const nextGroup = next?.supersetGroupId || null;
+    const movedNodeGroup = movedNode.supersetGroupId;
+    const prev = movedNode.prev;
+    const next = movedNode.next;
+    const prevGroup = prev?.supersetGroupId || null;
+    const nextGroup = next?.supersetGroupId || null;
 
-  // 1. Remove from current group if no longer adjacent to any member of its original group
-  if (
-    movedNodeGroup &&
-    prev?.supersetGroupId !== movedNodeGroup &&
-    next?.supersetGroupId !== movedNodeGroup
-  ) {
-    const group = this.groups[movedNodeGroup];
-    if (group) {
-      group.exercises = group.exercises.filter((n) => n !== movedNode);
-      if (group.exercises.length < 2) {
-        group.exercises.forEach((n) => (n.supersetGroupId = null));
-        delete this.groups[movedNodeGroup];
+    // 1. Remove from current group if no longer adjacent to any member of its original group
+    if (
+      movedNodeGroup &&
+      prev?.supersetGroupId !== movedNodeGroup &&
+      next?.supersetGroupId !== movedNodeGroup
+    ) {
+      const group = this.groups[movedNodeGroup];
+      if (group) {
+        group.exercises = group.exercises.filter((n) => n !== movedNode);
+        if (group.exercises.length < 2) {
+          group.exercises.forEach((n) => (n.supersetGroupId = null));
+          delete this.groups[movedNodeGroup];
+        }
       }
+      movedNode.supersetGroupId = null;
     }
-    movedNode.supersetGroupId = null;
-  }
 
-  // 2. Reassign based on adjacency
-  if (prevGroup && nextGroup && prevGroup === nextGroup) {
-    // Between two nodes in the same group
-    const group = this.groups[prevGroup];
-    movedNode.supersetGroupId = prevGroup;
-    const prevIndex = group.exercises.indexOf(prev!);
-    group.exercises.splice(prevIndex + 1, 0, movedNode);
-  } else if (prevGroup && movedNodeGroup === prevGroup) {
-    // Only previous is in a group 
-    const group = this.groups[prevGroup];
-    movedNode.supersetGroupId = prevGroup;
-    const prevIndex = group.exercises.indexOf(prev!);
-    group.exercises.splice(prevIndex + 1, 0, movedNode);
-  } else if (nextGroup && movedNodeGroup === nextGroup) {
-    // Only next is in a group
-    const group = this.groups[nextGroup];
-    movedNode.supersetGroupId = nextGroup;
-    const nextIndex = group.exercises.indexOf(next!);
-    group.exercises.splice(nextIndex, 0, movedNode);
+    // 2. Reassign based on adjacency
+    if (prevGroup && nextGroup && prevGroup === nextGroup) {
+      // Between two nodes in the same group
+      const group = this.groups[prevGroup];
+      movedNode.supersetGroupId = prevGroup;
+      const prevIndex = group.exercises.indexOf(prev!);
+      group.exercises.splice(prevIndex + 1, 0, movedNode);
+    } else if (prevGroup && movedNodeGroup === prevGroup) {
+      // Only previous is in a group
+      const group = this.groups[prevGroup];
+      movedNode.supersetGroupId = prevGroup;
+      const prevIndex = group.exercises.indexOf(prev!);
+      group.exercises.splice(prevIndex + 1, 0, movedNode);
+    } else if (nextGroup && movedNodeGroup === nextGroup) {
+      // Only next is in a group
+      const group = this.groups[nextGroup];
+      movedNode.supersetGroupId = nextGroup;
+      const nextIndex = group.exercises.indexOf(next!);
+      group.exercises.splice(nextIndex, 0, movedNode);
+    }
   }
-}
-
 
   canSupersetWithNext(node: ExerciseNode) {
     return (

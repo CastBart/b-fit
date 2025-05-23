@@ -177,8 +177,9 @@ export const sessionSlice = createSlice({
       state.activeExerciseId = action.payload;
     },
 
-    updateExerciseMap:(state, action: PayloadAction<Record<string, FlattenedExerciseNode>>)=>{
-      state.exerciseMap = action.payload;
+    updateExerciseMap:(state, action: PayloadAction<{newMap: Record<string, FlattenedExerciseNode>, newHead: string}>)=>{
+      state.exerciseMap = action.payload.newMap;
+      state.headExerciseId = action.payload.newHead;
     },
 
     endSession: (state) => {

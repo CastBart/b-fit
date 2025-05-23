@@ -93,8 +93,8 @@ function SortableExerciseCard({
           <div
             className={clsx(
               "h-full absolute right-0 left-0 bg-primary",
-              isFirst && "rounded-l-full -right-3 ",
-              isLast && "rounded-r-full -left-3"
+              isFirst && "rounded-l-full -right-4 ",
+              isLast && "rounded-r-full -left-4"
             )}
           />
         </div>
@@ -136,10 +136,10 @@ export default function ExerciseDndList({ exercises }: ExerciseDndListProps) {
       const newIndex = exerciseIds.indexOf(over.id);
       const newOrder = arrayMove(exerciseIds, oldIndex, newIndex);
       setExerciseIds(newOrder);
-      // optionally dispatch Redux update here to persist order
+
       const newFlattenedList = newOrder.map((id) => exercises[id]);
 
-      // Step 2: Convert array back into a Record<string, FlattenedExerciseNode>
+      // Convert array back into a Record<string, FlattenedExerciseNode>
       const updatedMap: Record<string, FlattenedExerciseNode> = {};
       newFlattenedList.forEach((ex, index) => {
         updatedMap[ex.id] = {
@@ -152,21 +152,18 @@ export default function ExerciseDndList({ exercises }: ExerciseDndListProps) {
         };
       });
 
-      // Step 3: Get the new head ID
+      // Get the new head ID
       const headId = newOrder[0];
-
+      // Unflatten map into head to form double linked list
       const linkedListHead = unFlattenExerciseNodeList(updatedMap, headId);
-
+      //initialize superset manager
       const supersetManager = new SupersetManager(linkedListHead);
-
+      //perform superset reasignment
       supersetManager.reassignSupersetGroups(linkedListHead);
-      //TODO: Unflatten node
-      //TODO: initialise super set manager
-      //TODO: reassign super set groups
-      //TODO: flatten exercise nodes
+      //create record map from new head
       const flattened = flattenExerciseNodeList(linkedListHead);
       dispatch(
-        updateExerciseMap(flattened)
+        updateExerciseMap({newMap: flattened, newHead: headId})
       );
     }
   };
