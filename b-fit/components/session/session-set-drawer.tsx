@@ -24,67 +24,68 @@ interface SetDrawerProps {
 }
 
 export default function SetDrawer({ exerciseId, onClose }: SetDrawerProps) {
-  if (!exerciseId) return;
   const dispatch = useDispatch();
   const sets = useSelector(
-    (state: RootState) => state.session.progress[exerciseId]?.sets || []
+    (state: RootState) => state.session.progress[exerciseId!]?.sets || []
   );
-
-  const handleAdd = () => dispatch(addSet({ exerciseId }));
-  const handleRemove = () => dispatch(removeLastSet({ exerciseId }));
-  const handleUndo = () => dispatch(undoLastCompletedSet({ exerciseId }));
   //check if set has at least one set completed
   const hasCompletedSet = sets.some((set) => set.completed);
   return (
-    <Drawer
-      open={!!exerciseId}
-      onOpenChange={onClose}
-      shouldScaleBackground={false}
-    >
-      <DrawerContent className="w-screen lg:w-[600px] justify-self-center">
-        <DrawerHeader>
-          <div className="flex flex-col gap-2">
-            <DrawerTitle className="text-center text-3xl">Sets</DrawerTitle>
-            <DrawerDescription className="hidden">
-              Sets drawer options
-            </DrawerDescription>
-            <Separator className="h-1" />
-          </div>
-        </DrawerHeader>
+    exerciseId && (
+      <Drawer
+        open={!!exerciseId}
+        onOpenChange={onClose}
+        shouldScaleBackground={false}
+      >
+        <DrawerContent className="w-screen lg:w-[600px] justify-self-center">
+          <DrawerHeader>
+            <div className="flex flex-col gap-2">
+              <DrawerTitle className="text-center text-3xl">Sets</DrawerTitle>
+              <DrawerDescription className="hidden">
+                Sets drawer options
+              </DrawerDescription>
+              <Separator className="h-1" />
+            </div>
+          </DrawerHeader>
 
-        <div className="flex justify-center items-center gap-10 py-6">
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleRemove}
-            disabled={sets.length === 0}
-          >
-            <MinusIcon className="w-5 h-5" />
-          </Button>
-          <span className="text-7xl font-semibold">{sets.length}</span>
-          <Button variant="default" size="lg" onClick={handleAdd}>
-            <PlusIcon className="w-5 h-5 " />
-          </Button>
-        </div>
-        {hasCompletedSet && (
-          <div className="w-full px-4">
+          <div className="flex justify-center items-center gap-10 py-6">
             <Button
-              className="flex gap-2 w-full"
-              variant="secondary"
-              onClick={handleUndo}
+              variant="default"
+              size="lg"
+              onClick={() => dispatch(removeLastSet({ exerciseId }))}
+              disabled={sets.length === 0}
             >
-              <span>Undo last set</span>
-              <Undo className="w-5 h-5" />
+              <MinusIcon className="w-5 h-5" />
+            </Button>
+            <span className="text-7xl font-semibold">{sets.length}</span>
+            <Button
+              variant="default"
+              size="lg"
+              onClick={() => dispatch(addSet({ exerciseId }))}
+            >
+              <PlusIcon className="w-5 h-5 " />
             </Button>
           </div>
-        )}
+          {hasCompletedSet && (
+            <div className="w-full px-4">
+              <Button
+                className="flex gap-2 w-full"
+                variant="secondary"
+                onClick={() => dispatch(undoLastCompletedSet({ exerciseId }))}
+              >
+                <span>Undo last set</span>
+                <Undo className="w-5 h-5" />
+              </Button>
+            </div>
+          )}
 
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="secondary">Close</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="secondary">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    )
   );
 }

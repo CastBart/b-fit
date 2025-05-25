@@ -60,7 +60,7 @@ export default function SessionSetTable() {
         <TableBody>
           {exerciseProgress.sets.map((set) => {
             return (
-              <TableRow className="hover:bg-none">
+              <TableRow className="hover:bg-none" key={set.setNumber}>
                 <TableCell>{set.setNumber}</TableCell>
                 <TableCell>
                   <Input
