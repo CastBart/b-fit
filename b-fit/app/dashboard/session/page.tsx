@@ -25,6 +25,8 @@ import {
 } from "@/components/workouts/workout-selected-exercises";
 import { SupersetManager } from "@/lib/superset-manager";
 import SessionSetTable from "@/components/session/session-set-table";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function SessionPage() {
   const dispatch = useDispatch();
@@ -39,8 +41,13 @@ export default function SessionPage() {
   const [supersetManager, setSupersetManager] =
     useState<SupersetManager | null>(null);
 
-  const { workoutId, exerciseMap, progress, activeExerciseId, headExerciseId } =
-    useSelector((state: RootState) => state.session);
+  const {
+    workoutCompleted,
+    exerciseMap,
+    progress,
+    activeExerciseId,
+    headExerciseId,
+  } = useSelector((state: RootState) => state.session);
   // const [supersetManager, setSupersetManager] = useState();
 
   const currentExercise = activeExerciseId
@@ -51,7 +58,6 @@ export default function SessionPage() {
     : null;
 
   function onSelectedExercise(exerciseID: string) {
-
     // Unflatten the exercise map to get the linked list
     const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
 
@@ -76,12 +82,16 @@ export default function SessionPage() {
         newMap: updatedList,
         newHead: supersetManager.head.id,
       })
-    ); 
+    );
     setSupersetExercise(null);
   }
 
   if (!currentExercise || !exerciseProgress)
-    return <div>Loading exercise...</div>;
+    return (
+      <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
+        <div className="text-center">Loading exercise...</div>
+      </div>
+    );
   return (
     <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
       <ExerciseCarousel exercises={exerciseMap} />
@@ -94,10 +104,26 @@ export default function SessionPage() {
         />
       </div>
 
+      {/* Notes */}
+      <div className="mt-4">
+        <Textarea
+          placeholder="Add notes..."
+          value={exerciseProgress.notes ?? ""}
+          onChange={(e) =>
+            dispatch(
+              addNote({
+                exerciseId: currentExercise.id,
+                note: e.target.value,
+              })
+            )
+          }
+          className="w-full border rounded p-2"
+        />
+      </div>
       {/* Sets Section */}
       <SessionSetTable />
 
-      <div className="mt-4 flex gap-2">
+      {/* <div className="mt-4 flex gap-2">
         <button
           onClick={() => dispatch(addSet({ exerciseId: currentExercise.id }))}
           className="px-3 py-2 bg-blue-500 text-white rounded"
@@ -120,42 +146,15 @@ export default function SessionPage() {
         >
           Undo Last Completed
         </button>
-      </div>
+      </div> */}
 
-      {/* Notes */}
-      <div className="mt-4">
-        <textarea
-          placeholder="Add notes..."
-          value={exerciseProgress.notes ?? ""}
-          onChange={(e) =>
-            dispatch(
-              addNote({
-                exerciseId: currentExercise.id,
-                note: e.target.value,
-              })
-            )
-          }
-          className="w-full border rounded p-2"
-        />
-      </div>
-
-      {/* Navigation */}
-      <div className="mt-6 flex justify-between">
-        <button
-          disabled={!currentExercise.prev}
-          onClick={() => dispatch(goToExercise(currentExercise.prev!))}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          disabled={!currentExercise.next}
-          onClick={() => dispatch(goToExercise(currentExercise.next!))}
-          className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      {workoutCompleted && (
+        <div className="fixed flex z-50 bottom-10 left-1/2 ">
+          <Button className="rounded-full py-10 px-10 text-3xl ">
+            Complete Workout
+          </Button>
+        </div>
+      )}
 
       {/* Option Drawer */}
       <OptionsDrawer

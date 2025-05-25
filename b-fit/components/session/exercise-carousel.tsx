@@ -151,20 +151,22 @@ export default function ExerciseDndList({ exercises }: ExerciseDndListProps) {
               : null,
         };
       });
-
+      debugger;
       // Get the new head ID
       const headId = newOrder[0];
       // Unflatten map into head to form double linked list
       const linkedListHead = unFlattenExerciseNodeList(updatedMap, headId);
       //initialize superset manager
       const supersetManager = new SupersetManager(linkedListHead);
+      let movedNode = linkedListHead;
+      while (movedNode && movedNode.id !== active.id) {
+        movedNode = movedNode.next!;
+      }
       //perform superset reasignment
-      supersetManager.reassignSupersetGroups(linkedListHead);
+      supersetManager.reassignSupersetGroups(movedNode);
       //create record map from new head
-      const flattened = flattenExerciseNodeList(linkedListHead);
-      dispatch(
-        updateExerciseMap({newMap: flattened, newHead: headId})
-      );
+      const flattened = flattenExerciseNodeList(supersetManager.head);
+      dispatch(updateExerciseMap({ newMap: flattened, newHead: headId }));
     }
   };
 
