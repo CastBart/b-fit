@@ -1,20 +1,21 @@
 "use client";
+import { v4 as uuidv4 } from "uuid";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import {
-  addSet,
-  completeSet,
-  updateSet,
-  removeLastSet,
-  undoLastCompletedSet,
   addNote,
-  goToExercise,
   updateExerciseMap,
+  ExerciseProgress,
+  addExercises,
 } from "@/store/sessionSlice";
 import {
+  createExerciseNode,
+  createFlattenedExerciseNode,
   ExerciseNode,
+  FlattenedExerciseNode,
   flattenExerciseNodeList,
+  getHeadNode,
   unFlattenExerciseNodeList,
 } from "@/lib/exercise-linked-list";
 import ExerciseCarousel from "@/components/session/exercise-carousel";
@@ -27,6 +28,8 @@ import { SupersetManager } from "@/lib/superset-manager";
 import SessionSetTable from "@/components/session/session-set-table";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
+import { Exercise } from "@/lib/definitions";
 
 export default function SessionPage() {
   const dispatch = useDispatch();
@@ -54,9 +57,8 @@ export default function SessionPage() {
     ? exerciseMap[activeExerciseId]
     : null;
   const exerciseProgress = currentExercise
-    ? progress[currentExercise.id]
+    ? progress[currentExercise.instanceId]
     : null;
-
   function onSelectedExercise(exerciseID: string) {
     // Unflatten the exercise map to get the linked list
     const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
@@ -65,7 +67,7 @@ export default function SessionPage() {
     // Traverse to find the selected node
     let current: ExerciseNode | null = headNode;
     while (current) {
-      if (current.id === exerciseID) {
+      if (current.instanceId === exerciseID) {
         setSelectedExercise(current);
         break;
       }
@@ -80,28 +82,101 @@ export default function SessionPage() {
     dispatch(
       updateExerciseMap({
         newMap: updatedList,
-        newHead: supersetManager.head.id,
+        newHead: supersetManager.head.instanceId,
       })
     );
     setSupersetExercise(null);
   }
 
+  function handleAddedExercises(newExercises: Exercise[]) {
+    debugger;
+    const existingIds = Object.keys(exerciseMap);
+    const newProgress: Record<string, ExerciseProgress> = {};
+    const firstNode = existingIds
+      .map((id) => exerciseMap[id])
+      .find((node) => node.prev === null);
+    //get current head from map
+    const currentHead = unFlattenExerciseNodeList(
+      exerciseMap,
+      firstNode?.instanceId!
+    );
+    //create new nodes
+    const newNodes = newExercises.map((exercise) =>
+      createExerciseNode({
+        id: exercise.id,
+        name: exercise.name,
+        equipment: exercise.equipment,
+        primaryMuscle: exercise.primaryMuscle,
+        auxiliaryMuscles: exercise.auxiliaryMuscles,
+        type: exercise.type,
+        supersetGroupId: null,
+      })
+    );
+
+    // Link the new nodes together (both next and prev)
+    for (let i = 0; i < newNodes.length; i++) {
+      if (i > 0) newNodes[i].prev = newNodes[i - 1];
+      if (i < newNodes.length - 1) newNodes[i].next = newNodes[i + 1];
+    }
+
+    let lastNode = currentHead;
+    while (lastNode.next) {
+      lastNode = lastNode.next;
+    }
+
+    lastNode.next = newNodes[0];
+    newNodes[0].prev = lastNode;
+    const joinedHead = getHeadNode(lastNode);
+    console.log(joinedHead);
+
+    //create progress for new nodes
+    for (const node of newNodes) {
+      newProgress[node.instanceId] = {
+        exerciseId: node.instanceId,
+        sets: [
+          { setNumber: 1, reps: 0, weight: 0, completed: false },
+          { setNumber: 2, reps: 0, weight: 0, completed: false },
+          { setNumber: 3, reps: 0, weight: 0, completed: false },
+        ],
+        activeSetNumber: 1,
+        notes: "",
+      };
+    }
+    const newFlattenedNodes = flattenExerciseNodeList(joinedHead);
+    
+    dispatch(
+      addExercises({
+        newExerciseMap: newFlattenedNodes,
+        newProgressMap: newProgress,
+      })
+    );
+
+    debugger;
+  }
+
   if (!currentExercise || !exerciseProgress)
     return (
       <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
-        <div className="text-center">Loading exercise...</div>
+        <div className="text-center">Loading exercise for session page...</div>
       </div>
     );
   return (
     <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
       <ExerciseCarousel exercises={exerciseMap} />
 
-      <div className="flex items-center space-x-2">
-        <h3 className="text-xl font-semibold">{currentExercise.name}</h3>
-        <EllipsisHorizontalIcon
-          className="w-7 h-7 cursor-pointer"
-          onClick={() => onSelectedExercise(activeExerciseId!)}
-        />
+      <div className="flex justify-between">
+        <div className="flex space-x-2 items-center">
+          <h3 className="text-2xl font-semibold">{currentExercise.name}</h3>
+          <EllipsisHorizontalIcon
+            className="w-7 h-7 cursor-pointer"
+            onClick={() => onSelectedExercise(activeExerciseId!)}
+          />
+        </div>
+        <div className="justify-self-end">
+          <WorkoutSelectExerciseDrawer
+            onExerciseSelect={handleAddedExercises}
+          />
+        </div>
       </div>
 
       {/* Notes */}
@@ -112,7 +187,7 @@ export default function SessionPage() {
           onChange={(e) =>
             dispatch(
               addNote({
-                exerciseId: currentExercise.id,
+                exerciseId: currentExercise.instanceId,
                 note: e.target.value,
               })
             )
@@ -123,31 +198,7 @@ export default function SessionPage() {
       {/* Sets Section */}
       <SessionSetTable />
 
-      {/* <div className="mt-4 flex gap-2">
-        <button
-          onClick={() => dispatch(addSet({ exerciseId: currentExercise.id }))}
-          className="px-3 py-2 bg-blue-500 text-white rounded"
-        >
-          Add Set
-        </button>
-        <button
-          onClick={() =>
-            dispatch(removeLastSet({ exerciseId: currentExercise.id }))
-          }
-          className="px-3 py-2 bg-red-500 text-white rounded"
-        >
-          Remove Last Set
-        </button>
-        <button
-          onClick={() =>
-            dispatch(undoLastCompletedSet({ exerciseId: currentExercise.id }))
-          }
-          className="px-3 py-2 bg-yellow-500 text-white rounded"
-        >
-          Undo Last Completed
-        </button>
-      </div> */}
-
+      {/* Complete Button */}
       {workoutCompleted && (
         <div className="fixed flex z-50 bottom-10 left-1/2 ">
           <Button className="rounded-full py-10 px-10 text-3xl ">

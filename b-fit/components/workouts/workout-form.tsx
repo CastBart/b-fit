@@ -108,9 +108,10 @@ export default function WorkoutForm({
     }
   }
   function handleStartWorkout() {
+    debugger
     if (workoutId && head) {
       const flattenedMap = flattenExerciseNodeList(head);
-      const headId = head.id;
+      const headId = head.instanceId;
       dispatch(startSession({ workoutId, headId, flattenedMap }));
       router.push(`/dashboard/session`);
     }

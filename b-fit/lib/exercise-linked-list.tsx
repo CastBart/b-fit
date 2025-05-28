@@ -31,22 +31,38 @@ export function createExerciseNode(data: ExerciseBaseData): ExerciseNode {
   };
 }
 
-export function flattenExerciseNodeList(head: ExerciseNode): Record<string, FlattenedExerciseNode> {
+export function createFlattenedExerciseNode(
+  data: ExerciseBaseData
+): FlattenedExerciseNode {
+  return {
+    ...data,
+    instanceId: uuidv4(),
+    next: null,
+    prev: null,
+  };
+}
+
+export function flattenExerciseNodeList(
+  head: ExerciseNode
+): Record<string, FlattenedExerciseNode> {
   const map: Record<string, FlattenedExerciseNode> = {};
   let current: ExerciseNode | null = head;
 
   while (current) {
-    map[current.id] = {
+    map[current.instanceId] = {
       ...current,
-      next: current.next?.id || null,
-      prev: current.prev?.id || null,
+      next: current.next?.instanceId || null,
+      prev: current.prev?.instanceId || null,
     };
     current = current.next;
   }
 
   return map;
 }
-export function unFlattenExerciseNodeList(flattenedMap: Record<string, FlattenedExerciseNode>, headId: string): ExerciseNode {
+export function unFlattenExerciseNodeList(
+  flattenedMap: Record<string, FlattenedExerciseNode>,
+  headId: string
+): ExerciseNode {
   const nodeMap: Record<string, ExerciseNode> = {};
 
   // Create all nodes first (no links yet)
@@ -69,15 +85,29 @@ export function unFlattenExerciseNodeList(flattenedMap: Record<string, Flattened
   return nodeMap[headId]; // return the head of the linked list
 }
 
+export function getHeadNode(node: ExerciseNode): ExerciseNode {
+  let current = node;
+  while (current.prev) {
+    current = current.prev;
+  }
+  return current;
+}
+
 export function getLinkedExerciseArray(
   node: ExerciseNode | null
-): { exerciseID: string; instanceId: string; prevId?: string; nextId?: string; supersetGroupId?: string }[] {
+): {
+  exerciseID: string;
+  instanceId: string;
+  prevId?: string;
+  nextId?: string;
+  supersetGroupId?: string;
+}[] {
   const exercises = [];
 
   while (node) {
     exercises.push({
-      exerciseID: node.id,            // real exercise id
-      instanceId: node.instanceId,    // temp instance id (uuidv4)
+      exerciseID: node.id, // real exercise id
+      instanceId: node.instanceId, // temp instance id (uuidv4)
       prevId: node.prev ? node.prev.instanceId : undefined,
       nextId: node.next ? node.next.instanceId : undefined,
       supersetGroupId: node.supersetGroupId ? node.supersetGroupId : undefined,
@@ -88,4 +118,3 @@ export function getLinkedExerciseArray(
 
   return exercises;
 }
-

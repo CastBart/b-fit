@@ -39,10 +39,10 @@ export default function SessionSetTable() {
     ? exerciseMap[activeExerciseId]
     : null;
   const exerciseProgress = currentExercise
-    ? progress[currentExercise.id]
+    ? progress[currentExercise.instanceId]
     : null;
   if (!currentExercise || !exerciseProgress)
-    return <div>Loading exercise...</div>;
+    return <div>Loading exercise table component...</div>;
   return (
     <>
       <Table>

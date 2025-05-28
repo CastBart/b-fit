@@ -11,7 +11,7 @@ type Set = {
   completed: boolean;
 };
 
-type ExerciseProgress = {
+export type ExerciseProgress = {
   exerciseId: string;
   sets: Set[];
   activeSetNumber: number;
@@ -84,8 +84,8 @@ export const sessionSlice = createSlice({
       state.activeExerciseId = action.payload.headId;
 
       Object.values(action.payload.flattenedMap).forEach((node) => {
-        state.progress[node.id] = {
-          exerciseId: node.id,
+        state.progress[node.instanceId] = {
+          exerciseId: node.instanceId,
           sets: Array.from({ length: 3 }, (_, i) => ({
             setNumber: i + 1,
             reps: 0,
@@ -217,11 +217,11 @@ export const sessionSlice = createSlice({
           } else {
             // If all next nodes are complete, try scanning entire list
             const fallback = Object.values(state.exerciseMap).find((node) => {
-              const prog = state.progress[node.id];
+              const prog = state.progress[node.instanceId];
               return prog.sets.some((s) => !s.completed);
             });
             if (fallback) {
-              state.activeExerciseId = fallback.id;
+              state.activeExerciseId = fallback.instanceId;
             } else {
               state.workoutCompleted = true;
             }
@@ -235,7 +235,7 @@ export const sessionSlice = createSlice({
         (n) => n.supersetGroupId === supersetId
       );
 
-      const currentIndex = supersetNodes.findIndex((n) => n.id === activeId);
+      const currentIndex = supersetNodes.findIndex((n) => n.instanceId === activeId);
       const nextIndex = (currentIndex + 1) % supersetNodes.length;
       const nextNode = supersetNodes[nextIndex];
 
@@ -244,18 +244,18 @@ export const sessionSlice = createSlice({
       }
 
       const allComplete = supersetNodes.every((node) => {
-        const prog = state.progress[node.id];
+        const prog = state.progress[node.instanceId];
         return prog.sets.every((s) => s.completed);
       });
 
       if (allComplete) {
         // Get last node in the chain
         const lastSupersetNode = supersetNodes.reduce((acc, node) => {
-          return state.exerciseMap[acc.id].next === node.id ? node : acc;
+          return state.exerciseMap[acc.instanceId].next === node.instanceId ? node : acc;
         }, supersetNodes[0]);
 
         const nextUnfinished = findNextIncompleteNode(
-          state.exerciseMap[lastSupersetNode.id].next,
+          state.exerciseMap[lastSupersetNode.instanceId].next,
           state.exerciseMap,
           state.progress
         );
@@ -265,18 +265,18 @@ export const sessionSlice = createSlice({
         } else {
           // Fallback full scan
           const fallback = Object.values(state.exerciseMap).find((node) => {
-            const prog = state.progress[node.id];
+            const prog = state.progress[node.instanceId];
             return prog.sets.some((s) => !s.completed);
           });
           if (fallback) {
-            state.activeExerciseId = fallback.id;
+            state.activeExerciseId = fallback.instanceId;
           } else {
             state.workoutCompleted = true; // ✅
           }
         }
       } else {
         // Move to next in superset
-        state.activeExerciseId = nextNode.id;
+        state.activeExerciseId = nextNode.instanceId;
       }
     },
 
@@ -321,6 +321,34 @@ export const sessionSlice = createSlice({
     setActiveExerciseId: (state, action: PayloadAction<string>) => {
       state.activeExerciseId = action.payload;
     },
+    addExercises: (
+      state,
+      action: PayloadAction<{
+        newExerciseMap: Record<string, FlattenedExerciseNode>;
+        newProgressMap: Record<string, ExerciseProgress>;
+      }>
+    ) => {
+      debugger
+      const { newExerciseMap, newProgressMap } = action.payload;
+      // state.exerciseMap = newExerciseMap;
+      //Merge new nodes
+      for (const [id, node] of Object.entries(newExerciseMap)) {
+        state.exerciseMap[id] = node;
+      }
+      const tempMap = state.exerciseMap;
+      // Merge new progress
+      for (const [id, progress] of Object.entries(newProgressMap)) {
+        state.progress[id] = progress;
+      }
+
+      //update workout completed state
+      state.workoutCompleted = false;
+
+      // If no activeExerciseId yet, set to first added node
+      if (!state.activeExerciseId) {
+        state.activeExerciseId = Object.keys(newExerciseMap)[0];
+      }
+    },
 
     goToExercise: (state, action: PayloadAction<string>) => {
       state.activeExerciseId = action.payload;
@@ -355,6 +383,7 @@ export const {
   goToExercise,
   updateExerciseMap,
   endSession,
+  addExercises,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
