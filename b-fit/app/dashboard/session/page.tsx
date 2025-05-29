@@ -143,7 +143,7 @@ export default function SessionPage() {
       };
     }
     const newFlattenedNodes = flattenExerciseNodeList(joinedHead);
-    
+
     dispatch(
       addExercises({
         newExerciseMap: newFlattenedNodes,
@@ -156,15 +156,15 @@ export default function SessionPage() {
 
   if (!currentExercise || !exerciseProgress)
     return (
-      <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
+      <div className="p-4 max-w-[900px] mx-auto ">
         <div className="text-center">Loading exercise for session page...</div>
       </div>
     );
   return (
-    <div className="p-4 w-[600px] lg:w-[900px] mx-auto ">
+    <div className="p-4 max-w-[900px] mx-auto ">
       <ExerciseCarousel exercises={exerciseMap} />
 
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <div className="flex space-x-2 items-center">
           <h3 className="text-2xl font-semibold">{currentExercise.name}</h3>
           <EllipsisHorizontalIcon
@@ -174,6 +174,7 @@ export default function SessionPage() {
         </div>
         <div className="justify-self-end">
           <WorkoutSelectExerciseDrawer
+            buttonText="+"
             onExerciseSelect={handleAddedExercises}
           />
         </div>

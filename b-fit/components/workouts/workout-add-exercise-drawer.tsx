@@ -15,9 +15,11 @@ import Exercises from "../exercises/exercises";
 import { Exercise } from "@/lib/definitions";
 
 export default function WorkoutSelectExerciseDrawer({
+  buttonText = "Add Exercise",
   onExerciseSelect,
 }: {
-  onExerciseSelect: (exercises: Exercise[]) => void;
+  buttonText?: string;
+  onExerciseSelect: ( exercises: Exercise[]) => void;
 }) {
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [open, setOpen] = useState(false); //drawer open/close state
@@ -43,7 +45,7 @@ export default function WorkoutSelectExerciseDrawer({
   return (
     <Drawer open={open} onOpenChange={handleDrawerChange}>
       <DrawerTrigger asChild>
-        <Button>Add Exercise</Button>
+        <Button>{buttonText}</Button>
       </DrawerTrigger>
       <DrawerContent className="add-exercise-drawer justify-self-center p-4">
         <DrawerHeader>

@@ -49,82 +49,94 @@ export default function SessionSetTable() {
         <TableCaption className="hidden">Exercise Sets</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Set</TableHead>
-            <TableHead>Reps</TableHead>
-            <TableHead>Weight</TableHead>
+            <TableHead className="text-center">Set</TableHead>
+            <TableHead className="text-center">Reps</TableHead>
+            <TableHead className="text-center">Weight</TableHead>
             <TableHead className="flex justify-center items-center cursor-pointer">
-              <Wrench size={"16px"} onClick={() =>setSetExercise(activeExerciseId)}/>
+              <Wrench
+                size={"16px"}
+                onClick={() => setSetExercise(activeExerciseId)}
+              />
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {exerciseProgress.sets.map((set) => {
+            const currentIsActive =
+              exerciseProgress.activeSetNumber === set.setNumber;
             return (
-              <TableRow className="hover:bg-none" key={set.setNumber}>
-                <TableCell>{set.setNumber}</TableCell>
+              <TableRow key={set.setNumber}>
+                <TableCell className="text-center">{set.setNumber}</TableCell>
                 <TableCell>
                   <Input
                     type="number"
+                    className={`text-center rounded-full transition
+                      ${currentIsActive ? "bg-muted" : ""}
+                      ${!currentIsActive && !set.completed ? "opacity-40 cursor-not-allowed" : ""}`}
                     value={set.reps}
+                    disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
-                          exerciseId: currentExercise.id,
+                          exerciseId: currentExercise.instanceId,
                           setNumber: set.setNumber,
                           reps: parseInt(e.target.value),
                         })
                       )
                     }
-                  ></Input>
+                  />
                 </TableCell>
                 <TableCell>
                   <Input
                     type="number"
+                    className={`text-center rounded-full transition 
+                      ${currentIsActive ? "bg-muted" : ""} 
+                      ${!currentIsActive && !set.completed ? "opacity-40 cursor-not-allowed" : ""}`}
                     value={set.weight}
+                    disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
-                          exerciseId: currentExercise.id,
+                          exerciseId: currentExercise.instanceId,
                           setNumber: set.setNumber,
                           weight: parseInt(e.target.value),
                         })
                       )
                     }
-                  ></Input>
+                  />
                 </TableCell>
                 <TableCell className="flex items-center justify-center">
-                  {set.completed && (
-                    <div className="border py-1 px-2 rounded-full">
-                      <Check
-                        strokeWidth={3}
-                        className="text-muted-foreground"
-                      />
-                    </div>
-                  )}
-                  {!set.completed &&
-                    set.setNumber === exerciseProgress.activeSetNumber && (
-                      <div className="border py-1 px-2 rounded-full bg-primary">
-                        <Check
-                          strokeWidth={3}
-                          onClick={() => {
-                            dispatch(
-                              completeSet({
-                                reps: set.reps,
-                                weight: set.weight,
-                              })
-                            );
-                          }}
-                          className="text-primary-foreground"
-                        />
-                      </div>
-                    )}
+                  <div
+                    className={`border py-1 px-2 rounded-full transition
+                      ${set.completed ? "" : currentIsActive ? "bg-primary cursor-pointer" : "opacity-40 cursor-not-allowed "}`}
+                    onClick={() => {
+                      if (!set.completed && currentIsActive) {
+                        dispatch(
+                          completeSet({
+                            reps: set.reps,
+                            weight: set.weight,
+                          })
+                        );
+                      } else {
+                        setSetExercise(activeExerciseId);
+                      }
+                    }}
+                  >
+                    <Check
+                      strokeWidth={3}
+                      className={`transition ${set.completed ? "text-muted-foreground" : currentIsActive ? "text-primary-foreground" : "hidden"}`}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
-      <SetDrawer exerciseId={setExercise} onClose={() => setSetExercise(null)}/>
+      <SetDrawer
+        exerciseId={setExercise}
+        onClose={() => setSetExercise(null)}
+      />
     </>
   );
 }

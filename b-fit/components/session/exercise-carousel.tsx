@@ -120,7 +120,7 @@ export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
         items={exerciseIds}
         strategy={horizontalListSortingStrategy}
       >
-        <div className="flex gap-4 overflow-x-auto p-2 custom-scrollbar">
+        <div className="flex gap-4 overflow-x-auto p-2 custom-scrollbar-vertical">
           {exerciseIds.map((instanceId) => {
             const exercise = exercises[instanceId];
             const isActive = activeExerciseId === instanceId;
