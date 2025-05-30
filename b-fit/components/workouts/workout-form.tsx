@@ -197,7 +197,7 @@ export default function WorkoutForm({
         </form>
       </Form>
 
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
+      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} buttonText="Add Exercise" />
 
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">

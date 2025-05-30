@@ -13,9 +13,10 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import Exercises from "../exercises/exercises";
 import { Exercise } from "@/lib/definitions";
+import { Plus } from "lucide-react";
 
 export default function WorkoutSelectExerciseDrawer({
-  buttonText = "Add Exercise",
+  buttonText,
   onExerciseSelect,
 }: {
   buttonText?: string;
@@ -45,7 +46,9 @@ export default function WorkoutSelectExerciseDrawer({
   return (
     <Drawer open={open} onOpenChange={handleDrawerChange}>
       <DrawerTrigger asChild>
-        <Button>{buttonText}</Button>
+        <Button>
+          <Plus/> {buttonText}
+        </Button>
       </DrawerTrigger>
       <DrawerContent className="add-exercise-drawer justify-self-center p-4">
         <DrawerHeader>

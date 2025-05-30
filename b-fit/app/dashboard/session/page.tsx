@@ -174,7 +174,6 @@ export default function SessionPage() {
         </div>
         <div className="justify-self-end">
           <WorkoutSelectExerciseDrawer
-            buttonText="+"
             onExerciseSelect={handleAddedExercises}
           />
         </div>
