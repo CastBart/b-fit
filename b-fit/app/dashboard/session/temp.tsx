@@ -1,39 +1,59 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { useState, useCallback, useEffect } from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store";
+import {
+  addNote,
+  updateExerciseMap,
+  ExerciseProgress,
+  addExercises,
+} from "@/store/sessionSlice";
 import {
   createExerciseNode,
+  createFlattenedExerciseNode,
   ExerciseNode,
   FlattenedExerciseNode,
   flattenExerciseNodeList,
   getHeadNode,
   unFlattenExerciseNodeList,
 } from "@/lib/exercise-linked-list";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store";
-import {
-  setActiveExerciseId,
-  addNote,
-  updateExerciseMap,
-  ExerciseProgress,
-  addExercises,
-} from "@/store/sessionSlice";
-import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
+import ExerciseCarousel from "@/components/session/exercise-carousel";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
-import { Textarea } from "@/components/ui/textarea";
-import { SupersetManager } from "@/lib/superset-manager";
-import { Exercise } from "@/lib/definitions";
-import SetDrawer from "@/components/session/session-set-drawer";
-import SessionSetTable from "@/components/session/session-set-table";
 import {
   OptionsDrawer,
   SupersetDrawer,
 } from "@/components/workouts/workout-selected-exercises";
-import ExerciseCarousel from "@/components/session/exercise-carousel";
+import { SupersetManager } from "@/lib/superset-manager";
+import SessionSetTable from "@/components/session/session-set-table";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
+import { Exercise } from "@/lib/definitions";
 
-export default function SessionExerciseCarousel() {
+export default function SessionPage() {
+  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [emblaMainRef, emblaMainApi] = useEmblaCarousel();
+  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
+    containScroll: "keepSnaps",
+    dragFree: true,
+  });
+
   const dispatch = useDispatch();
+
+  const [selectedOptionsExercise, setSelectedOptionsExercise] = useState<ExerciseNode | null>(
+    null
+  );
+  const [supersetExercise, setSupersetExercise] = useState<ExerciseNode | null>(
+    null
+  );
+
+  const [supersetManager, setSupersetManager] =
+    useState<SupersetManager | null>(null);
+
   const {
     workoutCompleted,
     exerciseMap,
@@ -41,76 +61,15 @@ export default function SessionExerciseCarousel() {
     activeExerciseId,
     headExerciseId,
   } = useSelector((state: RootState) => state.session);
+  // const [supersetManager, setSupersetManager] = useState();
 
-  //currentExercise from map
   const currentExercise = activeExerciseId
     ? exerciseMap[activeExerciseId]
     : null;
-  //curr
   const exerciseProgress = currentExercise
     ? progress[currentExercise.instanceId]
     : null;
-  //init emblaAPI
-  const [emblaRef, emblaApi] = useEmblaCarousel();
-
-  //order exercises into ID array
-  // const orderedExerciseArray = Object.values(exerciseMap);
-  const [exerciseIds, setExerciseIds] = useState(
-    Object.values(exerciseMap).map((ex) => ex.instanceId)
-  );
-  //update ordered Array od ID exericses when exercises change
-  useEffect(() => {
-    console.log("exerciseMap updated", exerciseMap);
-    const orderedExerciseArray = Object.values(exerciseMap);
-
-    setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
-  }, [exerciseMap]);
-  const indexFromId = useCallback(
-    (id: string) => exerciseIds.findIndex((exID) => exID === id),
-    [exerciseMap]
-  );
-  const idFromIndex = useCallback(
-    (index: number) => exerciseIds[index] ?? null,
-    [exerciseIds]
-  );
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    const index = emblaApi.selectedScrollSnap();
-    const selectedId = idFromIndex(index);
-    if (selectedId && selectedId !== activeExerciseId) {
-      dispatch(setActiveExerciseId(selectedId));
-    }
-  }, [emblaApi, idFromIndex, dispatch, activeExerciseId]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.on("select", onSelect).on("reInit", onSelect);
-    onSelect(); // initialize on mount
-  }, [emblaApi, onSelect]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const index = indexFromId(activeExerciseId!);
-    if (index >= 0) emblaApi.scrollTo(index);
-  }, [activeExerciseId, emblaApi, indexFromId]);
-
-  const [selectedOptionsExercise, setSelectedOptionsExercise] =
-    useState<ExerciseNode | null>(null);
-
-  const [supersetExercise, setSupersetExercise] = useState<ExerciseNode | null>(
-    null
-  );
-
-  const [setDrawerID, setSetDrawerID] = useState<string | null>(null);
-
-  const [supersetManager, setSupersetManager] =
-    useState<SupersetManager | null>(null);
-
-  function handleSetDrawerID(id: string | null) {
-    setSetDrawerID(id);
-  }
-
-  function handleSelectedExerciseOptions(exerciseID: string) {
+  function onSelectedExercise(exerciseID: string) {
     // Unflatten the exercise map to get the linked list
     const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
 
@@ -125,7 +84,6 @@ export default function SessionExerciseCarousel() {
       current = current.next;
     }
   }
-
   function handleSuperSetSelect() {
     if (!supersetManager) return;
 
@@ -214,13 +172,16 @@ export default function SessionExerciseCarousel() {
     );
   return (
     <div className="p-4 max-w-[900px] mx-auto ">
-      <ExerciseCarousel
-        exerciseIds={exerciseIds}
-        onReorder={(newOrder) => {
-          setExerciseIds(newOrder);
-        }}
-      />
+      {/* <ExerciseCarousel exerciseIds={exerciseMap} /> */}
+
       <div className="flex justify-between pt-4">
+        <div className="flex space-x-2 items-center">
+          <h3 className="text-2xl font-semibold">{currentExercise.name}</h3>
+          <EllipsisHorizontalIcon
+            className="w-7 h-7 cursor-pointer"
+            onClick={() => onSelectedExercise(activeExerciseId!)}
+          />
+        </div>
         <div className="justify-self-end">
           <WorkoutSelectExerciseDrawer
             onExerciseSelect={handleAddedExercises}
@@ -228,19 +189,34 @@ export default function SessionExerciseCarousel() {
         </div>
       </div>
 
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex space-x-4">
-          {exerciseIds.map((ex) => (
-            <div key={ex} className="flex-shrink-0 w-full pl-4">
-              <SessionSetTable
-                exerciseID={ex}
-                onSelectExerciseOptions={handleSelectedExerciseOptions}
-                onSelectSetDrawerID={handleSetDrawerID}
-              />
-            </div>
-          ))}
-        </div>
+      {/* Notes */}
+      <div className="mt-4">
+        <Textarea
+          placeholder="Add notes..."
+          value={exerciseProgress.notes ?? ""}
+          onChange={(e) =>
+            dispatch(
+              addNote({
+                exerciseId: currentExercise.instanceId,
+                note: e.target.value,
+              })
+            )
+          }
+          className="w-full border rounded p-2"
+        />
       </div>
+      {/* Sets Section */}
+      {/* <SessionSetTable /> */}
+
+      {/* Complete Button */}
+      {workoutCompleted && (
+        <div className="fixed flex z-50 bottom-10 left-1/2 ">
+          <Button className="rounded-full py-10 px-10 text-3xl ">
+            Complete Workout
+          </Button>
+        </div>
+      )}
+
       {/* Option Drawer */}
       <OptionsDrawer
         selectedExercise={selectedOptionsExercise}
@@ -258,10 +234,6 @@ export default function SessionExerciseCarousel() {
         onClose={() => setSupersetExercise(null)}
         onSelect={handleSuperSetSelect}
         supersetManager={supersetManager}
-      />
-      <SetDrawer
-        exerciseId={setDrawerID}
-        onClose={() => handleSetDrawerID(null)}
       />
     </div>
   );

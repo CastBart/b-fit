@@ -31,20 +31,21 @@ import {
 import { SupersetManager } from "@/lib/superset-manager";
 import WorkoutSelectExerciseDrawer from "../workouts/workout-add-exercise-drawer";
 
-type ExerciseCarouselProps = {
-  exercises: Record<string, FlattenedExerciseNode>;
+type ExerciseThumbsProps = {
+  exerciseIds: string[];
+  onReorder: (order: string[]) => void;
 };
 
-export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
+export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumbsProps) {
   const dispatch = useDispatch();
-  const activeExerciseId = useSelector(
-    (state: RootState) => state.session.activeExerciseId
+  const { activeExerciseId, exerciseMap } = useSelector(
+    (state: RootState) => state.session
   );
 
-  const orderedExerciseArray = Object.values(exercises);
-  const [exerciseIds, setExerciseIds] = useState(
-    orderedExerciseArray.map((ex) => ex.instanceId)
-  );
+  // const orderedExerciseArray = Object.values(exercises);
+  // const [exerciseIds, setExerciseIds] = useState(
+  //   orderedExerciseArray.map((ex) => ex.instanceId)
+  // );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -67,9 +68,9 @@ export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
       const oldIndex = exerciseIds.indexOf(active.id);
       const newIndex = exerciseIds.indexOf(over.id);
       const newOrder = arrayMove(exerciseIds, oldIndex, newIndex);
-      setExerciseIds(newOrder);
+      //setExerciseIds(newOrder);
 
-      const newFlattenedList = newOrder.map((id) => exercises[id]);
+      const newFlattenedList = newOrder.map((id) => exerciseMap[id]);
 
       // Convert array back into a Record<string, FlattenedExerciseNode>
       const updatedMap: Record<string, FlattenedExerciseNode> = {};
@@ -83,7 +84,6 @@ export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
               : null,
         };
       });
-      debugger;
       // Get the new head ID
       const headId = newOrder[0];
       // Unflatten map into head to form double linked list
@@ -99,15 +99,16 @@ export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
       //create record map from new head
       const flattened = flattenExerciseNodeList(supersetManager.head);
       dispatch(updateExerciseMap({ newMap: flattened, newHead: headId }));
+      onReorder(newOrder)
     }
   };
 
-  useEffect(() => {
-    console.log("exerciseMap updated", exercises);
-    const orderedExerciseArray = Object.values(exercises);
+  // useEffect(() => {
+  //   console.log("exerciseMap updated", exerciseIds);
+  //   const orderedExerciseArray = Object.values(exercises);
 
-    setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
-  }, [exercises]);
+  //   setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
+  // }, [exercises]);
 
   return (
     <DndContext
@@ -122,7 +123,7 @@ export default function ExerciseCarousel({ exercises }: ExerciseCarouselProps) {
       >
         <div className="flex gap-4 overflow-x-auto p-2 custom-scrollbar-vertical">
           {exerciseIds.map((instanceId) => {
-            const exercise = exercises[instanceId];
+            const exercise = exerciseMap[instanceId];
             const isActive = activeExerciseId === instanceId;
             return (
               <SortableExerciseCard
@@ -167,7 +168,6 @@ function SortableExerciseCard({
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  // 👇 Add this useEffect
   useEffect(() => {
     if (isActive && nodeRef.current) {
       nodeRef.current.scrollIntoView({ behavior: "smooth", inline: "center" });
