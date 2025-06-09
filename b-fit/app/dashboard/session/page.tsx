@@ -62,7 +62,6 @@ export default function SessionExerciseCarousel() {
   useEffect(() => {
     console.log("exerciseMap updated", exerciseMap);
     const orderedExerciseArray = Object.values(exerciseMap);
-
     setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
   }, [exerciseMap]);
   const indexFromId = useCallback(
@@ -141,7 +140,6 @@ export default function SessionExerciseCarousel() {
   }
 
   function handleAddedExercises(newExercises: Exercise[]) {
-    debugger;
     const existingIds = Object.keys(exerciseMap);
     const newProgress: Record<string, ExerciseProgress> = {};
     const firstNode = existingIds
@@ -202,8 +200,7 @@ export default function SessionExerciseCarousel() {
         newProgressMap: newProgress,
       })
     );
-
-    debugger;
+    setExerciseIds(Object.values(newFlattenedNodes).map((ex) => ex.instanceId))
   }
 
   if (!currentExercise || !exerciseProgress)

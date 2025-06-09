@@ -42,11 +42,6 @@ export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumb
     (state: RootState) => state.session
   );
 
-  // const orderedExerciseArray = Object.values(exercises);
-  // const [exerciseIds, setExerciseIds] = useState(
-  //   orderedExerciseArray.map((ex) => ex.instanceId)
-  // );
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -102,13 +97,6 @@ export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumb
       onReorder(newOrder)
     }
   };
-
-  // useEffect(() => {
-  //   console.log("exerciseMap updated", exerciseIds);
-  //   const orderedExerciseArray = Object.values(exercises);
-
-  //   setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
-  // }, [exercises]);
 
   return (
     <DndContext
@@ -195,7 +183,10 @@ function SortableExerciseCard({
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => dispatch(setActiveExerciseId(exercise.instanceId))}
+      onClick={() => {
+        debugger
+        const temp = exercise;
+        dispatch(setActiveExerciseId(exercise.instanceId))}}
       className="cursor-pointer relative flex items-center flex-col"
     >
       <div
