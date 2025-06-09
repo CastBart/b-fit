@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useEffect, useState } from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
@@ -24,13 +23,13 @@ import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 import { Textarea } from "@/components/ui/textarea";
 import { SupersetManager } from "@/lib/superset-manager";
 import { Exercise } from "@/lib/definitions";
-import SetDrawer from "@/components/session/session-set-drawer";
-import SessionSetTable from "@/components/session/session-set-table";
+import SessionSetTable from "./session-set-table";
 import {
   OptionsDrawer,
   SupersetDrawer,
-} from "@/components/workouts/workout-selected-exercises";
-import ExerciseCarousel from "@/components/session/exercise-carousel";
+} from "../workouts/workout-selected-exercises";
+import SetDrawer from "./session-set-drawer";
+
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -54,9 +53,9 @@ export default function SessionExerciseCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel();
 
   //order exercises into ID array
-  // const orderedExerciseArray = Object.values(exerciseMap);
+  const orderedExerciseArray = Object.values(exerciseMap);
   const [exerciseIds, setExerciseIds] = useState(
-    Object.values(exerciseMap).map((ex) => ex.instanceId)
+    orderedExerciseArray.map((ex) => ex.instanceId)
   );
   //update ordered Array od ID exericses when exercises change
   useEffect(() => {
@@ -70,8 +69,8 @@ export default function SessionExerciseCarousel() {
     [exerciseMap]
   );
   const idFromIndex = useCallback(
-    (index: number) => exerciseIds[index] ?? null,
-    [exerciseIds]
+    (index: number) => exerciseMap[index]?.instanceId ?? null,
+    [exerciseMap]
   );
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -213,13 +212,7 @@ export default function SessionExerciseCarousel() {
       </div>
     );
   return (
-    <div className="p-4 max-w-[900px] mx-auto ">
-      <ExerciseCarousel
-        exerciseIds={exerciseIds}
-        onReorder={(newOrder) => {
-          setExerciseIds(newOrder);
-        }}
-      />
+    <>
       <div className="flex justify-between pt-4">
         <div className="justify-self-end">
           <WorkoutSelectExerciseDrawer
@@ -228,19 +221,13 @@ export default function SessionExerciseCarousel() {
         </div>
       </div>
 
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex space-x-4">
-          {exerciseIds.map((ex) => (
-            <div key={ex} className="flex-shrink-0 w-full pl-4">
-              <SessionSetTable
-                exerciseID={ex}
-                onSelectExerciseOptions={handleSelectedExerciseOptions}
-                onSelectSetDrawerID={handleSetDrawerID}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      {exerciseIds.map((ex) => (
+        <SessionSetTable
+          exerciseID={ex}
+          onSelectExerciseOptions={handleSelectedExerciseOptions}
+          onSelectSetDrawerID={handleSetDrawerID}
+        />
+      ))}
       {/* Option Drawer */}
       <OptionsDrawer
         selectedExercise={selectedOptionsExercise}
@@ -263,6 +250,6 @@ export default function SessionExerciseCarousel() {
         exerciseId={setDrawerID}
         onClose={() => handleSetDrawerID(null)}
       />
-    </div>
+    </>
   );
 }

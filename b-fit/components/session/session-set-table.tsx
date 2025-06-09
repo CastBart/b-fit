@@ -12,9 +12,11 @@ import { Check, Wrench } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { Input } from "../ui/input";
-import { updateSet, completeSet } from "@/store/sessionSlice";
+import { updateSet, completeSet, addNote } from "@/store/sessionSlice";
 import { useState } from "react";
 import SetDrawer from "./session-set-drawer";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import { Textarea } from "../ui/textarea";
 
 /**
  * Checks which set is active in a active exercise
@@ -27,24 +29,51 @@ const selectActiveSet = (state: RootState) => {
   return progress?.sets.find((s) => s.setNumber === progress.activeSetNumber);
 };
 
-export default function SessionSetTable() {
+interface SessionSetTableProps {
+  exerciseID: string;
+  onSelectExerciseOptions: (exID: string) => void;
+  onSelectSetDrawerID: (exID: string | null) => void;
+}
+
+export default function SessionSetTable({
+  exerciseID,
+  onSelectExerciseOptions,
+  onSelectSetDrawerID,
+}: SessionSetTableProps) {
   const dispatch = useDispatch();
   const { exerciseMap, progress, activeExerciseId, headExerciseId } =
     useSelector((state: RootState) => state.session);
   const activeSet = useSelector(selectActiveSet);
 
-  const [setExercise, setSetExercise] = useState<string | null>(null);
+  const exerciseProgress = progress[exerciseID];
 
-  const currentExercise = activeExerciseId
-    ? exerciseMap[activeExerciseId]
-    : null;
-  const exerciseProgress = currentExercise
-    ? progress[currentExercise.instanceId]
-    : null;
-  if (!currentExercise || !exerciseProgress)
-    return <div>Loading exercise table component...</div>;
   return (
-    <>
+    <div className="">
+      <div className="flex space-x-2 items-center">
+        <h3 className="text-2xl font-semibold">
+          {exerciseMap[exerciseID].name}
+        </h3>
+        <EllipsisHorizontalIcon
+          className="w-7 h-7 cursor-pointer"
+          onClick={() => onSelectExerciseOptions(exerciseID)}
+        />
+      </div>
+      {/* Notes */}
+      <div className="mt-4">
+        <Textarea
+          placeholder="Add notes..."
+          value={exerciseProgress.notes ?? ""}
+          onChange={(e) =>
+            dispatch(
+              addNote({
+                exerciseId: exerciseID,
+                note: e.target.value,
+              })
+            )
+          }
+          className="w-full border rounded p-2"
+        />
+      </div>
       <Table>
         <TableCaption className="hidden">Exercise Sets</TableCaption>
         <TableHeader>
@@ -55,7 +84,7 @@ export default function SessionSetTable() {
             <TableHead className="flex justify-center items-center cursor-pointer">
               <Wrench
                 size={"16px"}
-                onClick={() => setSetExercise(activeExerciseId)}
+                onClick={() => onSelectSetDrawerID(exerciseID)}
               />
             </TableHead>
           </TableRow>
@@ -72,13 +101,13 @@ export default function SessionSetTable() {
                     type="number"
                     className={`text-center rounded-full transition
                       ${currentIsActive ? "bg-muted" : ""}
-                      ${!currentIsActive && !set.completed ? "opacity-40 cursor-not-allowed" : ""}`}
+                      ${!currentIsActive && !set.completed ? "opacity-40 " : ""}`}
                     value={set.reps}
                     disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
-                          exerciseId: currentExercise.instanceId,
+                          exerciseId: exerciseID,
                           setNumber: set.setNumber,
                           reps: parseInt(e.target.value),
                         })
@@ -91,13 +120,13 @@ export default function SessionSetTable() {
                     type="number"
                     className={`text-center rounded-full transition 
                       ${currentIsActive ? "bg-muted" : ""} 
-                      ${!currentIsActive && !set.completed ? "opacity-40 cursor-not-allowed" : ""}`}
+                      ${!currentIsActive && !set.completed ? "opacity-40" : ""}`}
                     value={set.weight}
                     disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
-                          exerciseId: currentExercise.instanceId,
+                          exerciseId: exerciseID,
                           setNumber: set.setNumber,
                           weight: parseInt(e.target.value),
                         })
@@ -118,7 +147,7 @@ export default function SessionSetTable() {
                           })
                         );
                       } else {
-                        setSetExercise(activeExerciseId);
+                        onSelectSetDrawerID(exerciseID);
                       }
                     }}
                   >
@@ -133,10 +162,6 @@ export default function SessionSetTable() {
           })}
         </TableBody>
       </Table>
-      <SetDrawer
-        exerciseId={setExercise}
-        onClose={() => setSetExercise(null)}
-      />
-    </>
+    </div>
   );
 }
