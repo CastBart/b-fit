@@ -1,12 +1,68 @@
-import {
-  Exercise,
-  MuscleGroup,
-  ExerciseType,
-  ExerciseEquipment,
-  ExerciseOwnership,
-} from "./definitions";
+/// Exercise Types
+// Enum for Exercise Equipment
+enum ExerciseEquipment {
+  Cable = "Cable",
+  Barbell = "Barbell",
+  Dumbbells = "Dumbbells",
+  Machine = "Machine",
+  Bodyweight = "Bodyweight",
+  SmithMachine = "Smith Machine",
+  TrapBar = "Trap Bar",
+  EzBar = "EZ Bar",
+  Kettlebells = "Kettlebells",
+  ResistanceBands = "Resistance Bands",
+  TRX = "TRX",
+}
 
-const exercises: Exercise[] = [
+// Enum for Muscle Groups
+enum MuscleGroup {
+  Traps = "Traps",
+  Front_Delts = "Front Delts",
+  Side_Delts = "Side Delts",
+  Rear_Delts = "Rear Delts",
+  Chest = "Chest",
+  Upper_Back = "Upper Back",
+  Lats = "Lats",
+  Core = "Core",
+  Biceps = "Biceps",
+  Triceps = "Triceps",
+  Forearms = "Forearms",
+  Lower_Back = "Lower Back",
+  Abductors = "Abductors",
+  Adductors = "Adductors",
+  Glutes = "Glutes",
+  Quads = "Quads",
+  Hamstrings = "Hamstrings",
+  Calves = "Calves",
+}
+
+// Enum for Exercise Type
+enum ExerciseType {
+  Small = "Small exercise",
+  Medium = "Medium exercise",
+  Large = "Large exercise",
+}
+enum ExerciseOwnership {
+  BFit = "BFit",
+  Custom = "Custom",
+}
+
+
+// Exercise Interface
+export interface Exercise {
+  id: string;
+  owner: ExerciseOwnership;
+  name: string;
+  equipment: ExerciseEquipment;
+  primaryMuscle: MuscleGroup;
+  auxiliaryMuscles: MuscleGroup[];
+  type: ExerciseType;
+  notes?: string;
+  instructions?: string;
+}
+
+// Array of unique gym exercises with corrected IDs and added instructions.
+export const exercises = [
   {
     id: "ex-001",
     owner: ExerciseOwnership.BFit,
@@ -2108,4 +2164,3 @@ const exercises: Exercise[] = [
     instructions: "1. Anchor a resistance band to a sturdy point at eye level. 2. Grasp the ends of the band with a neutral grip (palms facing each other) and take a step back to create tension. 3. Pull the band towards your face, pulling your elbows wide and back, squeezing your rear delts and upper back. 4. Slowly extend your arms back to the starting position with control."
   }
 ];
-export default exercises;

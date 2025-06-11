@@ -115,7 +115,6 @@ export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumb
             const isActive = activeExerciseId === instanceId;
             return (
               <SortableExerciseCard
-                key={instanceId}
                 exercise={exercise}
                 isActive={isActive}
               />
@@ -176,6 +175,7 @@ function SortableExerciseCard({
 
   return (
     <div
+    key={exercise.instanceId}
       ref={(el) => {
         setNodeRef(el);
         nodeRef.current = el;

@@ -235,7 +235,9 @@ export const sessionSlice = createSlice({
         (n) => n.supersetGroupId === supersetId
       );
 
-      const currentIndex = supersetNodes.findIndex((n) => n.instanceId === activeId);
+      const currentIndex = supersetNodes.findIndex(
+        (n) => n.instanceId === activeId
+      );
       const nextIndex = (currentIndex + 1) % supersetNodes.length;
       const nextNode = supersetNodes[nextIndex];
 
@@ -251,7 +253,9 @@ export const sessionSlice = createSlice({
       if (allComplete) {
         // Get last node in the chain
         const lastSupersetNode = supersetNodes.reduce((acc, node) => {
-          return state.exerciseMap[acc.instanceId].next === node.instanceId ? node : acc;
+          return state.exerciseMap[acc.instanceId].next === node.instanceId
+            ? node
+            : acc;
         }, supersetNodes[0]);
 
         const nextUnfinished = findNextIncompleteNode(
@@ -328,7 +332,7 @@ export const sessionSlice = createSlice({
         newProgressMap: Record<string, ExerciseProgress>;
       }>
     ) => {
-      debugger
+      debugger;
       const { newExerciseMap, newProgressMap } = action.payload;
       // state.exerciseMap = newExerciseMap;
       //Merge new nodes
@@ -348,6 +352,24 @@ export const sessionSlice = createSlice({
       if (!state.activeExerciseId) {
         state.activeExerciseId = Object.keys(newExerciseMap)[0];
       }
+    },
+    removeExercise: (
+      state,
+      action: PayloadAction<{
+        newExerciseMap: SessionState["exerciseMap"];
+        newProgress: SessionState["progress"];
+        newHeadId: string | null;
+        newActiveId: string | null;
+      }>
+    ) => {
+      state.exerciseMap = action.payload.newExerciseMap;
+      state.progress = action.payload.newProgress;
+      state.headExerciseId = action.payload.newHeadId;
+      state.activeExerciseId = action.payload.newActiveId;
+
+      state.workoutCompleted = Object.values(state.progress).every((p) =>
+        p.sets.every((s) => s.completed)
+      );
     },
 
     goToExercise: (state, action: PayloadAction<string>) => {
@@ -384,6 +406,7 @@ export const {
   updateExerciseMap,
   endSession,
   addExercises,
+  removeExercise,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

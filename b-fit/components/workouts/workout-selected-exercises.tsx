@@ -137,6 +137,7 @@ export default function SelectedExercisesList({
   }
 
   function removeExercise(id: string) {
+    debugger
     setSelectedExercise(null);
     console.log(
       "exerciseNodes",

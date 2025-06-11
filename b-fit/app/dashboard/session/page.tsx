@@ -18,6 +18,7 @@ import {
   updateExerciseMap,
   ExerciseProgress,
   addExercises,
+  removeExercise,
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
@@ -200,7 +201,53 @@ export default function SessionExerciseCarousel() {
         newProgressMap: newProgress,
       })
     );
-    setExerciseIds(Object.values(newFlattenedNodes).map((ex) => ex.instanceId))
+    setExerciseIds(Object.values(newFlattenedNodes).map((ex) => ex.instanceId));
+  }
+
+  function handleRemoveExercise(instanceId: string) {
+    const nodeToRemove = exerciseMap[instanceId];
+    if (!nodeToRemove) return;
+
+    const { prev, next } = nodeToRemove;
+
+    const newExerciseMap = { ...exerciseMap };
+    delete newExerciseMap[instanceId];
+
+    const newProgress = { ...progress };
+    delete newProgress[instanceId];
+
+    if (prev) {
+      newExerciseMap[prev] = {
+        ...newExerciseMap[prev],
+        next,
+      };
+    }
+    if (next) {
+      newExerciseMap[next] = {
+        ...newExerciseMap[next],
+        prev,
+      };
+    }
+
+    let newHeadId = headExerciseId;
+    if (headExerciseId === instanceId) {
+      newHeadId = next ?? prev ?? null;
+    }
+
+    let newActiveId = activeExerciseId;
+    if (activeExerciseId === instanceId) {
+      newActiveId = next ?? prev ?? newHeadId ?? null;
+    }
+    setExerciseIds(Object.values(newExerciseMap).map((node) => node.instanceId));
+    setSelectedOptionsExercise(null);
+    dispatch(
+      removeExercise({
+        newExerciseMap: newExerciseMap,
+        newProgress: newProgress,
+        newHeadId: newHeadId,
+        newActiveId: newActiveId,
+      })
+    );
   }
 
   if (!currentExercise || !exerciseProgress)
@@ -248,7 +295,10 @@ export default function SessionExerciseCarousel() {
             setSelectedOptionsExercise(null); // Hide options drawer
           }
         }}
-        onRemove={() => {}}
+        onRemove={() =>
+          selectedOptionsExercise &&
+          handleRemoveExercise(selectedOptionsExercise.instanceId)
+        }
       />
       <SupersetDrawer
         exercise={supersetExercise}
