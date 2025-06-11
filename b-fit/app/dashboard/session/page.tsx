@@ -1,11 +1,9 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   createExerciseNode,
   ExerciseNode,
-  FlattenedExerciseNode,
   flattenExerciseNodeList,
   getHeadNode,
   unFlattenExerciseNodeList,
@@ -14,15 +12,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import {
   setActiveExerciseId,
-  addNote,
   updateExerciseMap,
   ExerciseProgress,
   addExercises,
   removeExercise,
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
-import { Textarea } from "@/components/ui/textarea";
 import { SupersetManager } from "@/lib/superset-manager";
 import { Exercise } from "@/lib/definitions";
 import SetDrawer from "@/components/session/session-set-drawer";
@@ -32,6 +27,7 @@ import {
   SupersetDrawer,
 } from "@/components/workouts/workout-selected-exercises";
 import ExerciseCarousel from "@/components/session/exercise-carousel";
+import { Button } from "@/components/ui/button";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -238,7 +234,9 @@ export default function SessionExerciseCarousel() {
     if (activeExerciseId === instanceId) {
       newActiveId = next ?? prev ?? newHeadId ?? null;
     }
-    setExerciseIds(Object.values(newExerciseMap).map((node) => node.instanceId));
+    setExerciseIds(
+      Object.values(newExerciseMap).map((node) => node.instanceId)
+    );
     setSelectedOptionsExercise(null);
     dispatch(
       removeExercise({
@@ -285,6 +283,14 @@ export default function SessionExerciseCarousel() {
           ))}
         </div>
       </div>
+      {/* Complete Button */}
+      {workoutCompleted && (
+        <div className="fixed flex z-50 bottom-10 left-1/2 ">
+          <Button className="rounded-full py-10 px-10 text-3xl ">
+            Complete Workout
+          </Button>
+        </div>
+      )}
       {/* Option Drawer */}
       <OptionsDrawer
         selectedExercise={selectedOptionsExercise}
