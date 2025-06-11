@@ -67,7 +67,7 @@ export default function SessionExerciseCarousel() {
   }, [exerciseMap]);
   const indexFromId = useCallback(
     (id: string) => exerciseIds.findIndex((exID) => exID === id),
-    [exerciseMap]
+    [exerciseMap, exerciseIds]
   );
   const idFromIndex = useCallback(
     (index: number) => exerciseIds[index] ?? null,

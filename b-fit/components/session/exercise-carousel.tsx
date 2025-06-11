@@ -36,7 +36,10 @@ type ExerciseThumbsProps = {
   onReorder: (order: string[]) => void;
 };
 
-export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumbsProps) {
+export default function ExerciseThumbs({
+  exerciseIds,
+  onReorder,
+}: ExerciseThumbsProps) {
   const dispatch = useDispatch();
   const { activeExerciseId, exerciseMap } = useSelector(
     (state: RootState) => state.session
@@ -94,7 +97,7 @@ export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumb
       //create record map from new head
       const flattened = flattenExerciseNodeList(supersetManager.head);
       dispatch(updateExerciseMap({ newMap: flattened, newHead: headId }));
-      onReorder(newOrder)
+      onReorder(newOrder);
     }
   };
 
@@ -114,10 +117,7 @@ export default function ExerciseThumbs({ exerciseIds, onReorder }: ExerciseThumb
             const exercise = exerciseMap[instanceId];
             const isActive = activeExerciseId === instanceId;
             return (
-              <SortableExerciseCard
-                exercise={exercise}
-                isActive={isActive}
-              />
+              <SortableExerciseCard key={exercise.instanceId} exercise={exercise} isActive={isActive} />
             );
           })}
         </div>
@@ -175,7 +175,7 @@ function SortableExerciseCard({
 
   return (
     <div
-    key={exercise.instanceId}
+      key={exercise.instanceId}
       ref={(el) => {
         setNodeRef(el);
         nodeRef.current = el;
@@ -184,9 +184,10 @@ function SortableExerciseCard({
       {...attributes}
       {...listeners}
       onClick={() => {
-        debugger
+        debugger;
         const temp = exercise;
-        dispatch(setActiveExerciseId(exercise.instanceId))}}
+        dispatch(setActiveExerciseId(exercise.instanceId));
+      }}
       className="cursor-pointer relative flex items-center flex-col"
     >
       <div

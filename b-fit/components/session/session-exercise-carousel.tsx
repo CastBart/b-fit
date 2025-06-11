@@ -30,7 +30,6 @@ import {
 } from "../workouts/workout-selected-exercises";
 import SetDrawer from "./session-set-drawer";
 
-
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
   const {
@@ -66,7 +65,7 @@ export default function SessionExerciseCarousel() {
   }, [exerciseMap]);
   const indexFromId = useCallback(
     (id: string) => exerciseIds.findIndex((exID) => exID === id),
-    [exerciseMap]
+    [exerciseMap, exerciseIds]
   );
   const idFromIndex = useCallback(
     (index: number) => exerciseMap[index]?.instanceId ?? null,
@@ -223,6 +222,7 @@ export default function SessionExerciseCarousel() {
 
       {exerciseIds.map((ex) => (
         <SessionSetTable
+          key={ex}
           exerciseID={ex}
           onSelectExerciseOptions={handleSelectedExerciseOptions}
           onSelectSetDrawerID={handleSetDrawerID}
