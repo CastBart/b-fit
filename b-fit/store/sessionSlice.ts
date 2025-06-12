@@ -18,8 +18,14 @@ export type ExerciseProgress = {
   notes?: string;
 };
 
+interface TimerState {
+  isRunning: boolean;
+  timeLeft: number;
+}
+
 interface SessionState {
   workoutId: string | null;
+  workoutName: string;
   startTime: number | null;
   isActive: boolean;
   workoutCompleted: boolean;
@@ -27,10 +33,12 @@ interface SessionState {
   exerciseMap: Record<string, FlattenedExerciseNode>; // flatten linked list into a map
   headExerciseId: string | null;
   progress: Record<string, ExerciseProgress>;
+  timer: TimerState | null;
 }
 
 const initialState: SessionState = {
   workoutId: null,
+  workoutName: "",
   startTime: null,
   isActive: false,
   workoutCompleted: false,
@@ -38,7 +46,26 @@ const initialState: SessionState = {
   exerciseMap: {},
   headExerciseId: null,
   progress: {},
+  timer: null,
 };
+
+/**
+ * Helper function to determin the timer start time based on the exercise type
+ * @param type of timer based on the exercise
+ * @returns number in seconds
+ */
+function getTimerDuration(type: "small" | "medium" | "large"): number {
+  switch (type) {
+    case "small":
+      return 90; // 1:30
+    case "medium":
+      return 120; // 2:00
+    case "large":
+      return 180; // 3:00
+    default:
+      return 120; // fallback
+  }
+}
 
 /**
  * Function returning the id the next exercise that is incomplete
@@ -71,11 +98,13 @@ export const sessionSlice = createSlice({
       state,
       action: PayloadAction<{
         workoutId: string;
+        workoutName: string;
         headId: string;
         flattenedMap: Record<string, FlattenedExerciseNode>;
       }>
     ) => {
       state.workoutId = action.payload.workoutId;
+      state.workoutName = action.payload.workoutName;
       state.startTime = Date.now();
       state.isActive = true;
       state.workoutCompleted = false;
@@ -154,6 +183,7 @@ export const sessionSlice = createSlice({
 
       state.workoutCompleted = allComplete;
     },
+
     updateSet: (
       state,
       action: PayloadAction<{
@@ -178,6 +208,7 @@ export const sessionSlice = createSlice({
         }
       }
     },
+
     completeSet: (
       state,
       action: PayloadAction<{ reps: number; weight: number }>
@@ -197,6 +228,12 @@ export const sessionSlice = createSlice({
       set.completed = true;
       set.reps = action.payload.reps;
       set.weight = action.payload.weight;
+
+      const startRestTimerIfApplicable = () => {
+        const exerciseType = activeNode.type; // <-- we already store "small" | "medium" | "large" in node
+        const duration = getTimerDuration(exerciseType);
+        state.timer = { isRunning: true, timeLeft: duration };
+      };
 
       const totalSets = activeProgress.sets.length;
       const supersetId = activeNode.supersetGroupId;
@@ -325,6 +362,7 @@ export const sessionSlice = createSlice({
     setActiveExerciseId: (state, action: PayloadAction<string>) => {
       state.activeExerciseId = action.payload;
     },
+
     addExercises: (
       state,
       action: PayloadAction<{
@@ -353,6 +391,7 @@ export const sessionSlice = createSlice({
         state.activeExerciseId = Object.keys(newExerciseMap)[0];
       }
     },
+
     removeExercise: (
       state,
       action: PayloadAction<{
@@ -385,6 +424,32 @@ export const sessionSlice = createSlice({
     ) => {
       state.exerciseMap = action.payload.newMap;
       state.headExerciseId = action.payload.newHead;
+    },
+
+    startTimer: (state, action: PayloadAction<number>) => {
+      state.timer = {
+        isRunning: true,
+        timeLeft: action.payload,
+      };
+    },
+
+    tickTimer: (state) => {
+      if (state.timer && state.timer.isRunning && state.timer.timeLeft > 0) {
+        state.timer.timeLeft -= 1;
+      }
+      if (state.timer?.timeLeft === 0) {
+        state.timer.isRunning = false;
+      }
+    },
+
+    stopTimer: (state) => {
+      if (state.timer) {
+        state.timer.isRunning = false;
+      }
+    },
+
+    resetTimer: (state) => {
+      state.timer = null;
     },
 
     endSession: (state) => {

@@ -37,6 +37,7 @@ export default function SessionExerciseCarousel() {
     progress,
     activeExerciseId,
     headExerciseId,
+    workoutName
   } = useSelector((state: RootState) => state.session);
 
   //currentExercise from map
@@ -255,7 +256,10 @@ export default function SessionExerciseCarousel() {
       </div>
     );
   return (
-    <div className="p-4 max-w-[900px] mx-auto ">
+    <div className="p-4 max-w-[900px] mx-auto">
+      {/* <div className="flex flex-col"> */}
+      <div className="w-full text-center text-3xl mb-4">{workoutName}</div>
+
       <ExerciseCarousel
         exerciseIds={exerciseIds}
         onReorder={(newOrder) => {
@@ -285,12 +289,13 @@ export default function SessionExerciseCarousel() {
       </div>
       {/* Complete Button */}
       {workoutCompleted && (
-        <div className="fixed flex z-50 bottom-10 left-1/2 ">
+        <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
           <Button className="rounded-full py-10 px-10 text-3xl ">
             Complete Workout
           </Button>
         </div>
       )}
+
       {/* Option Drawer */}
       <OptionsDrawer
         selectedExercise={selectedOptionsExercise}
@@ -317,5 +322,6 @@ export default function SessionExerciseCarousel() {
         onClose={() => handleSetDrawerID(null)}
       />
     </div>
+    // </div>
   );
 }

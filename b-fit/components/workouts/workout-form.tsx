@@ -59,7 +59,7 @@ export default function WorkoutForm({
   const dispatch = useDispatch();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const { isUpdating, handleUpdate, handleDelete } = useWorkout(workoutId!);
+  const { isUpdating, handleUpdate, handleDelete, data } = useWorkout(workoutId!);
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -112,7 +112,7 @@ export default function WorkoutForm({
     if (workoutId && head) {
       const flattenedMap = flattenExerciseNodeList(head);
       const headId = head.instanceId;
-      dispatch(startSession({ workoutId, headId, flattenedMap }));
+      dispatch(startSession({ workoutId, workoutName: data?.workout?.name!, headId, flattenedMap }));
       router.push(`/dashboard/session`);
     }
   }

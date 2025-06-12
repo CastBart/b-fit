@@ -5,7 +5,7 @@ import {
   ExerciseEquipment,
   ExerciseOwnership,
 } from "./definitions";
-
+//exercise seed
 const exercises: Exercise[] = [
   {
     id: "ex-001",
