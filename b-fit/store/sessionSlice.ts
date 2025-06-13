@@ -3,6 +3,7 @@ import {
   ExerciseNode,
   FlattenedExerciseNode,
 } from "@/lib/exercise-linked-list";
+import { ExerciseType } from "@/lib/definitions";
 
 type Set = {
   setNumber: number;
@@ -54,13 +55,13 @@ const initialState: SessionState = {
  * @param type of timer based on the exercise
  * @returns number in seconds
  */
-function getTimerDuration(type: "small" | "medium" | "large"): number {
+function getTimerDuration(type: ExerciseType): number {
   switch (type) {
-    case "small":
+    case ExerciseType.Small:
       return 90; // 1:30
-    case "medium":
+    case ExerciseType.Medium:
       return 120; // 2:00
-    case "large":
+    case ExerciseType.Large:
       return 180; // 3:00
     default:
       return 120; // fallback
@@ -86,6 +87,28 @@ function findNextIncompleteNode(
     const isComplete = prog.sets.every((s) => s.completed);
     if (!isComplete) return currentId;
     currentId = node.next;
+  }
+  return null;
+}
+
+/**
+ * Return ID of next exercise in a superset that does not have the active set number completed
+ * @param currentSetNumber active set number
+ * @param supersetNodes all exercises within the superset
+ * @param progress progress of the exercise
+ * @returns
+ */
+function getNextSupersetExercise(
+  currentSetNumber: number,
+  supersetNodes: FlattenedExerciseNode[],
+  progress: Record<string, ExerciseProgress>
+): string | null {
+  for (const node of supersetNodes) {
+    const prog = progress[node.instanceId];
+    const set = prog.sets[currentSetNumber - 1];
+    if (!set?.completed) {
+      return node.instanceId;
+    }
   }
   return null;
 }
@@ -230,7 +253,7 @@ export const sessionSlice = createSlice({
       set.weight = action.payload.weight;
 
       const startRestTimerIfApplicable = () => {
-        const exerciseType = activeNode.type; // <-- we already store "small" | "medium" | "large" in node
+        const exerciseType = activeNode.type;
         const duration = getTimerDuration(exerciseType);
         state.timer = { isRunning: true, timeLeft: duration };
       };
@@ -238,7 +261,7 @@ export const sessionSlice = createSlice({
       const totalSets = activeProgress.sets.length;
       const supersetId = activeNode.supersetGroupId;
 
-      // 🔁 Case 1: Not in a superset
+      // 🟢 CASE 1: Not in superset
       if (!supersetId) {
         if (activeProgress.activeSetNumber < totalSets) {
           activeProgress.activeSetNumber += 1;
@@ -248,11 +271,9 @@ export const sessionSlice = createSlice({
             state.exerciseMap,
             state.progress
           );
-
           if (nextId) {
             state.activeExerciseId = nextId;
           } else {
-            // If all next nodes are complete, try scanning entire list
             const fallback = Object.values(state.exerciseMap).find((node) => {
               const prog = state.progress[node.instanceId];
               return prog.sets.some((s) => !s.completed);
@@ -264,60 +285,95 @@ export const sessionSlice = createSlice({
             }
           }
         }
+        startRestTimerIfApplicable();
         return;
       }
 
-      // 🔁 Case 2: In a superset group
+      // 🟢 CASE 2: In superset
       const supersetNodes = Object.values(state.exerciseMap).filter(
         (n) => n.supersetGroupId === supersetId
       );
 
-      const currentIndex = supersetNodes.findIndex(
-        (n) => n.instanceId === activeId
-      );
-      const nextIndex = (currentIndex + 1) % supersetNodes.length;
-      const nextNode = supersetNodes[nextIndex];
+      const currentSetNumber = activeProgress.activeSetNumber;
 
-      if (activeProgress.activeSetNumber < totalSets) {
-        activeProgress.activeSetNumber += 1;
-      }
-
-      const allComplete = supersetNodes.every((node) => {
+      // Check if current round of superset is complete
+      const supersetSetComplete = supersetNodes.every((node) => {
         const prog = state.progress[node.instanceId];
-        return prog.sets.every((s) => s.completed);
+        return prog.sets[currentSetNumber - 1]?.completed;
       });
 
-      if (allComplete) {
-        // Get last node in the chain
-        const lastSupersetNode = supersetNodes.reduce((acc, node) => {
-          return state.exerciseMap[acc.instanceId].next === node.instanceId
-            ? node
-            : acc;
-        }, supersetNodes[0]);
+      if (supersetSetComplete) {
+        // All exercises finished current round → start timer
+        startRestTimerIfApplicable();
 
-        const nextUnfinished = findNextIncompleteNode(
-          state.exerciseMap[lastSupersetNode.instanceId].next,
-          state.exerciseMap,
-          state.progress
-        );
+        // Increment activeSetNumber for all exercises in superset
+        supersetNodes.forEach((node) => {
+          const prog = state.progress[node.instanceId];
+          if (prog.activeSetNumber < totalSets) {
+            prog.activeSetNumber += 1;
+          }
+        });
 
-        if (nextUnfinished) {
-          state.activeExerciseId = nextUnfinished;
-        } else {
-          // Fallback full scan
-          const fallback = Object.values(state.exerciseMap).find((node) => {
-            const prog = state.progress[node.instanceId];
-            return prog.sets.some((s) => !s.completed);
-          });
-          if (fallback) {
-            state.activeExerciseId = fallback.instanceId;
+        // After increment: check if entire superset is fully complete
+        const supersetFullyComplete = supersetNodes.every((node) => {
+          const prog = state.progress[node.instanceId];
+          return prog.sets.every((s) => s.completed);
+        });
+
+        if (supersetFullyComplete) {
+          // 🔚 Move to next non-superset exercise
+          const lastSupersetNode = supersetNodes.reduce((acc, node) => {
+            return state.exerciseMap[acc.instanceId].next === node.instanceId
+              ? node
+              : acc;
+          }, supersetNodes[0]);
+
+          const nextUnfinished = findNextIncompleteNode(
+            state.exerciseMap[lastSupersetNode.instanceId].next,
+            state.exerciseMap,
+            state.progress
+          );
+
+          if (nextUnfinished) {
+            state.activeExerciseId = nextUnfinished;
           } else {
-            state.workoutCompleted = true; // ✅
+            const fallback = Object.values(state.exerciseMap).find((node) => {
+              const prog = state.progress[node.instanceId];
+              return prog.sets.some((s) => !s.completed);
+            });
+            if (fallback) {
+              state.activeExerciseId = fallback.instanceId;
+            } else {
+              state.workoutCompleted = true;
+              state.timer!.isRunning = false;
+            }
+          }
+        } else {
+          // 🟢 Move to first unfinished exercise in next superset round
+          const nextSetNumber = currentSetNumber + 1;
+          const nextExerciseId = getNextSupersetExercise(
+            nextSetNumber,
+            supersetNodes,
+            state.progress
+          );
+
+          if (nextExerciseId) {
+            state.activeExerciseId = nextExerciseId;
           }
         }
-      } else {
-        // Move to next in superset
-        state.activeExerciseId = nextNode.instanceId;
+
+        return;
+      }
+
+      // If supersetSetComplete === false → move to next unfinished within current set
+      const nextExerciseId = getNextSupersetExercise(
+        currentSetNumber,
+        supersetNodes,
+        state.progress
+      );
+
+      if (nextExerciseId) {
+        state.activeExerciseId = nextExerciseId;
       }
     },
 
@@ -472,6 +528,10 @@ export const {
   endSession,
   addExercises,
   removeExercise,
+  startTimer,
+  tickTimer,
+  stopTimer,
+  resetTimer,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

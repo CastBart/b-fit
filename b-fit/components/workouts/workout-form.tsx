@@ -229,6 +229,9 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
+      <Button onClick={()=>{
+        console.log("Exercises Object", head)
+      }}>Check Workout Json</Button>
     </div>
   );
 }

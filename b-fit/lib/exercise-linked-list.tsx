@@ -1,15 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 import * as z from "zod";
 import { WorkoutSchema } from "@/schemas";
+import { ExerciseEquipment, ExerciseType, MuscleGroup } from "./definitions";
 
 export type ExerciseNode = {
   id: string;
   instanceId: string;
   name: string;
-  equipment: string;
-  primaryMuscle: string;
-  auxiliaryMuscles: string[];
-  type: string;
+  equipment: ExerciseEquipment;
+  primaryMuscle: MuscleGroup;
+  auxiliaryMuscles: MuscleGroup[];
+  type: ExerciseType;
   next: ExerciseNode | null;
   prev: ExerciseNode | null;
   supersetGroupId: string | null;

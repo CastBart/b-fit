@@ -16,6 +16,7 @@ import {
   ExerciseProgress,
   addExercises,
   removeExercise,
+  tickTimer,
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { SupersetManager } from "@/lib/superset-manager";
@@ -37,7 +38,8 @@ export default function SessionExerciseCarousel() {
     progress,
     activeExerciseId,
     headExerciseId,
-    workoutName
+    workoutName,
+    timer,
   } = useSelector((state: RootState) => state.session);
 
   //currentExercise from map
@@ -56,20 +58,24 @@ export default function SessionExerciseCarousel() {
   const [exerciseIds, setExerciseIds] = useState(
     Object.values(exerciseMap).map((ex) => ex.instanceId)
   );
+
   //update ordered Array od ID exericses when exercises change
   useEffect(() => {
     console.log("exerciseMap updated", exerciseMap);
     const orderedExerciseArray = Object.values(exerciseMap);
     setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
   }, [exerciseMap]);
+
   const indexFromId = useCallback(
     (id: string) => exerciseIds.findIndex((exID) => exID === id),
     [exerciseMap, exerciseIds]
   );
+
   const idFromIndex = useCallback(
     (index: number) => exerciseIds[index] ?? null,
     [exerciseIds]
   );
+
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const index = emblaApi.selectedScrollSnap();
@@ -79,17 +85,34 @@ export default function SessionExerciseCarousel() {
     }
   }, [emblaApi, idFromIndex, dispatch, activeExerciseId]);
 
+  //re-initialize carousel after adding or removing
   useEffect(() => {
     if (!emblaApi) return;
     emblaApi.on("select", onSelect).on("reInit", onSelect);
     onSelect(); // initialize on mount
   }, [emblaApi, onSelect]);
 
+  //update index after user click or complete set logic
   useEffect(() => {
     if (!emblaApi) return;
     const index = indexFromId(activeExerciseId!);
     if (index >= 0) emblaApi.scrollTo(index);
   }, [activeExerciseId, emblaApi, indexFromId]);
+
+  //update timer
+  useEffect(() => {
+    if (timer?.isRunning) {
+      const interval = setInterval(() => {
+        dispatch(tickTimer());
+      }, 1000);
+
+      if (timer.timeLeft <= 0) {
+        clearInterval(interval);
+      }
+
+      return () => clearInterval(interval);
+    }
+  }, [timer?.isRunning, timer?.timeLeft, dispatch]);
 
   const [selectedOptionsExercise, setSelectedOptionsExercise] =
     useState<ExerciseNode | null>(null);
@@ -287,6 +310,16 @@ export default function SessionExerciseCarousel() {
           ))}
         </div>
       </div>
+
+      {/* Timer Button */}
+      {timer &&  timer.isRunning && !workoutCompleted &&(
+        <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
+          <Button className="rounded-full py-10 px-10 text-3xl ">
+            {timer.timeLeft}
+          </Button>
+        </div>
+      )}
+
       {/* Complete Button */}
       {workoutCompleted && (
         <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">

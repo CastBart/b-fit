@@ -6,6 +6,7 @@ import { ExerciseNode } from "@/lib/exercise-linked-list";
 import WorkoutForm from "@/components/workouts/workout-form";
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { ExerciseEquipment, ExerciseType, getEnumValueByKey, getEnumValuesByKeys, MuscleGroup } from "@/lib/definitions";
 
 export default function WorkoutDetailsClient({ workoutId }: { workoutId: string }) {
   const { data, isLoading } = useWorkout(workoutId);
@@ -31,10 +32,10 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
       id: workoutExercise.exercise.id,
       instanceId: workoutExercise.id,
       name: workoutExercise.exercise.name,
-      equipment: workoutExercise.exercise.equipment,
-      primaryMuscle: workoutExercise.exercise.primaryMuscle,
-      auxiliaryMuscles: workoutExercise.exercise.auxiliaryMuscles,
-      type: workoutExercise.exercise.exerciseType,
+      equipment: getEnumValueByKey(ExerciseEquipment, workoutExercise.exercise.equipment) ,
+      primaryMuscle: getEnumValueByKey(MuscleGroup, workoutExercise.exercise.primaryMuscle),
+      auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, workoutExercise.exercise.auxiliaryMuscles),
+      type: getEnumValueByKey(ExerciseType, workoutExercise.exercise.exerciseType),
       next: null,
       prev: null,
       supersetGroupId: workoutExercise.supersetGroupId || null,
