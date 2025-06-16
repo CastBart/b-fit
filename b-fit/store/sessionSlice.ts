@@ -21,7 +21,7 @@ export type ExerciseProgress = {
 
 interface TimerState {
   isRunning: boolean;
-  timeLeft: number;
+  endTime: number | null;
 }
 
 interface SessionState {
@@ -47,7 +47,7 @@ const initialState: SessionState = {
   exerciseMap: {},
   headExerciseId: null,
   progress: {},
-  timer: null,
+  timer: { isRunning: false, endTime: null },
 };
 
 /**
@@ -255,7 +255,7 @@ export const sessionSlice = createSlice({
       const startRestTimerIfApplicable = () => {
         const exerciseType = activeNode.type;
         const duration = getTimerDuration(exerciseType);
-        state.timer = { isRunning: true, timeLeft: duration };
+        state.timer = { isRunning: true, endTime: Date.now() + duration * 1000 };
       };
 
       const totalSets = activeProgress.sets.length;
@@ -485,27 +485,31 @@ export const sessionSlice = createSlice({
     startTimer: (state, action: PayloadAction<number>) => {
       state.timer = {
         isRunning: true,
-        timeLeft: action.payload,
+        endTime: Date.now() + action.payload * 1000,
       };
     },
 
-    tickTimer: (state) => {
-      if (state.timer && state.timer.isRunning && state.timer.timeLeft > 0) {
-        state.timer.timeLeft -= 1;
-      }
-      if (state.timer?.timeLeft === 0) {
-        state.timer.isRunning = false;
-      }
-    },
+    // tickTimer: (state) => {
+    //   if (state.timer && state.timer.isRunning && state.timer.timeLeft > 0) {
+    //     state.timer.timeLeft -= 1;
+    //   }
+    //   if (state.timer?.timeLeft === 0) {
+    //     state.timer.isRunning = false;
+    //   }
+    // },
 
     stopTimer: (state) => {
       if (state.timer) {
         state.timer.isRunning = false;
+        state.timer.endTime = null;
       }
     },
 
     resetTimer: (state) => {
-      state.timer = null;
+      state.timer = {
+        isRunning: false,
+        endTime: null,
+      };
     },
 
     endSession: (state) => {
@@ -529,7 +533,6 @@ export const {
   addExercises,
   removeExercise,
   startTimer,
-  tickTimer,
   stopTimer,
   resetTimer,
 } = sessionSlice.actions;

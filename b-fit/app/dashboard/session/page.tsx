@@ -16,7 +16,6 @@ import {
   ExerciseProgress,
   addExercises,
   removeExercise,
-  tickTimer,
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { SupersetManager } from "@/lib/superset-manager";
@@ -29,6 +28,9 @@ import {
 } from "@/components/workouts/workout-selected-exercises";
 import ExerciseCarousel from "@/components/session/exercise-carousel";
 import { Button } from "@/components/ui/button";
+import { useTimeLeft } from "@/hooks/use-timer";
+import { formatTime } from "@/lib/formatTime";
+import RestButton from "@/components/session/session-timer-button";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -41,6 +43,7 @@ export default function SessionExerciseCarousel() {
     workoutName,
     timer,
   } = useSelector((state: RootState) => state.session);
+  const timeLeft = useTimeLeft();
 
   //currentExercise from map
   const currentExercise = activeExerciseId
@@ -98,21 +101,6 @@ export default function SessionExerciseCarousel() {
     const index = indexFromId(activeExerciseId!);
     if (index >= 0) emblaApi.scrollTo(index);
   }, [activeExerciseId, emblaApi, indexFromId]);
-
-  //update timer
-  useEffect(() => {
-    if (timer?.isRunning) {
-      const interval = setInterval(() => {
-        dispatch(tickTimer());
-      }, 1000);
-
-      if (timer.timeLeft <= 0) {
-        clearInterval(interval);
-      }
-
-      return () => clearInterval(interval);
-    }
-  }, [timer?.isRunning, timer?.timeLeft, dispatch]);
 
   const [selectedOptionsExercise, setSelectedOptionsExercise] =
     useState<ExerciseNode | null>(null);
@@ -312,12 +300,8 @@ export default function SessionExerciseCarousel() {
       </div>
 
       {/* Timer Button */}
-      {timer &&  timer.isRunning && !workoutCompleted &&(
-        <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
-          <Button className="rounded-full py-10 px-10 text-3xl ">
-            {timer.timeLeft}
-          </Button>
-        </div>
+      {timer && timer.isRunning && !workoutCompleted && (
+        <RestButton />
       )}
 
       {/* Complete Button */}

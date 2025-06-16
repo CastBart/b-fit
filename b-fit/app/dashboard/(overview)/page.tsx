@@ -10,6 +10,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/solid";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import SessionResumeButton from "@/components/session/session-resume-button";
 
 const links: Pages = {
   calorieCounter: {
@@ -63,6 +64,7 @@ export default function Page() {
           );
         })}
       </ul>
+      {/* <SessionResumeButton /> */}
     </section>
   );
 }
