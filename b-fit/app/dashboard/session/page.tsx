@@ -26,11 +26,11 @@ import {
   OptionsDrawer,
   SupersetDrawer,
 } from "@/components/workouts/workout-selected-exercises";
-import ExerciseCarousel from "@/components/session/exercise-carousel";
+import ExerciseCarousel from "@/components/session/session-exercise-carousel";
 import { Button } from "@/components/ui/button";
 import { useTimeLeft } from "@/hooks/use-timer";
-import { formatTime } from "@/lib/formatTime";
-import RestButton from "@/components/session/session-timer-button";
+import RestTimerDrawer from "@/components/session/session-timer-drawer";
+import { Wrench } from "lucide-react";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -43,7 +43,6 @@ export default function SessionExerciseCarousel() {
     workoutName,
     timer,
   } = useSelector((state: RootState) => state.session);
-  const timeLeft = useTimeLeft();
 
   //currentExercise from map
   const currentExercise = activeExerciseId
@@ -269,7 +268,12 @@ export default function SessionExerciseCarousel() {
   return (
     <div className="p-4 max-w-[900px] mx-auto">
       {/* <div className="flex flex-col"> */}
-      <div className="w-full text-center text-3xl mb-4">{workoutName}</div>
+      <div className="mb-2">
+        <Button variant={"ghost"} className="text-2xl flex justify-center items-center space-x-2">
+          <span>{workoutName}</span>
+          <Wrench />
+        </Button>
+      </div>
 
       <ExerciseCarousel
         exerciseIds={exerciseIds}
@@ -300,9 +304,7 @@ export default function SessionExerciseCarousel() {
       </div>
 
       {/* Timer Button */}
-      {timer && timer.isRunning && !workoutCompleted && (
-        <RestButton />
-      )}
+      {timer && timer.isRunning && !workoutCompleted && <RestTimerDrawer />}
 
       {/* Complete Button */}
       {workoutCompleted && (

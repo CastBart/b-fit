@@ -24,7 +24,7 @@ export default function SessionResumeButton() {
   return (
     <div className="fixed bottom-4 right-24 z-50">
       <Button onClick={() => router.push("/dashboard/session")}>
-        Resume Session {formatTime(timeLeft!)}
+        Back to session
       </Button>
     </div>
   );
