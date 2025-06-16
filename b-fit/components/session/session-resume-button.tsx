@@ -4,13 +4,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useTimeLeft } from "@/hooks/use-timer";
+import { useRestTimer } from "@/hooks/use-rest-timer";
 import { formatTime } from "@/lib/formatTime";
 
 export default function SessionResumeButton() {
   const pathname = usePathname();
   const router = useRouter();
-  const timeLeft = useTimeLeft();
 
   // Call our tick hook — this ensures re-render every second
 

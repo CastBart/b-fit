@@ -9,17 +9,19 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useTimeLeft } from "@/hooks/use-timer";
+import { useRestTimer } from "@/hooks/use-rest-timer";
 import { Separator } from "../ui/separator";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { formatTime } from "@/lib/formatTime";
 import { Button } from "../ui/button";
 import { Timer } from "lucide-react";
 import clsx from "clsx";
+import { useDispatch } from "react-redux";
+import { addTimeToTimer } from "@/store/sessionSlice";
 
 export default function RestTimerDrawer() {
-  const timeLeft = useTimeLeft();
-
+  const timeLeft = useRestTimer();
+  const dispatch = useDispatch();
   if (timeLeft === null) return null;
 
   const isNegative = timeLeft < 0;
@@ -50,14 +52,14 @@ export default function RestTimerDrawer() {
           <Button
             variant="default"
             size="lg"
-            // onClick={() => dispatch(removeLastSet({ exerciseId }))}
+             onClick={() => dispatch(addTimeToTimer(-15))}
             // disabled={sets.length === 0}
             // className="flex justify-center items-center"
           >
             <MinusIcon className="w-5 h-5" />
             <span className="text-xl">15</span>
           </Button>
-          <span className={clsx("text-7xl text-center font-semibold w-[220px] py-2 px-4 rounded-full",
+          <span className={clsx("text-3xl text-center font-semibold w-[220px] py-2 px-4 rounded-full",
             isNegative? "bg-secondary text-secondary-foreground ":"bg-primary text-primary-foreground"
           )}>
             {formatTime(timeLeft!)}
@@ -66,7 +68,7 @@ export default function RestTimerDrawer() {
           className=""
             variant="default"
             size="lg"
-            // onClick={() => dispatch(addSet({ exerciseId }))}
+            onClick={() => dispatch(addTimeToTimer(15))}
           >
             <span className="text-xl">15</span>
             <PlusIcon className="w-5 h-5 " />

@@ -28,7 +28,6 @@ import {
 } from "@/components/workouts/workout-selected-exercises";
 import ExerciseCarousel from "@/components/session/session-exercise-carousel";
 import { Button } from "@/components/ui/button";
-import { useTimeLeft } from "@/hooks/use-timer";
 import RestTimerDrawer from "@/components/session/session-timer-drawer";
 import { Wrench } from "lucide-react";
 

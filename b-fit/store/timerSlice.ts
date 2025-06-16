@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TimerState {
   tick: number;
@@ -18,8 +18,11 @@ export const timerSlice = createSlice({
     resetTick(state) {
       state.tick = 0;
     },
+    addTime(state, action: PayloadAction<number>){
+      state.tick += action.payload
+    },
   },
 });
 
-export const { incrementTick, resetTick } = timerSlice.actions;
+export const { incrementTick, resetTick, addTime } = timerSlice.actions;
 export default timerSlice.reducer;

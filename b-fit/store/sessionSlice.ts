@@ -28,6 +28,7 @@ interface SessionState {
   workoutId: string | null;
   workoutName: string;
   startTime: number | null;
+  completeTime: number | null;
   isActive: boolean;
   workoutCompleted: boolean;
   activeExerciseId: string | null;
@@ -41,6 +42,7 @@ const initialState: SessionState = {
   workoutId: null,
   workoutName: "",
   startTime: null,
+  completeTime: null,
   isActive: false,
   workoutCompleted: false,
   activeExerciseId: null,
@@ -255,7 +257,10 @@ export const sessionSlice = createSlice({
       const startRestTimerIfApplicable = () => {
         const exerciseType = activeNode.type;
         const duration = getTimerDuration(exerciseType);
-        state.timer = { isRunning: true, endTime: Date.now() + duration * 1000 };
+        state.timer = {
+          isRunning: true,
+          endTime: Date.now() + duration * 1000,
+        };
       };
 
       const totalSets = activeProgress.sets.length;
@@ -512,6 +517,12 @@ export const sessionSlice = createSlice({
       };
     },
 
+    addTimeToTimer: (state, action: PayloadAction<number>) => {
+      if (state.timer?.isRunning && state.timer.endTime) {
+        state.timer.endTime += action.payload * 1000;
+      }
+    },
+
     endSession: (state) => {
       Object.assign(state, initialState);
     },
@@ -535,6 +546,7 @@ export const {
   startTimer,
   stopTimer,
   resetTimer,
+  addTimeToTimer,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

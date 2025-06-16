@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
-export function useTimeLeft() {
+export function useRestTimer() {
   const endTime = useSelector((state: RootState) => state.session.timer?.endTime);
   const isRunning = useSelector((state: RootState) => state.session.timer?.isRunning);
   const tick = useSelector((state: RootState) => state.timer.tick);
