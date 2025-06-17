@@ -5,11 +5,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { Toaster } from "@/components/ui/sonner";
-import { QueryProvider } from "@/components/query-provider"; // ✅ Import the QueryProvider
+import { QueryProvider } from "@/providers/query-provider"; // ✅ Import the QueryProvider
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { StoreProvider } from "@/components/store-provider";
+import { StoreProvider } from "@/providers/store-provider";
 import { startGlobalTimer } from "@/lib/timeRunner";
-import { GlobalTimerProvider } from "@/components/global-timer-provider";
+import { GlobalTimerProvider } from "@/providers/global-timer-provider";
 import SessionResumeButton from "@/components/session/session-resume-button";
 export default async function Layout({
   children,

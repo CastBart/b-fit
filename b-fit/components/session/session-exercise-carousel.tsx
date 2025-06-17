@@ -112,7 +112,7 @@ export default function ExerciseThumbs({
         items={exerciseIds}
         strategy={horizontalListSortingStrategy}
       >
-        <div className="flex gap-4 overflow-x-auto p-2 custom-scrollbar-vertical">
+        <div className="flex gap-4 overflow-x-auto mb-2 custom-scrollbar-vertical">
           {exerciseIds.map((instanceId) => {
             const exercise = exerciseMap[instanceId];
             const isActive = activeExerciseId === instanceId;

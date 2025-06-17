@@ -16,6 +16,7 @@ import {
   ExerciseProgress,
   addExercises,
   removeExercise,
+  resumeSession,
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { SupersetManager } from "@/lib/superset-manager";
@@ -30,6 +31,7 @@ import ExerciseCarousel from "@/components/session/session-exercise-carousel";
 import { Button } from "@/components/ui/button";
 import RestTimerDrawer from "@/components/session/session-timer-drawer";
 import { Wrench } from "lucide-react";
+import SessionSettingsDrawer from "@/components/session/session-settings-drawer";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -40,6 +42,7 @@ export default function SessionExerciseCarousel() {
     activeExerciseId,
     headExerciseId,
     workoutName,
+    isPaused,
     timer,
   } = useSelector((state: RootState) => state.session);
 
@@ -267,12 +270,8 @@ export default function SessionExerciseCarousel() {
   return (
     <div className="p-4 max-w-[900px] mx-auto">
       {/* <div className="flex flex-col"> */}
-      <div className="mb-2">
-        <Button variant={"ghost"} className="text-2xl flex justify-center items-center space-x-2">
-          <span>{workoutName}</span>
-          <Wrench />
-        </Button>
-      </div>
+
+      <SessionSettingsDrawer />
 
       <ExerciseCarousel
         exerciseIds={exerciseIds}
@@ -280,18 +279,12 @@ export default function SessionExerciseCarousel() {
           setExerciseIds(newOrder);
         }}
       />
-      <div className="flex justify-between pt-4">
-        <div className="justify-self-end">
-          <WorkoutSelectExerciseDrawer
-            onExerciseSelect={handleAddedExercises}
-          />
-        </div>
-      </div>
+      <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} />
 
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex space-x-4">
           {exerciseIds.map((ex) => (
-            <div key={ex} className="flex-shrink-0 w-full pl-4">
+            <div key={ex} className="flex-shrink-0 w-full">
               <SessionSetTable
                 exerciseID={ex}
                 onSelectExerciseOptions={handleSelectedExerciseOptions}
@@ -304,6 +297,18 @@ export default function SessionExerciseCarousel() {
 
       {/* Timer Button */}
       {timer && timer.isRunning && !workoutCompleted && <RestTimerDrawer />}
+
+      {/* Resume Button */}
+      {isPaused && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
+          <Button
+            onClick={() => dispatch(resumeSession())}
+            className="rounded-full py-10 px-10 text-3xl flex  justify-center space-x-2"
+          >
+            Resume session
+          </Button>
+        </div>
+      )}
 
       {/* Complete Button */}
       {workoutCompleted && (
@@ -340,6 +345,5 @@ export default function SessionExerciseCarousel() {
         onClose={() => handleSetDrawerID(null)}
       />
     </div>
-    // </div>
   );
 }

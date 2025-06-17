@@ -24,10 +24,13 @@ interface TimerState {
   endTime: number | null;
 }
 
-interface SessionState {
+export interface SessionState {
   workoutId: string | null;
   workoutName: string;
   startTime: number | null;
+  isPaused: boolean;
+  pauseTime: number | null;
+  accumulatedPauseDuration: number;
   completeTime: number | null;
   isActive: boolean;
   workoutCompleted: boolean;
@@ -42,6 +45,9 @@ const initialState: SessionState = {
   workoutId: null,
   workoutName: "",
   startTime: null,
+  isPaused: false,
+  pauseTime: null,
+  accumulatedPauseDuration: 0,
   completeTime: null,
   isActive: false,
   workoutCompleted: false,
@@ -249,7 +255,7 @@ export const sessionSlice = createSlice({
       const set = activeProgress.sets[activeSetIndex];
       if (!set || set.completed) return;
 
-      // ✅ Mark current set as completed
+      // Mark current set as completed
       set.completed = true;
       set.reps = action.payload.reps;
       set.weight = action.payload.weight;
@@ -266,7 +272,7 @@ export const sessionSlice = createSlice({
       const totalSets = activeProgress.sets.length;
       const supersetId = activeNode.supersetGroupId;
 
-      // 🟢 CASE 1: Not in superset
+      // CASE 1: Not in superset
       if (!supersetId) {
         if (activeProgress.activeSetNumber < totalSets) {
           activeProgress.activeSetNumber += 1;
@@ -286,7 +292,9 @@ export const sessionSlice = createSlice({
             if (fallback) {
               state.activeExerciseId = fallback.instanceId;
             } else {
+              //Workout Completed
               state.workoutCompleted = true;
+              state.timer!.isRunning = false;
             }
           }
         }
@@ -294,7 +302,7 @@ export const sessionSlice = createSlice({
         return;
       }
 
-      // 🟢 CASE 2: In superset
+      // CASE 2: In superset
       const supersetNodes = Object.values(state.exerciseMap).filter(
         (n) => n.supersetGroupId === supersetId
       );
@@ -326,7 +334,7 @@ export const sessionSlice = createSlice({
         });
 
         if (supersetFullyComplete) {
-          // 🔚 Move to next non-superset exercise
+          //  Move to next non-superset exercise
           const lastSupersetNode = supersetNodes.reduce((acc, node) => {
             return state.exerciseMap[acc.instanceId].next === node.instanceId
               ? node
@@ -349,12 +357,13 @@ export const sessionSlice = createSlice({
             if (fallback) {
               state.activeExerciseId = fallback.instanceId;
             } else {
+              //Workout Completed
               state.workoutCompleted = true;
               state.timer!.isRunning = false;
             }
           }
         } else {
-          // 🟢 Move to first unfinished exercise in next superset round
+          // Move to first unfinished exercise in next superset round
           const nextSetNumber = currentSetNumber + 1;
           const nextExerciseId = getNextSupersetExercise(
             nextSetNumber,
@@ -494,15 +503,6 @@ export const sessionSlice = createSlice({
       };
     },
 
-    // tickTimer: (state) => {
-    //   if (state.timer && state.timer.isRunning && state.timer.timeLeft > 0) {
-    //     state.timer.timeLeft -= 1;
-    //   }
-    //   if (state.timer?.timeLeft === 0) {
-    //     state.timer.isRunning = false;
-    //   }
-    // },
-
     stopTimer: (state) => {
       if (state.timer) {
         state.timer.isRunning = false;
@@ -520,6 +520,23 @@ export const sessionSlice = createSlice({
     addTimeToTimer: (state, action: PayloadAction<number>) => {
       if (state.timer?.isRunning && state.timer.endTime) {
         state.timer.endTime += action.payload * 1000;
+      }
+    },
+
+    pauseSession(state) {
+      if (!state.isPaused) {
+        state.isPaused = true;
+        state.pauseTime = Date.now();
+      }
+      state.timer!.isRunning = false;
+    },
+
+    resumeSession(state) {
+      if (state.isPaused && state.pauseTime) {
+        const pauseDuration = Date.now() - state.pauseTime;
+        state.accumulatedPauseDuration += pauseDuration;
+        state.pauseTime = null;
+        state.isPaused = false;
       }
     },
 
@@ -547,6 +564,8 @@ export const {
   stopTimer,
   resetTimer,
   addTimeToTimer,
+  pauseSession,
+  resumeSession,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

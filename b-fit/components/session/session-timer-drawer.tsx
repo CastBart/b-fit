@@ -59,7 +59,7 @@ export default function RestTimerDrawer() {
             <MinusIcon className="w-5 h-5" />
             <span className="text-xl">15</span>
           </Button>
-          <span className={clsx("text-3xl text-center font-semibold w-[220px] py-2 px-4 rounded-full",
+          <span className={clsx("text-3xl text-center font-medium w-[220px] py-6 px-6 rounded-full",
             isNegative? "bg-secondary text-secondary-foreground ":"bg-primary text-primary-foreground"
           )}>
             {formatTime(timeLeft!)}

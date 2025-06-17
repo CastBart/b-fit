@@ -2,14 +2,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
 export function useElapsedSessionTime() {
-  const startTime = useSelector((state: RootState) => state.session.startTime);
+  const { startTime, isPaused, pauseTime, accumulatedPauseDuration } =
+    useSelector((state: RootState) => state.session);
   const tick = useSelector((state: RootState) => state.timer.tick);
 
   if (!startTime) return null;
 
   const now = Date.now();
-  const elapsedMs = now - startTime;
-  const elapsedSec = Math.floor(elapsedMs / 1000);
+  const totalPaused =
+    accumulatedPauseDuration + (isPaused && pauseTime ? now - pauseTime : 0);
 
-  return elapsedSec;
+  return Math.floor((now - startTime - totalPaused) / 1000);
 }
