@@ -4,6 +4,7 @@ import {
   FlattenedExerciseNode,
 } from "@/lib/exercise-linked-list";
 import { ExerciseType } from "@/lib/definitions";
+import { v4 as uuidv4 } from "uuid";
 
 type Set = {
   setNumber: number;
@@ -25,6 +26,7 @@ interface TimerState {
 }
 
 export interface SessionState {
+  sessionId: string | null;
   workoutId: string | null;
   workoutName: string;
   startTime: number | null;
@@ -42,6 +44,7 @@ export interface SessionState {
 }
 
 const initialState: SessionState = {
+  sessionId: null,
   workoutId: null,
   workoutName: "",
   startTime: null,
@@ -134,6 +137,7 @@ export const sessionSlice = createSlice({
         flattenedMap: Record<string, FlattenedExerciseNode>;
       }>
     ) => {
+      state.sessionId = uuidv4();
       state.workoutId = action.payload.workoutId;
       state.workoutName = action.payload.workoutName;
       state.startTime = Date.now();

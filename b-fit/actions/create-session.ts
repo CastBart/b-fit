@@ -1,59 +1,91 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { auth } from "@/auth";
-import { SessionState } from "@/store/sessionSlice";
+import { ExerciseProgress, SessionState } from "@/store/sessionSlice";
 import { revalidatePath } from "next/cache";
+import { error } from "console";
+import { FlattenedExerciseNode } from "@/lib/exercise-linked-list";
 
-export async function completeSession(sessionData: SessionState) {
-  const user = await auth();
-  if (!user) throw new Error("Unauthorized");
+interface SessionInput {
+  sessionId: string;
+  workoutId: string;
+  workoutName: string;
+  startTime: number;
+  duration: number;
+  exerciseMap: Record<string, FlattenedExerciseNode>;
+  progress: Record<string, ExerciseProgress>;
+}
 
-  const {
-    workoutId,
-    workoutName,
-    startTime,
-    exerciseMap,
-  } = sessionData;
-
-  // Create session record
-  const session = await prisma.session.create({
-    where: { id: sessionId },
-    create: {
-      id: sessionId,
-      userId: user.id,
+export async function completeSession(sessionData: SessionInput) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { error: "Unauthorized: User not logged in" };
+    }
+    const user = session.user;
+    const {
+      sessionId,
       workoutId,
       workoutName,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      startTime,
+      exerciseMap,
+      progress,
       duration,
-      complete: true,
-    },
-    update: {
-      endTime: new Date(endTime),
-      duration,
-      complete: true,
-    },
-  });
+    } = sessionData;
 
-  // Create ExerciseHistory entries for completed sets
-  const historyEntries = Object.values(exerciseMap)
-    .filter((ex) => ex.sets.some((set) => set.completed))
-    .map((ex) => ({
-      sessionId: session.id,
-      exerciseId: ex.exerciseId, // original exercise ID
-      userId: user.id,
-      name: ex.name,
-      sets: JSON.stringify(ex.sets.filter((s) => s.completed)),
-    }));
+    // Prepare data for ExerciseHistory creation
+    const exerciseHistories = Object.values(progress)
+      .filter((ex) => ex.sets.some((set) => set.completed))
+      .map((ex) => {
+        const sets = ex.sets
+          .filter((set) => set.completed)
+          .map((set) => ({
+            reps: set.reps,
+            weight: set.weight,
+          }));
 
-  if (historyEntries.length > 0) {
-    await prisma.exerciseHistory.createMany({
-      data: historyEntries,
+        return {
+          exerciseId: exerciseMap[ex.exerciseId].id,
+          userId: user.id,
+          sets,
+        };
+      });
+    if (exerciseHistories.length === 0) {
+      return { error: "No completed sets to save." };
+    }
+    await db.$transaction(async (tx) => {
+      const session = await tx.session.create({
+        data: {
+          id: sessionId,
+          userId: user.id!,
+          workoutId,
+          workoutName,
+          startTime: new Date(startTime!),
+          duration,
+          complete: true,
+        },
+      });
+
+      for (const history of exerciseHistories) {
+        await tx.exerciseHistory.create({
+          data: {
+            sessionId: session.id,
+            exerciseId: history.exerciseId,
+            userId: user.id!,
+            sets: {
+              create: history.sets.map((s) => ({
+                reps: s.reps,
+                weight: s.weight,
+                isCompleted: true,
+              })),
+            },
+          },
+        });
+      }
     });
-  }
+    revalidatePath("/dashboard/sessions");
 
-  revalidatePath("/dashboard/sessions"); // or wherever needed
-
-  return { success: true };
+    return { success: true };
+  } catch (error) {}
 }

@@ -212,7 +212,6 @@ model Session {
   workoutName String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   startTime   DateTime
-  endTime     DateTime
   duration    Int
   complete    Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -243,7 +242,6 @@ model ExerciseSet {
   exerciseHistoryId String
   reps              Int
   weight            Float?
-  rir               Int? // RIR = Reps in Reserve
   isCompleted       Boolean @default(false)
 
   exerciseHistory ExerciseHistory @relation(fields: [exerciseHistoryId], references: [id], onDelete: Cascade)
