@@ -32,6 +32,8 @@ import { Button } from "@/components/ui/button";
 import RestTimerDrawer from "@/components/session/session-timer-drawer";
 import { Wrench } from "lucide-react";
 import SessionSettingsDrawer from "@/components/session/session-settings-drawer";
+import { SessionInput } from "@/actions/session-complete";
+import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -44,7 +46,11 @@ export default function SessionExerciseCarousel() {
     workoutName,
     isPaused,
     timer,
+    sessionId,
+    workoutId,
+    startTime,
   } = useSelector((state: RootState) => state.session);
+  const workoutDuration = useElapsedSessionTime();
 
   //currentExercise from map
   const currentExercise = activeExerciseId
@@ -261,6 +267,25 @@ export default function SessionExerciseCarousel() {
     );
   }
 
+  async function handleCompleteSession() {
+    const sessionData: SessionInput = {
+      sessionId: sessionId!,
+      workoutId: workoutId!,
+      workoutName,
+      startTime: startTime!,
+      duration: workoutDuration!,
+      exerciseMap,
+      progress,
+    };
+    await fetch("/api/session", {
+      method: "POST",
+      body: JSON.stringify(sessionData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
   if (!currentExercise || !exerciseProgress)
     return (
       <div className="p-4 max-w-[900px] mx-auto ">
@@ -313,7 +338,10 @@ export default function SessionExerciseCarousel() {
       {/* Complete Button */}
       {workoutCompleted && (
         <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
-          <Button className="rounded-full py-10 px-10 text-3xl ">
+          <Button
+            onClick={handleCompleteSession}
+            className="rounded-full py-10 px-10 text-3xl "
+          >
             Complete Workout
           </Button>
         </div>

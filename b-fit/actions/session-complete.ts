@@ -4,10 +4,9 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { ExerciseProgress, SessionState } from "@/store/sessionSlice";
 import { revalidatePath } from "next/cache";
-import { error } from "console";
 import { FlattenedExerciseNode } from "@/lib/exercise-linked-list";
 
-interface SessionInput {
+export interface SessionInput {
   sessionId: string;
   workoutId: string;
   workoutName: string;
@@ -86,6 +85,6 @@ export async function completeSession(sessionData: SessionInput) {
     });
     revalidatePath("/dashboard/sessions");
 
-    return { success: true };
+    return { success: true, sessionData };
   } catch (error) {}
 }

@@ -1,19 +1,17 @@
 // /app/api/workouts/route.ts
 import { NextResponse } from "next/server";
-import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
+import { completeSession, SessionInput } from "@/actions/session-complete";
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    const workouts = await fetchUserWorkouts();
+    const data = await req.json()
+    const session = await completeSession(data);
 
-    // If no workouts, it could mean user is not authenticated
-    if (!workouts.length) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    return NextResponse.json(workouts, {status: 200});
+    return NextResponse.json(session, { status: 200 });
   } catch (error) {
-    console.error("Fetch workouts error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("[SESSION_COMPLETE_API_ERROR]", error);
+
+    const status = error instanceof Error && error.message === "Unauthorized" ? 401 : 500;
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status });
   }
 }
