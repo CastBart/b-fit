@@ -1,4 +1,5 @@
 import { TabsContent } from "@/components/ui/tabs";
+import { useExercise } from "@/hooks/queries/use-exercise";
 
 import { Exercise } from "@/lib/definitions";
 
@@ -8,6 +9,8 @@ interface ExerciseDetailsHistoryProps {
 export default function ExerciseDetailsHistory({
   exercise,
 }: ExerciseDetailsHistoryProps) {
+  const { data, isLoading } = useExercise(exercise.id);
+  
   return (
     <TabsContent value="history">
       <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
