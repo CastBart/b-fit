@@ -54,7 +54,7 @@ export default function SessionSettingsDrawer() {
       <DrawerTrigger >
         <div className="mb-4">
           <Button
-            variant={"default"}
+            variant={"outline"}
             className="text-2xl flex justify-center items-center space-x-2 "
           >
             <span>{workoutName}</span>

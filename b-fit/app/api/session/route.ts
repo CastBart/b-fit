@@ -1,4 +1,4 @@
-// /app/api/workouts/route.ts
+// /app/api/session/route.ts
 import { NextResponse } from "next/server";
 import { completeSession, SessionInput } from "@/actions/session-complete";
 

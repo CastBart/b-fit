@@ -2,45 +2,43 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 
-import { ExerciseHistory } from "@prisma/client";
+export interface ExerciseHistory {
+  exerciseName: string;
+  workoutName: string;
+  sessionStartTime: Date;
+  sets: ExerciseSet[];
+}
 
-export interface History {
-  sessionId: string;
-  id: string;
-  exerciseId: string;
-  userId: string;
-  notes: string | null;
+export interface ExerciseSet {
+  reps: number;
+  weight: number | null;
+  setNumber?: number;
 }
 
 export async function fetchExercise(
   exerciseId: string
-): Promise<History | { error: string }> {
+): Promise<ExerciseHistory[] | { error: string }> {
   const session = await auth();
   if (!session?.user) {
     return { error: "Unauthorised" };
   }
   const userId = session.user.id;
-  const exercise = await db.exercise.findUnique({
-    where: {
-      id: exerciseId,
-      userId: userId,
-    },
-    include: {
-      workouts: true,
-    },
-  });
-
-  const history = await db.exerciseHistory.findMany({
+  const histories = await db.exerciseHistory.findMany({
     where: {
       exerciseId,
-      userId: userId,
+      userId,
     },
     include: {
       sets: true,
       session: {
         select: {
           startTime: true,
-          duration: true,
+          workoutName: true,
+        },
+      },
+      exercise: {
+        select: {
+          name: true,
         },
       },
     },
@@ -49,6 +47,13 @@ export async function fetchExercise(
     },
   });
 
-  
-  return { history };
+  return histories.map((history) => ({
+    exerciseName: history.exercise.name,
+    workoutName: history.session.workoutName,
+    sessionStartTime: history.session.startTime,
+    sets: history.sets.map((set) => ({
+      reps: set.reps,
+      weight: set.weight,
+    })),
+  }));
 }

@@ -53,38 +53,44 @@ export async function completeSession(sessionData: SessionInput) {
     if (exerciseHistories.length === 0) {
       return { error: "No completed sets to save." };
     }
-    await db.$transaction(async (tx) => {
-      const session = await tx.session.create({
-        data: {
-          id: sessionId,
-          userId: user.id!,
-          workoutId,
-          workoutName,
-          startTime: new Date(startTime!),
-          duration,
-          complete: true,
-        },
-      });
-
-      for (const history of exerciseHistories) {
-        await tx.exerciseHistory.create({
+    await db.$transaction(
+      async (tx) => {
+        const session = await tx.session.create({
           data: {
-            sessionId: session.id,
-            exerciseId: history.exerciseId,
+            id: sessionId,
             userId: user.id!,
-            sets: {
-              create: history.sets.map((s) => ({
-                reps: s.reps,
-                weight: s.weight,
-                isCompleted: true,
-              })),
-            },
+            workoutId,
+            workoutName,
+            startTime: new Date(startTime!),
+            duration,
+            complete: true,
           },
         });
-      }
-    });
-    revalidatePath("/dashboard/sessions");
 
-    return { success: true, sessionData };
-  } catch (error) {}
+        for (const history of exerciseHistories) {
+          await tx.exerciseHistory.create({
+            data: {
+              sessionId: session.id,
+              exerciseId: history.exerciseId,
+              userId: user.id!,
+              sets: {
+                create: history.sets.map((s) => ({
+                  reps: s.reps,
+                  weight: s.weight,
+                  isCompleted: true,
+                })),
+              },
+            },
+          });
+        }
+      },
+      { maxWait: 10000, timeout: 20000 }
+    );
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("[COMPLETE_SESSION_ERROR]", error);
+    return { error: "Internal server error" };
+  }
 }
