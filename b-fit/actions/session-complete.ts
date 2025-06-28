@@ -42,6 +42,7 @@ export async function completeSession(sessionData: SessionInput) {
           .map((set) => ({
             reps: set.reps,
             weight: set.weight,
+            setNumber: set.setNumber,
           }));
 
         return {
@@ -78,6 +79,7 @@ export async function completeSession(sessionData: SessionInput) {
                   reps: s.reps,
                   weight: s.weight,
                   isCompleted: true,
+                  setNumber: s.setNumber,
                 })),
               },
             },

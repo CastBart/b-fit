@@ -34,6 +34,8 @@ import { Wrench } from "lucide-react";
 import SessionSettingsDrawer from "@/components/session/session-settings-drawer";
 import { SessionInput } from "@/actions/session-complete";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/hooks/queries/use-session";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -51,6 +53,8 @@ export default function SessionExerciseCarousel() {
     startTime,
   } = useSelector((state: RootState) => state.session);
   const workoutDuration = useElapsedSessionTime();
+  const router = useRouter();
+  const { createSession } = useSession();
 
   //currentExercise from map
   const currentExercise = activeExerciseId
@@ -278,13 +282,16 @@ export default function SessionExerciseCarousel() {
       exerciseMap,
       progress,
     };
-    await fetch("/api/session", {
-      method: "POST",
-      body: JSON.stringify(sessionData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // await fetch("/api/session", {
+    //   method: "POST",
+    //   body: JSON.stringify(sessionData),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+    createSession(sessionData);
+    // dispatch(endSession());
+    // router.push("/dashboard");
   }
 
   if (!currentExercise || !exerciseProgress)
@@ -363,12 +370,14 @@ export default function SessionExerciseCarousel() {
           handleRemoveExercise(selectedOptionsExercise.instanceId)
         }
       />
+      {/* Superset Drawer */}
       <SupersetDrawer
         exercise={supersetExercise}
         onClose={() => setSupersetExercise(null)}
         onSelect={handleSuperSetSelect}
         supersetManager={supersetManager}
       />
+      {/* Set Drawer */}
       <SetDrawer
         exerciseId={setDrawerID}
         onClose={() => handleSetDrawerID(null)}

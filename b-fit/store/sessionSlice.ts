@@ -128,6 +128,11 @@ export const sessionSlice = createSlice({
   name: "session",
   initialState,
   reducers: {
+    /**
+     * Starts the session and assigns initial values to state. Creates set progress map for each exercise
+     * @param state Redux Sessions Slice State
+     * @param action PayloadAction Type holds workoutId, workoutName, headId, FlattenedExerciseMap
+     */
     startSession: (
       state,
       action: PayloadAction<{

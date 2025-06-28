@@ -240,6 +240,7 @@ model ExerciseHistory {
 model ExerciseSet {
   id                String  @id @default(cuid())
   exerciseHistoryId String
+  setNumber         Int
   reps              Int
   weight            Float?
   isCompleted       Boolean @default(false)
