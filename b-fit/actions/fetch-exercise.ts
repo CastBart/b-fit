@@ -54,6 +54,7 @@ export async function fetchExercise(
     sets: history.sets.map((set) => ({
       reps: set.reps,
       weight: set.weight,
+      setNumber: set.setNumber,
     })),
   }));
 }
