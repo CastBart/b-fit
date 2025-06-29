@@ -108,7 +108,6 @@ export default function WorkoutForm({
     }
   }
   function handleStartWorkout() {
-    debugger
     if (workoutId && head) {
       const flattenedMap = flattenExerciseNodeList(head);
       const headId = head.instanceId;
@@ -229,9 +228,6 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
-      <Button onClick={()=>{
-        console.log("Exercises Object", head)
-      }}>Check Workout Json</Button>
     </div>
   );
 }

@@ -184,7 +184,6 @@ function SortableExerciseCard({
       {...attributes}
       {...listeners}
       onClick={() => {
-        debugger;
         const temp = exercise;
         dispatch(setActiveExerciseId(exercise.instanceId));
       }}

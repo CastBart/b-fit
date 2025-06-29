@@ -449,7 +449,6 @@ export const sessionSlice = createSlice({
         newProgressMap: Record<string, ExerciseProgress>;
       }>
     ) => {
-      debugger;
       const { newExerciseMap, newProgressMap } = action.payload;
       // state.exerciseMap = newExerciseMap;
       //Merge new nodes

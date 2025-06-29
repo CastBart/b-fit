@@ -272,7 +272,6 @@ export default function SessionExerciseCarousel() {
   }
 
   async function handleCompleteSession() {
-    debugger;
     const sessionData: SessionInput = {
       sessionId: sessionId!,
       workoutId: workoutId!,

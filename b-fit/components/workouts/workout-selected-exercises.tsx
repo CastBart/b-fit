@@ -137,7 +137,6 @@ export default function SelectedExercisesList({
   }
 
   function removeExercise(id: string) {
-    debugger
     setSelectedExercise(null);
     console.log(
       "exerciseNodes",
@@ -407,7 +406,6 @@ export function SupersetDrawer({
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
                 onClick={() => {
-                  debugger;
                   supersetManager.supersetWithNext(exercise);
                   onSelect();
                 }}
