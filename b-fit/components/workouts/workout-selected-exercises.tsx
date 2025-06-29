@@ -137,6 +137,7 @@ export default function SelectedExercisesList({
   }
 
   function removeExercise(id: string) {
+    debugger
     setSelectedExercise(null);
     console.log(
       "exerciseNodes",
@@ -290,7 +291,7 @@ interface OptionsDrawerProps {
   onRemove: () => void;
 }
 
-function OptionsDrawer({
+export function OptionsDrawer({
   selectedExercise,
   onClose,
   onSuperSet,
@@ -350,7 +351,7 @@ interface SupersetDrawerProps {
   supersetManager: SupersetManager | null;
 }
 
-function SupersetDrawer({
+export function SupersetDrawer({
   exercise,
   onClose,
   onSelect,
@@ -406,6 +407,7 @@ function SupersetDrawer({
                 variant={"secondary"}
                 className="w-full min-h-[48px]"
                 onClick={() => {
+                  debugger;
                   supersetManager.supersetWithNext(exercise);
                   onSelect();
                 }}

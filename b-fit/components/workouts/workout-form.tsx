@@ -15,8 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
-import { createExerciseNode, ExerciseNode, getLinkedExerciseArray } from "@/lib/exercise-linked-list";
+import {
+  createExerciseNode,
+  ExerciseNode,
+  getLinkedExerciseArray,
+  FlattenedExerciseNode,
+  flattenExerciseNodeList,
+} from "@/lib/exercise-linked-list";
 import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
@@ -25,6 +30,8 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useWorkout } from "@/hooks/queries/use-workout";
 import { useWorkouts } from "@/hooks/queries/use-workouts";
+import { useDispatch } from "react-redux";
+import { startSession } from "@/store/sessionSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,9 +56,10 @@ export default function WorkoutForm({
   workoutHead = null,
 }: WorkoutFormProps) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const {isUpdating, handleUpdate, handleDelete} = useWorkout(workoutId ?? "");
+  const { isUpdating, handleUpdate, handleDelete, data } = useWorkout(workoutId!);
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -62,8 +70,6 @@ export default function WorkoutForm({
       exercises: getLinkedExerciseArray(workoutHead),
     },
   });
-
-  
 
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
@@ -77,13 +83,13 @@ export default function WorkoutForm({
         supersetGroupId: null,
       })
     );
-  
+
     // Link the new nodes together (both next and prev)
     for (let i = 0; i < newNodes.length; i++) {
       if (i > 0) newNodes[i].prev = newNodes[i - 1];
       if (i < newNodes.length - 1) newNodes[i].next = newNodes[i + 1];
     }
-  
+
     if (!head) {
       // If no head, start new chain
       setHead(newNodes[0]);
@@ -93,12 +99,21 @@ export default function WorkoutForm({
       while (lastNode.next) {
         lastNode = lastNode.next;
       }
-  
+
       lastNode.next = newNodes[0];
       newNodes[0].prev = lastNode;
-  
+
       // Force state update
       setHead({ ...head });
+    }
+  }
+  function handleStartWorkout() {
+    debugger
+    if (workoutId && head) {
+      const flattenedMap = flattenExerciseNodeList(head);
+      const headId = head.instanceId;
+      dispatch(startSession({ workoutId, workoutName: data?.workout?.name!, headId, flattenedMap }));
+      router.push(`/dashboard/session`);
     }
   }
 
@@ -153,6 +168,7 @@ export default function WorkoutForm({
                     {mode === "edit" && (
                       <EditDropdown
                         onDelete={() => handleDelete(defaultName)}
+                        onStart={() => handleStartWorkout()}
                       />
                     )}
                   </div>
@@ -181,7 +197,7 @@ export default function WorkoutForm({
         </form>
       </Form>
 
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
+      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} buttonText="Add Exercise" />
 
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
@@ -213,20 +229,31 @@ export default function WorkoutForm({
           "Update Workout"
         )}
       </Button>
-      {/* <Button onClick={()=>{
-        console.log("Exercises: ", getLinkedExerciseArray(head))
-      }}>Head</Button> */}
+      <Button onClick={()=>{
+        console.log("Exercises Object", head)
+      }}>Check Workout Json</Button>
     </div>
   );
 }
 
-function EditDropdown({ onDelete }: { onDelete: () => void }) {
+function EditDropdown({
+  onDelete,
+  onStart,
+}: {
+  onDelete: () => void;
+  onStart: () => void;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <EllipsisHorizontalIcon className="h-7 w-7 cursor-pointer" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end" className="w-[200px] space-y-2">
+        <DropdownMenuItem asChild>
+          <Button className="w-full" variant={"default"} onClick={onStart}>
+            Start Workout
+          </Button>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Button className="w-full" variant={"destructive"} onClick={onDelete}>
             Delete

@@ -38,7 +38,8 @@ async function main() {
         primaryMuscle: primaryMuscleEnumKey,
         auxiliaryMuscles: auxiliaryMusclesEnumKeys,
         exerciseType: exerciseTypeEnumKey,
-        ownership: "BFit"
+        ownership: "BFit",
+        instructions: exercise.instructions,
       },
     });
   }

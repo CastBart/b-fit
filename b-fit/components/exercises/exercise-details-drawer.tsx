@@ -47,7 +47,7 @@ export function ExerciseDetailsDrawer({
             </DrawerHeader>
             <div className="h-[335px] overflow-y-auto custom-scrollbar ">
               <Tabs defaultValue="info" className="px-4 flex flex-col">
-                <TabsList className="grid grid-cols-2 sticky top-0">
+                <TabsList className="grid grid-cols-2 sticky top-0 z-10">
                   <TabsTrigger value="info">Info</TabsTrigger>
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>

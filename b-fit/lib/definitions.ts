@@ -105,9 +105,9 @@ export interface Exercise {
   owner: ExerciseOwnership;
   name: string;
   equipment: ExerciseEquipment;
-  primaryMuscle: MuscleGroup; // Renamed for clarity
-  auxiliaryMuscles: MuscleGroup[]; // Changed to an array
-  type: ExerciseType; // Used an enum instead of a string union
+  primaryMuscle: MuscleGroup; 
+  auxiliaryMuscles: MuscleGroup[]; 
+  type: ExerciseType; 
   notes?: string;
   instructions?: string;
 }

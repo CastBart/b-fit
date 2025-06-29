@@ -1,7 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getWorkoutWithExercises } from "@/actions/fetch-workout";
-import { updateWorkout } from "@/actions/update-workout";
-import { deleteWorkout } from "@/actions/delete-workout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { z } from "zod";
