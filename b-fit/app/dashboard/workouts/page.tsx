@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { Workout } from "@/lib/definitions";
 import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 
-export default async function WorkoutCreatePage() {
+export default async function WorkoutsPage() {
   const queryClient = getQueryClient();
 
   //
