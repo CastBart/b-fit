@@ -6,7 +6,7 @@ import { getQueryClient } from "@/lib/getQueryClient";
 import { useDispatch } from "react-redux";
 import { endSession } from "@/store/sessionSlice";
 export const useSession = () => {
-  const queryClient = getQueryClient(); // ✅ correct client-side queryClient
+  const queryClient = getQueryClient(); 
   const router = useRouter();
   const dispatch = useDispatch();
 

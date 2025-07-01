@@ -272,11 +272,14 @@ function DraggableExerciseRow({
         )}
         <div className="py-2 px-4 flex items-center">
           <div {...listeners} className="touch-none hover:cursor-move">
-            <GripVertical />
+            <GripVertical className="h-6 w-6"/>
           </div>
 
           {/* Content with padding */}
-          <div className="">{exercise.name}</div>
+          <div className="flex flex-col pl-2">
+            <div className="text-lg">{exercise.name}</div>
+            <div className="text-muted-foreground">{exercise.equipment}</div>
+          </div>
         </div>
       </TableCell>
     </TableRow>

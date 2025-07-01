@@ -27,7 +27,7 @@ import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exerc
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
 import { Exercise } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, BicepsFlexed } from "lucide-react";
 import { useWorkout } from "@/hooks/queries/use-workout";
 import { useWorkouts } from "@/hooks/queries/use-workouts";
 import { useDispatch } from "react-redux";
@@ -59,7 +59,9 @@ export default function WorkoutForm({
   const dispatch = useDispatch();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const { isUpdating, handleUpdate, handleDelete, data } = useWorkout(workoutId!);
+  const { isUpdating, handleUpdate, handleDelete, data } = useWorkout(
+    workoutId!
+  );
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -111,7 +113,14 @@ export default function WorkoutForm({
     if (workoutId && head) {
       const flattenedMap = flattenExerciseNodeList(head);
       const headId = head.instanceId;
-      dispatch(startSession({ workoutId, workoutName: data?.workout?.name!, headId, flattenedMap }));
+      dispatch(
+        startSession({
+          workoutId,
+          workoutName: data?.workout?.name!,
+          headId,
+          flattenedMap,
+        })
+      );
       router.push(`/dashboard/session`);
     }
   }
@@ -187,6 +196,7 @@ export default function WorkoutForm({
                   <Textarea
                     {...field}
                     placeholder="Describe your workout (optional)"
+                    className=" text-xl md:text-xl sm:text-xl lg:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
                   />
                 </FormControl>
                 <FormMessage />
@@ -196,8 +206,18 @@ export default function WorkoutForm({
         </form>
       </Form>
 
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} buttonText="Add Exercise" />
-
+      <div className="flex justify-between items-center">
+        <WorkoutSelectExerciseDrawer
+          onExerciseSelect={handleExerciseSelect}
+          buttonText="Add Exercise"
+        />
+        {mode === "edit" && (
+          <Button className="" onClick={() => handleStartWorkout()}>
+            <BicepsFlexed />
+            Start Workout
+          </Button>
+        )}
+      </div>
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
           {form.formState.errors.exercises.message}
