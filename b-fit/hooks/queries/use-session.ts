@@ -6,13 +6,13 @@ import { getQueryClient } from "@/lib/getQueryClient";
 import { useDispatch } from "react-redux";
 import { endSession } from "@/store/sessionSlice";
 export const useSession = () => {
-  const queryClient = getQueryClient(); // ✅ correct client-side queryClient
+  const queryClient = getQueryClient(); 
   const router = useRouter();
   const dispatch = useDispatch();
 
   const createMutation = useMutation({
     mutationFn: async (data: SessionInput) => {
-      const res = await fetch("/api/session", {
+      const res = await fetch("/api/session/create", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -43,26 +43,26 @@ export const useSession = () => {
   });
 
   //Todo: Implement fetch sessions Query
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["sessions"],
-    queryFn: async () => {
-      const res = await fetch(`/api/sessions`);
-      const data = await res.json();
+  // const { data, isLoading, isError, error } = useQuery({
+  //   queryKey: ["sessions"],
+  //   queryFn: async () => {
+  //     const res = await fetch(`/api/sessions`);
+  //     const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch workouts.");
-      }
+  //     if (!res.ok) {
+  //       throw new Error(data.error || "Failed to fetch workouts.");
+  //     }
 
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  //     return data;
+  //   },
+  //   staleTime: 1000 * 60 * 5, // 5 minutes
+  // });
 
   return {
-    sessions: data,
-    isLoading,
-    isError,
-    error,
+    // sessions: data,
+    // isLoading,
+    // isError,
+    // error,
     createSession: createMutation.mutate,
     isCreating: createMutation.isPending,
   };

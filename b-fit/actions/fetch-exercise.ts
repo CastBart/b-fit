@@ -43,7 +43,7 @@ export async function fetchExercise(
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
   });
 
