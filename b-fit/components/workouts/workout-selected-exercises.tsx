@@ -45,7 +45,7 @@ import {
 } from "@/lib/exercise-linked-list";
 import { GripVertical } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { SupersetManager } from "@/lib/superset-manager";
 
 interface SelectedExerciseListProps {
