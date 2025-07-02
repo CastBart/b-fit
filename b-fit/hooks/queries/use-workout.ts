@@ -1,7 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getWorkoutWithExercises } from "@/actions/fetch-workout";
-import { updateWorkout } from "@/actions/update-workout";
-import { deleteWorkout } from "@/actions/delete-workout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -14,17 +12,11 @@ type UpdateWorkoutParams = {
 };
 
 export function useWorkout(id: string) {
-  
   const router = useRouter();
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
 
   // Fetch the workout
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["workout", id],
     queryFn: () => getWorkoutWithExercises(id),
     enabled: !!id,
@@ -40,24 +32,26 @@ export function useWorkout(id: string) {
         },
         body: JSON.stringify(data),
       });
-  
+
       const result = await res.json();
-  
+
       if (!res.ok) {
         throw new Error(result.error || "Failed to update workout.");
       }
-  
+
       return result;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["workout", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
       toast.success("Workout updated successfully.");
+      router.push("/dashboard/workouts");
     },
     onError: (error: any) => {
       toast.error("Failed to update workout", {
         description: error?.message ?? "Something went wrong.",
       });
+      router.push("/dashboard/workouts");
     },
   });
 
@@ -67,13 +61,13 @@ export function useWorkout(id: string) {
       const res = await fetch(`/api/workouts/${id}/delete`, {
         method: "DELETE",
       });
-  
+
       const result = await res.json();
-  
+
       if (!res.ok) {
         throw new Error(result.error || "Failed to delete workout.");
       }
-  
+
       return result;
     },
     onSuccess: (_, deletedId) => {

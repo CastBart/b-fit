@@ -26,8 +26,12 @@ export function ExerciseDetailsDrawer({
   onDelete,
 }: ExerciseDetailsDrawerProps) {
   return (
-    <Drawer open={!!selectedExercise} onOpenChange={onClose} shouldScaleBackground={false}>
-      <DrawerContent className="custom-drawer justify-self-center">
+    <Drawer
+      open={!!selectedExercise}
+      onOpenChange={onClose}
+      shouldScaleBackground={false}
+    >
+      <DrawerContent className="w-full max-h-screen lg:w-[600px] justify-self-center">
         {selectedExercise && (
           <>
             <DrawerHeader>
@@ -35,20 +39,27 @@ export function ExerciseDetailsDrawer({
                 <DrawerTitle className="text-center text-3xl">
                   {selectedExercise.name}
                 </DrawerTitle>
-                <DrawerDescription className="hidden">View exercise details</DrawerDescription>
+                <DrawerDescription className="hidden">
+                  View exercise details
+                </DrawerDescription>
                 <Separator className="h-1"></Separator>
               </div>
             </DrawerHeader>
-            <Tabs defaultValue="info" className="px-4 flex flex-col overflow-y-auto custom-scrollbar">
-              <TabsList className="grid grid-cols-2">
-                <TabsTrigger value="info">Info</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
-              </TabsList>
-              <div>
-                <ExerciseDetailsInfo exercise={selectedExercise} onDelete={onDelete} />
-                <ExerciseDetailsHistory exercise={selectedExercise} />
-              </div>
-            </Tabs>
+            <div className="h-[335px] overflow-y-auto custom-scrollbar ">
+              <Tabs defaultValue="info" className="px-4 flex flex-col">
+                <TabsList className="grid grid-cols-2 sticky top-0 z-10">
+                  <TabsTrigger value="info">Info</TabsTrigger>
+                  <TabsTrigger value="history">History</TabsTrigger>
+                </TabsList>
+                <div className=" overflow-y-auto  ">
+                  <ExerciseDetailsInfo
+                    exercise={selectedExercise}
+                    onDelete={onDelete}
+                  />
+                  <ExerciseDetailsHistory exercise={selectedExercise} />
+                </div>
+              </Tabs>
+            </div>
             <DrawerFooter>
               <DrawerClose asChild id="exercise-filters-drawer-close">
                 <Button variant="secondary">Close</Button>

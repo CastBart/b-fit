@@ -15,16 +15,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
-import { createExerciseNode, ExerciseNode } from "@/lib/exercise-linked-list";
+import {
+  createExerciseNode,
+  ExerciseNode,
+  getLinkedExerciseArray,
+  FlattenedExerciseNode,
+  flattenExerciseNodeList,
+} from "@/lib/exercise-linked-list";
 import { WorkoutSchema } from "@/schemas";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import SelectedExercisesList from "@/components/workouts/workout-selected-exercises";
 import { Exercise } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, BicepsFlexed } from "lucide-react";
 import { useWorkout } from "@/hooks/queries/use-workout";
 import { useWorkouts } from "@/hooks/queries/use-workouts";
+import { useDispatch } from "react-redux";
+import { startSession } from "@/store/sessionSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,9 +56,12 @@ export default function WorkoutForm({
   workoutHead = null,
 }: WorkoutFormProps) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [isPending, startTransition] = useTransition();
   const [head, setHead] = useState<ExerciseNode | null>(workoutHead);
-  const workoutQuery = useWorkout(workoutId ?? "");
+  const { isUpdating, handleUpdate, handleDelete, data } = useWorkout(
+    workoutId!
+  );
   const { createWorkout, isCreating } = useWorkouts();
 
   const form = useForm<z.infer<typeof WorkoutSchema>>({
@@ -63,23 +73,6 @@ export default function WorkoutForm({
     },
   });
 
-  function getLinkedExerciseArray(
-    node: ExerciseNode | null
-  ): z.infer<typeof WorkoutSchema>["exercises"] {
-    const exercises = [];
-    let prevNode: ExerciseNode | null = null;
-    while (node) {
-      exercises.push({
-        exerciseID: node.id,
-        prevId: prevNode ? prevNode.id : undefined,
-        nextId: node.next ? node.next.id : undefined,
-      });
-      prevNode = node;
-      node = node.next;
-    }
-    return exercises;
-  }
-
   function handleExerciseSelect(newExercises: Exercise[]) {
     const newNodes = newExercises.map((exercise) =>
       createExerciseNode({
@@ -89,22 +82,46 @@ export default function WorkoutForm({
         primaryMuscle: exercise.primaryMuscle,
         auxiliaryMuscles: exercise.auxiliaryMuscles,
         type: exercise.type,
+        supersetGroupId: null,
       })
     );
 
-    for (let i = 0; i < newNodes.length - 1; i++) {
-      newNodes[i].next = newNodes[i + 1];
+    // Link the new nodes together (both next and prev)
+    for (let i = 0; i < newNodes.length; i++) {
+      if (i > 0) newNodes[i].prev = newNodes[i - 1];
+      if (i < newNodes.length - 1) newNodes[i].next = newNodes[i + 1];
     }
 
     if (!head) {
+      // If no head, start new chain
       setHead(newNodes[0]);
     } else {
+      // Otherwise, append to end of current chain
       let lastNode = head;
       while (lastNode.next) {
         lastNode = lastNode.next;
       }
+
       lastNode.next = newNodes[0];
+      newNodes[0].prev = lastNode;
+
+      // Force state update
       setHead({ ...head });
+    }
+  }
+  function handleStartWorkout() {
+    if (workoutId && head) {
+      const flattenedMap = flattenExerciseNodeList(head);
+      const headId = head.instanceId;
+      dispatch(
+        startSession({
+          workoutId,
+          workoutName: data?.workout?.name!,
+          headId,
+          flattenedMap,
+        })
+      );
+      router.push(`/dashboard/session`);
     }
   }
 
@@ -130,18 +147,17 @@ export default function WorkoutForm({
           });
         });
       } else if (mode === "edit" && workoutId) {
-        workoutQuery?.handleUpdate(workoutData);
-        router.push("/dashboard/workouts");
+        handleUpdate(workoutData);
       }
     });
   }
 
   return (
-    <div className="max-w-[600px] mx-auto p-6 overflow-auto space-y-6">
+    <div className="max-w-[600px] mx-auto overflow-auto space-y-4 p-2">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
+          className="space-y-2"
           id={`${mode}-workout-form`}
         >
           <FormField
@@ -159,7 +175,8 @@ export default function WorkoutForm({
                     />
                     {mode === "edit" && (
                       <EditDropdown
-                        onDelete={() => workoutQuery.handleDelete(defaultName)}
+                        onDelete={() => handleDelete(defaultName)}
+                        onStart={() => handleStartWorkout()}
                       />
                     )}
                   </div>
@@ -179,6 +196,7 @@ export default function WorkoutForm({
                   <Textarea
                     {...field}
                     placeholder="Describe your workout (optional)"
+                    className=" text-xl md:text-xl sm:text-xl lg:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
                   />
                 </FormControl>
                 <FormMessage />
@@ -188,8 +206,18 @@ export default function WorkoutForm({
         </form>
       </Form>
 
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleExerciseSelect} />
-
+      <div className="flex justify-between items-center">
+        <WorkoutSelectExerciseDrawer
+          onExerciseSelect={handleExerciseSelect}
+          buttonText="Add Exercise"
+        />
+        {mode === "edit" && (
+          <Button className="" onClick={() => handleStartWorkout()}>
+            <BicepsFlexed />
+            Start Workout
+          </Button>
+        )}
+      </div>
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
           {form.formState.errors.exercises.message}
@@ -207,9 +235,9 @@ export default function WorkoutForm({
             shouldValidate: true,
           });
         }}
-        disabled={isPending || isCreating}
+        disabled={isUpdating || isCreating}
       >
-        {isPending || isCreating ? (
+        {isUpdating || isCreating ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
             {mode === "create" ? "Creating..." : "Updating..."}
@@ -224,13 +252,24 @@ export default function WorkoutForm({
   );
 }
 
-function EditDropdown({ onDelete }: { onDelete: () => void }) {
+function EditDropdown({
+  onDelete,
+  onStart,
+}: {
+  onDelete: () => void;
+  onStart: () => void;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <EllipsisHorizontalIcon className="h-7 w-7 cursor-pointer" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end" className="w-[200px] space-y-2">
+        <DropdownMenuItem asChild>
+          <Button className="w-full" variant={"default"} onClick={onStart}>
+            Start Workout
+          </Button>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Button className="w-full" variant={"destructive"} onClick={onDelete}>
             Delete

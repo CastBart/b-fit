@@ -18,10 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import FormError from "../form-error";
 import {
   ExerciseEquipment,
@@ -29,9 +27,6 @@ import {
   ExerciseType,
 } from "@/lib/definitions";
 import ExerciseCreateFilter from "@/components/exercises/exercise-create-filter";
-
-import { createExercise } from "@/actions/create-exercise";
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,7 +91,7 @@ export default function CreateExerciseDrawer() {
       <DrawerContent
         id="create-exercise-drawer-content"
         title="Create Exercise Drawer Content"
-        className="custom-drawer justify-self-center"
+        className="w-full max-h-screen lg:w-[600px] justify-self-center"
       >
         <DrawerHeader id="create-exercise-drawer-header">
           <div className="flex flex-col gap-2">
@@ -109,7 +104,7 @@ export default function CreateExerciseDrawer() {
             <Separator className="h-1" />
           </div>
         </DrawerHeader>
-        <div className="grid gap-4 px-4 min-h-[200px] overflow-y-auto custom-scrollbar">
+        <div className="grid gap-4 px-4 overflow-y-auto custom-scrollbar">
           <Form {...form}>
             <form
               id="create-exercise-form"

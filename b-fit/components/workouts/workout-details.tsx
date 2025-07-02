@@ -6,6 +6,7 @@ import { ExerciseNode } from "@/lib/exercise-linked-list";
 import WorkoutForm from "@/components/workouts/workout-form";
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { ExerciseEquipment, ExerciseType, getEnumValueByKey, getEnumValuesByKeys, MuscleGroup } from "@/lib/definitions";
 
 export default function WorkoutDetailsClient({ workoutId }: { workoutId: string }) {
   const { data, isLoading } = useWorkout(workoutId);
@@ -25,33 +26,38 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
   // Build the linked list
   let head: ExerciseNode | null = null;
   const exerciseMap: Record<string, ExerciseNode> = {};
-
+  // first pass - create nodes after db fetch
   for (const workoutExercise of workout.exercises) {
     const node: ExerciseNode = {
       id: workoutExercise.exercise.id,
       instanceId: workoutExercise.id,
       name: workoutExercise.exercise.name,
-      equipment: workoutExercise.exercise.equipment,
-      primaryMuscle: workoutExercise.exercise.primaryMuscle,
-      auxiliaryMuscles: workoutExercise.exercise.auxiliaryMuscles,
-      type: workoutExercise.exercise.exerciseType,
+      equipment: getEnumValueByKey(ExerciseEquipment, workoutExercise.exercise.equipment) ,
+      primaryMuscle: getEnumValueByKey(MuscleGroup, workoutExercise.exercise.primaryMuscle),
+      auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, workoutExercise.exercise.auxiliaryMuscles),
+      type: getEnumValueByKey(ExerciseType, workoutExercise.exercise.exerciseType),
       next: null,
+      prev: null,
+      supersetGroupId: workoutExercise.supersetGroupId || null,
     };
-
+    // find head
     exerciseMap[workoutExercise.id] = node;
     if (!workoutExercise.previousId) {
       head = node;
     }
   }
-
+  // second pass - link nodes
   for (const workoutExercise of workout.exercises) {
+    const current = exerciseMap[workoutExercise.id];
     if (workoutExercise.nextId) {
-      exerciseMap[workoutExercise.id].next = exerciseMap[workoutExercise.nextId];
+      const nextNode = exerciseMap[workoutExercise.nextId];
+      current.next = nextNode;
+      nextNode.prev = current; // set the reverse link
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
+    <div className="max-w-2xl mx-auto  space-y-6">
       <WorkoutForm
         mode="edit"
         workoutId={workout.id}

@@ -1,7 +1,7 @@
+import UnderConstruction from "@/components/under-construction";
+
 export default function Page() {
     return (
-      <main>
-        <div>Hello, this is Calorie Calculator Page</div>
-      </main>
+      <UnderConstruction/>
     );
   }

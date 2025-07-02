@@ -20,6 +20,7 @@ export default function DashboardHeader() {
     "/dashboard/plans/create": "Create Plan",
     "/dashboard/exercises": "Exercises",
     "/dashboard/workouts": "Workouts",
+    "/dashboard/session": "Session",
     "/dashboard/workouts/create": "Create Workout",
   };
 
@@ -29,6 +30,7 @@ export default function DashboardHeader() {
     "/dashboard/plans/create": "/dashboard/plans",
     "/dashboard/exercises": "/dashboard",
     "/dashboard/workouts": "/dashboard",
+    "/dashboard/session": "/dashboard",
     "/dashboard/workouts/create": "/dashboard/workouts",
   };
 

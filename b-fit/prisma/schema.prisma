@@ -36,6 +36,8 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   Exercise              Exercise[]
   Workout               Workout[]
+  Session               Session[]
+  ExerciseHistory       ExerciseHistory[]
 }
 
 model Account {
@@ -158,8 +160,10 @@ model Exercise {
   user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-
-  workouts WorkoutExercise[]
+  notes            String?
+  instructions     String?
+  workouts         WorkoutExercise[]
+  ExerciseHistory  ExerciseHistory[]
 }
 
 // ───────────────────────────
@@ -179,15 +183,15 @@ model Workout {
 }
 
 model WorkoutExercise {
-  id         String   @id @default(cuid())
-  workoutId  String
-  exerciseId String
-  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-
+  id              String           @id @default(cuid())
+  workoutId       String
+  exerciseId      String
+  workout         Workout          @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise        Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  supersetGroupId String?
   // Self-referencing linked list structure
-  nextId String?          @unique
-  next   WorkoutExercise? @relation("WorkoutExerciseToNext", fields: [nextId], references: [id])
+  nextId          String?          @unique
+  next            WorkoutExercise? @relation("WorkoutExerciseToNext", fields: [nextId], references: [id])
 
   previousId String?          @unique
   previous   WorkoutExercise? @relation("WorkoutExerciseToPrevious", fields: [previousId], references: [id])
@@ -195,4 +199,51 @@ model WorkoutExercise {
   // Add the inverse side of the relationships
   nextRef WorkoutExercise[] @relation("WorkoutExerciseToPrevious")
   prevRef WorkoutExercise[] @relation("WorkoutExerciseToNext")
+}
+
+// ───────────────────────────
+// SESSION SYSTEM
+// ───────────────────────────
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  workoutId   String
+  workoutName String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startTime   DateTime
+  duration    Int
+  complete    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  exerciseHistories ExerciseHistory[]
+}
+
+model ExerciseHistory {
+  id         String @id @default(cuid())
+  sessionId  String
+  exerciseId String
+  userId     String
+
+  session  Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sets ExerciseSet[]
+}
+
+model ExerciseSet {
+  id                String  @id @default(cuid())
+  exerciseHistoryId String
+  setNumber         Int
+  reps              Int
+  weight            Float?
+  isCompleted       Boolean @default(false)
+
+  exerciseHistory ExerciseHistory @relation(fields: [exerciseHistoryId], references: [id], onDelete: Cascade)
 }

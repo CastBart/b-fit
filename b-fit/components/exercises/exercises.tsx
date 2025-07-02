@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
-import { deleteExercise } from "@/actions/delete-exercise";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
@@ -14,7 +11,6 @@ import {
   Exercise,
 } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
-import { toast } from "sonner"; // ✅ Import toast for confirmation
 import { useExercises } from "@/hooks/queries/use-exercises";
 
 interface ExercisesProps {
