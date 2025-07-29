@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata } from "next";
-import { Inter, Ubuntu, Outfit } from "@next/font/google";
+import { Inter, Ubuntu, Outfit } from "next/font/google";
 import "./globals.css";
 
 
