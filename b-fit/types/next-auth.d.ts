@@ -2,6 +2,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 
 export type ExtendedUser = DefaultSession["user"] & {
   type: "PERSONAL" | "CLIENT" | "PT" | "ENTERPRISE";
+  isTwoFactorEnabled: boolean;
 };
 
 declare module "next-auth" {
@@ -10,14 +11,14 @@ declare module "next-auth" {
   }
 }
 
-
 // The `JWT` interface can be found in the `next-auth/jwt` submodule
-import { JWT } from "next-auth/jwt"
- 
+import { JWT } from "next-auth/jwt";
+
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
     /** OpenID ID Token */
     type?: "PERSONAL" | "CLIENT" | "PT" | "ENTERPRISE";
+    isTwoFactorEnabled?: boolean;
   }
 }
