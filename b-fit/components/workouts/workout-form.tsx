@@ -261,7 +261,7 @@ function EditDropdown({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger >
         <EllipsisHorizontalIcon className="h-7 w-7 cursor-pointer" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px] space-y-2">

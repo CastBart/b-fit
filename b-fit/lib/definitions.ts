@@ -169,4 +169,9 @@ export interface WorkoutExercise{
   prevId?: string;
 }
 
-
+export interface UserSettings {
+  isTwoFactorEnabled: boolean;
+  isDarkModeEnabled?: boolean;
+  isEmailNotificationsEnabled?: boolean;
+  isPushNotificationsEnabled?: boolean;
+}

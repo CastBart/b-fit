@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
@@ -12,6 +12,7 @@ import {
 } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import { useExercises } from "@/hooks/queries/use-exercises";
+import SkeletonWorkouts from "../workouts/skeletons/skeleton-workouts";
 
 interface ExercisesProps {
   mode: "view" | "select"; // ✅ "view" for exercise details, "select" for adding to a list
@@ -19,8 +20,15 @@ interface ExercisesProps {
 }
 
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
-  const { exercises, isPending, isError, error, handleDelete, createExercise, refetch } = useExercises();
-
+  const {
+    exercises,
+    isPending,
+    isError,
+    error,
+    handleDelete,
+    createExercise,
+    refetch,
+  } = useExercises();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -71,12 +79,14 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
         numOfExercises={filteredExercises.length}
         setFilters={setFilters}
       />
-      <ExerciseTable
-        mode={mode}
-        exercises={filteredExercises}
-        onDelete={handleDelete}
-        onSelect={onExerciseSelect}
-      />
+      {/* <Suspense fallback={ <SkeletonWorkouts/>}> */}
+        <ExerciseTable
+          mode={mode}
+          exercises={filteredExercises}
+          onDelete={handleDelete}
+          onSelect={onExerciseSelect}
+        />
+      {/* </Suspense> */}
     </>
   );
 }

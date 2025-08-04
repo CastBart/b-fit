@@ -45,7 +45,7 @@ export default function WorkoutSelectExerciseDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleDrawerChange}>
-      <DrawerTrigger >
+      <DrawerTrigger asChild>
         <Button>
           <Plus/> {buttonText}
         </Button>
