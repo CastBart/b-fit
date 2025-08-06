@@ -11,7 +11,7 @@ import {
   generateTwoFactorToken,
 } from "@/lib/tokens";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 
 export async function login(values: z.infer<typeof LoginSchema>) {

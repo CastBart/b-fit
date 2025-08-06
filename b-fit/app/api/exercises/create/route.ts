@@ -1,32 +1,42 @@
 // app/api/exercises/route.ts
 
 import { NextResponse } from "next/server";
-import { createExercise } from "@/actions/create-exercise";
-import { CreateExerciseSchema } from "@/schemas";
+import { createExerciseDB } from "@/lib/db/exercise";
+import { auth } from "@/auth";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-
-    // Validate input using your schema
-    const parsed = CreateExerciseSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid exercise data." },
-        { status: 400 }
-      );
+    // Ensure the user is authenticated
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    
+    const result = await createExerciseDB(body, userId); // Replace with actual user ID from session or context
 
-    // Create exercise using server action
-    const result = await createExercise(parsed.data);
-
-    if (result?.error) {
+    if ("error" in result) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    return NextResponse.json({ exercise: result.exercise }, { status: 201 });
+    return NextResponse.json(
+      {
+        exercise: {
+          exerciseName: result.name,
+          equipment: result.equipment,
+          primaryMuscle: result.primaryMuscle,
+          auxiliaryMuscles: result.auxiliaryMuscles,
+          exerciseType: result.exerciseType,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("[EXERCISE_POST]", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("[EXERCISE_CREATE]", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

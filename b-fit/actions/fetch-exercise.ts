@@ -1,5 +1,5 @@
 // actions/fetch-exercise.ts
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
 
 export interface ExerciseHistory {

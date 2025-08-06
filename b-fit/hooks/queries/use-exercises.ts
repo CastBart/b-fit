@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchUserExercises } from "@/actions/fetch-exercises";
 import { deleteExercise } from "@/actions/delete-exercise";
-import { createExercise } from "@/actions/create-exercise"; 
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
 import { getQueryClient } from "@/lib/getQueryClient";
