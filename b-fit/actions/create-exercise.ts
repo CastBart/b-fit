@@ -2,15 +2,7 @@
 
 import * as z from "zod";
 import { CreateExerciseSchema } from "@/schemas";
-import { db } from "@/lib/db/db";
 import { auth } from "@/auth"; // Authentication setup
-import {
-  ExerciseEquipment,
-  MuscleGroup,
-  ExerciseType,
-  getEnumKeyByValue,
-  getEnumKeysByValues,
-} from "@/lib/definitions"; // ✅ Import frontend enums
 import { createExerciseDB } from "@/lib/db/exercise";
 
 export async function createExercise(

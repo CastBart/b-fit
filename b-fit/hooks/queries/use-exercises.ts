@@ -27,12 +27,12 @@ export function useExercises() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExercise),
       });
-  
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to create exercise");
       }
-  
+
       return data.exercise;
     },
     onSuccess: (exercise) => {
@@ -45,7 +45,15 @@ export function useExercises() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteExercise,
+    mutationFn: async (exerciseId: string) => {
+      const response = await fetch(`/api/exercises/${exerciseId}/delete`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete exercise");
+      }
+    },
     onSuccess: (_, id) => {
       queryClient.setQueryData(["exercises"], (old?: Exercise[]) =>
         old ? old.filter((e) => e.id !== id) : []
@@ -59,7 +67,7 @@ export function useExercises() {
       description:
         "Are you sure you want to delete this exercise? This action cannot be undone.",
       position: "bottom-center",
-      duration: 10000,
+      duration: 10000000,
       action: {
         label: "Confirm Delete",
         onClick: () => deleteMutation.mutate(id),

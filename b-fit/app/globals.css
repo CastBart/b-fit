@@ -286,3 +286,12 @@ tr {
     overflow-y: auto; /* Ensure scrolling */
   }
 }
+
+[data-sonner-toast] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+[data-sonner-toaster] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}

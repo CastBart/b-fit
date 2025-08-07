@@ -1,5 +1,4 @@
 import { db } from "@/lib/db/db";
-import { Exercise } from "@/lib/definitions";
 import { CreateExerciseSchema } from "@/schemas";
 import * as z from "zod";
 import {
@@ -9,6 +8,7 @@ import {
   getEnumKeyByValue,
   getEnumKeysByValues,
 } from "@/lib/definitions";
+import { ExerciseHistory } from "@/actions/fetch-exercise";
 
 // Example: Create Exercise
 export async function createExerciseDB(
@@ -55,8 +55,41 @@ export async function createExerciseDB(
 }
 
 // Example: Fetch Exercises
-export async function fetchExercisesDB(userId: string) {
-  return db.exercise.findMany({ where: { userId } });
+export async function fetchExerciseHistoryDB(exerciseId: string, userId: string ): Promise<ExerciseHistory[] | { error: string }> {
+  const histories = await db.exerciseHistory.findMany({
+    where: {
+      exerciseId,
+      userId,
+    },
+    include: {
+      sets: true,
+      session: {
+        select: {
+          startTime: true,
+          workoutName: true,
+        },
+      },
+      exercise: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  return histories.map((history) => ({
+    exerciseName: history.exercise.name,
+    workoutName: history.session.workoutName,
+    sessionStartTime: history.session.startTime,
+    sets: history.sets.map((set) => ({
+      reps: set.reps,
+      weight: set.weight,
+      setNumber: set.setNumber,
+    })),
+  }));
 }
 
 // Add more CRUD functions as needed...
