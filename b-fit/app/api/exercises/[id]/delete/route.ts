@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
+import { ExerciseOwnership } from "@/lib/definitions";
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
@@ -12,7 +13,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     const exerciseId = params.id;
     // check ownership before deleting
     const exercise = await db.exercise.findUnique({ where: { id: exerciseId } });
-    if (!exercise || exercise.userId !== session.user.id) {
+    if (!exercise || exercise.userId !== session.user.id || exercise.ownership === ExerciseOwnership.BFit) {
       return NextResponse.json({ error: "Not found or forbidden" }, { status: 404 });
     }
 

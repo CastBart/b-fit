@@ -13,11 +13,19 @@ export function useExercises() {
   const {
     data: exercises = [],
     isPending,
+    isLoading,
     isError,
     error,
   } = useQuery({
     queryKey: ["exercises"],
-    queryFn: () => fetchUserExercises(),
+    queryFn: async () => {
+      const res = await fetch("/api/exercises");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch exercises - Use Exercises.");
+      }
+      return data;
+    },
   });
 
   const createMutation = useMutation({
@@ -78,7 +86,7 @@ export function useExercises() {
 
   return {
     exercises,
-    isPending,
+    isCreating: createMutation.isPending,
     isError,
     error,
     createExercise: createMutation.mutate,

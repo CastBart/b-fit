@@ -27,6 +27,7 @@ interface ExerciseFilterProps<T> {
   control: Control<any>;
   singleSelect?: boolean;
   blankSelectionTxt?: string;
+  disabled?: boolean;
 }
 
 export default function ExerciseCreateFilter<T extends string>({
@@ -36,6 +37,7 @@ export default function ExerciseCreateFilter<T extends string>({
   control,
   singleSelect = false,
   blankSelectionTxt = "Please select",
+  disabled = false,
 }: ExerciseFilterProps<T>) {
   return (
     <Controller
@@ -62,7 +64,7 @@ export default function ExerciseCreateFilter<T extends string>({
           <FormItem>
             <FormControl>
               <Dialog>
-                <DialogTrigger asChild>
+                <DialogTrigger asChild disabled={disabled}>
                   <Button className="w-full h-12" variant={"secondary"}>
                     <div className="flex items-center justify-between w-full">
                       <FormLabel>{title}</FormLabel>
