@@ -13,10 +13,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { Input } from "../ui/input";
 import { updateSet, completeSet, addNote } from "@/store/sessionSlice";
-import { useState } from "react";
-import SetDrawer from "./session-set-drawer";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 import { Textarea } from "../ui/textarea";
+import { Exercise } from "@/lib/definitions";
+import { useExercise } from "@/hooks/queries/use-exercise";
+import moment from "moment";
+import LatestExerciseHistory from "./session-latest-history";
 
 /**
  * Checks which set is active in a active exercise
@@ -33,28 +35,42 @@ interface SessionSetTableProps {
   exerciseID: string;
   onSelectExerciseOptions: (exID: string) => void;
   onSelectSetDrawerID: (exID: string | null) => void;
+  onSelectExerciseDetails: (exID: string | null) => void;
 }
 
 export default function SessionSetTable({
   exerciseID,
   onSelectExerciseOptions,
   onSelectSetDrawerID,
+  onSelectExerciseDetails,
 }: SessionSetTableProps) {
   const dispatch = useDispatch();
   const { exerciseMap, progress, activeExerciseId, headExerciseId } =
     useSelector((state: RootState) => state.session);
   const activeSet = useSelector(selectActiveSet);
 
-  const exerciseProgress = progress[exerciseID];
+  function handleExerciseDetailsSelect() {
+    // const exercise: Exercise = {
+    //   id: exerciseID,
+    // }
+  }
 
+  const exerciseProgress = progress[exerciseID];
+  const exerciseNode = exerciseMap[exerciseID];
   return (
-    <div className="">
+    <div className=" space-y-8">
       <div className="flex space-x-2 items-center">
-        <h3 className="text-2xl font-semibold">
+        <h3
+          className="text-2xl font-semibold"
+          onClick={() => {
+            const id = exerciseMap[exerciseID].id;
+            onSelectExerciseDetails(id);
+          }}
+        >
           {exerciseMap[exerciseID].name}
         </h3>
         <EllipsisHorizontalIcon
-          className="w-7 h-7 cursor-pointer"
+          className="w-12 h-8 cursor-pointer border rounded-2xl bg-muted hover:bg-muted/80"
           onClick={() => onSelectExerciseOptions(exerciseID)}
         />
       </div>
@@ -79,8 +95,8 @@ export default function SessionSetTable({
         <TableHeader>
           <TableRow>
             <TableHead className="text-center">Set</TableHead>
-            <TableHead className="text-center">Reps</TableHead>
             <TableHead className="text-center">Weight</TableHead>
+            <TableHead className="text-center">Reps</TableHead>
             <TableHead className="flex justify-center items-center cursor-pointer">
               <Wrench
                 size={"16px"}
@@ -98,18 +114,19 @@ export default function SessionSetTable({
                 <TableCell className="text-center">{set.setNumber}</TableCell>
                 <TableCell>
                   <Input
+                    name="Weight"
                     type="number"
-                    className={`text-center rounded-full transition
-                      ${currentIsActive ? "bg-muted" : ""}
-                      ${!currentIsActive && !set.completed ? "opacity-40 " : ""}`}
-                    value={set.reps}
-                    disabled={!currentIsActive && !set.completed}
+                    className={`text-center rounded-full transition 
+                      ${currentIsActive ? "bg-muted" : ""} 
+                      ${!currentIsActive && !set.completed ? "opacity-40" : ""}`}
+                    value={set.weight}
+                    // disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
                           exerciseId: exerciseID,
                           setNumber: set.setNumber,
-                          reps: parseInt(e.target.value),
+                          weight: parseInt(e.target.value),
                         })
                       )
                     }
@@ -117,18 +134,19 @@ export default function SessionSetTable({
                 </TableCell>
                 <TableCell>
                   <Input
+                    name="Reps"
                     type="number"
-                    className={`text-center rounded-full transition 
-                      ${currentIsActive ? "bg-muted" : ""} 
-                      ${!currentIsActive && !set.completed ? "opacity-40" : ""}`}
-                    value={set.weight}
-                    disabled={!currentIsActive && !set.completed}
+                    className={`text-center rounded-full transition
+                      ${currentIsActive ? "bg-muted" : ""}
+                      ${!currentIsActive && !set.completed ? "opacity-40 " : ""}`}
+                    value={set.reps}
+                    // disabled={!currentIsActive && !set.completed}
                     onChange={(e) =>
                       dispatch(
                         updateSet({
                           exerciseId: exerciseID,
                           setNumber: set.setNumber,
-                          weight: parseInt(e.target.value),
+                          reps: parseInt(e.target.value),
                         })
                       )
                     }
@@ -162,6 +180,39 @@ export default function SessionSetTable({
           })}
         </TableBody>
       </Table>
+      <LatestExerciseHistory id={exerciseMap[exerciseID].id} />
+      <>
+        {/* {data &&
+        data?.history.map((ex, index) => (
+          <div key={index} className="rounded-xl border bg-secondary/50">
+            <div className="px-4 pt-2 flex justify-between">
+            <div>{ex.workoutName}</div>
+              <div>{moment(ex.sessionStartTime).format("MMM Do YY hh:mm")}</div>
+            </div>
+            <Table>
+            <TableCaption className="hidden">Sets</TableCaption>
+            <TableHeader>
+            <TableRow>
+            <TableHead className="text-center">Set</TableHead>
+            <TableHead className="text-center">Weight</TableHead>
+            <TableHead className="text-center">Reps</TableHead>
+            </TableRow>
+            </TableHeader>
+            <TableBody>
+            {ex.sets.map((set, setIndex) => (
+              <TableRow key={setIndex}>
+              <TableCell className="text-center">
+              {set.setNumber}
+              </TableCell>
+              <TableCell className="text-center">{set.weight}</TableCell>
+              <TableCell className="text-center">{set.reps}</TableCell>
+              </TableRow>
+              ))}
+              </TableBody>
+              </Table>
+              </div>
+              ))} */}
+      </>
     </div>
   );
 }

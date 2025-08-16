@@ -13,9 +13,11 @@ import { Separator } from "../ui/separator";
 import { Exercise } from "@/lib/definitions";
 import ExerciseDetailsInfo from "./exercise-details-info";
 import ExerciseDetailsHistory from "./exercise-details-history";
+import { useExercise } from "@/hooks/queries/use-exercise";
+import { Loader2 } from "lucide-react";
 
 interface ExerciseDetailsDrawerProps {
-  selectedExercise: Exercise | null;
+  selectedExercise: string | null;
   onClose: () => void;
   onDelete: (exerciseId: string, exerciseName: string) => void;
 }
@@ -25,6 +27,47 @@ export function ExerciseDetailsDrawer({
   onClose,
   onDelete,
 }: ExerciseDetailsDrawerProps) {
+  const { data, isLoading } = useExercise(selectedExercise || "");
+
+  if (isLoading) {
+    return (
+      <Drawer
+        open={!!selectedExercise}
+        onOpenChange={onClose}
+        shouldScaleBackground={false}
+      >
+        <DrawerContent className="w-full max-h-screen lg:w-[600px] justify-self-center">
+          {selectedExercise && (
+            <>
+              <DrawerHeader>
+                <div className="flex flex-col gap-2">
+                  <DrawerTitle className="text-center text-3xl">
+                    Exercise Details
+                  </DrawerTitle>
+                  <DrawerDescription className="hidden">
+                    View exercise details
+                  </DrawerDescription>
+                  <Separator className="h-1"></Separator>
+                </div>
+              </DrawerHeader>
+              <div className="w-full flex justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+              <DrawerFooter>
+                <DrawerClose asChild id="exercise-filters-drawer-close">
+                  <Button variant="secondary">Close</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </>
+          )}
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+  if (!data) return;
+
+  const { exercise } = data;
+
   return (
     <Drawer
       open={!!selectedExercise}
@@ -37,7 +80,7 @@ export function ExerciseDetailsDrawer({
             <DrawerHeader>
               <div className="flex flex-col gap-2">
                 <DrawerTitle className="text-center text-3xl">
-                  {selectedExercise.name}
+                  {exercise.name}
                 </DrawerTitle>
                 <DrawerDescription className="hidden">
                   View exercise details
@@ -53,10 +96,10 @@ export function ExerciseDetailsDrawer({
                 </TabsList>
                 <div className=" overflow-y-auto  ">
                   <ExerciseDetailsInfo
-                    exercise={selectedExercise}
+                    exercise={exercise}
                     onDelete={onDelete}
                   />
-                  <ExerciseDetailsHistory exercise={selectedExercise} />
+                  <ExerciseDetailsHistory exercise={exercise} />
                 </div>
               </Tabs>
             </div>

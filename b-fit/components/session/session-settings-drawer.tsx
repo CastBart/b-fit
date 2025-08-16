@@ -51,13 +51,13 @@ export default function SessionSettingsDrawer() {
   const dispatch = useDispatch();
   return (
     <Drawer>
-      <DrawerTrigger >
-        <div className="mb-4">
+      <DrawerTrigger asChild>
+        <div className="mb-4 w-full">
           <Button
             variant={"outline"}
-            className="text-2xl flex justify-center items-center space-x-2 "
+            className="text-2xl flex justify-center items-center space-x-2 max-w-full"
           >
-            <span>{workoutName}</span>
+            <span className="w-full truncate">{workoutName}</span>
             <Wrench />
           </Button>
         </div>

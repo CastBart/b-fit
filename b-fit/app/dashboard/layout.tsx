@@ -6,7 +6,6 @@ import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query-provider"; // ✅ Import the QueryProvider
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { StoreProvider } from "@/providers/store-provider";
 import { startGlobalTimer } from "@/lib/timeRunner";
 import { GlobalTimerProvider } from "@/providers/global-timer-provider";
@@ -28,7 +27,6 @@ export default async function Layout({
               {children}
               <Toaster />
               <SessionResumeButton />
-              <ReactQueryDevtools initialIsOpen={false} />
             </main>
             <GlobalTimerProvider />
           </SidebarProvider>

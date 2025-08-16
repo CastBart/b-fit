@@ -16,7 +16,7 @@ export function useExercises() {
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<Exercise[]>({
     queryKey: ["exercises"],
     queryFn: async () => {
       const res = await fetch("/api/exercises");

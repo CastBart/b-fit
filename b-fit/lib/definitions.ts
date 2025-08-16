@@ -107,7 +107,7 @@ export interface Exercise {
   equipment: ExerciseEquipment;
   primaryMuscle: MuscleGroup; 
   auxiliaryMuscles: MuscleGroup[]; 
-  type: ExerciseType; 
+  type: ExerciseType;
   notes?: string;
   instructions?: string;
 }

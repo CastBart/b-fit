@@ -12,7 +12,6 @@ import {
 } from "@/lib/definitions";
 import { ExerciseFilterDrawer } from "./exercise-filter-drawer";
 import { useExercises } from "@/hooks/queries/use-exercises";
-import SkeletonWorkouts from "../workouts/skeletons/skeleton-workouts";
 
 interface ExercisesProps {
   mode: "view" | "select"; // ✅ "view" for exercise details, "select" for adding to a list
@@ -22,7 +21,7 @@ interface ExercisesProps {
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
   const {
     exercises,
-    isPending,
+    isCreating: isPending,
     isError,
     error,
     handleDelete,
@@ -79,14 +78,12 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
         numOfExercises={filteredExercises.length}
         setFilters={setFilters}
       />
-      {/* <Suspense fallback={ <SkeletonWorkouts/>}> */}
-        <ExerciseTable
-          mode={mode}
-          exercises={filteredExercises}
-          onDelete={handleDelete}
-          onSelect={onExerciseSelect}
-        />
-      {/* </Suspense> */}
+      <ExerciseTable
+        mode={mode}
+        exercises={filteredExercises}
+        onDelete={handleDelete}
+        onSelect={onExerciseSelect}
+      />
     </>
   );
 }

@@ -36,6 +36,7 @@ import { SessionInput } from "@/actions/session-complete";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/queries/use-session";
+import { ExerciseDetailsDrawer } from "@/components/exercises/exercise-details-drawer";
 
 export default function SessionExerciseCarousel() {
   const dispatch = useDispatch();
@@ -120,10 +121,16 @@ export default function SessionExerciseCarousel() {
     null
   );
 
+  const [exerciseDetails, setExerciseDetails] = useState<string | null>(null);
+
   const [setDrawerID, setSetDrawerID] = useState<string | null>(null);
 
   const [supersetManager, setSupersetManager] =
     useState<SupersetManager | null>(null);
+
+  function handleSetExerciseDetails(id: string | null) {
+    setExerciseDetails(id);
+  }
 
   function handleSetDrawerID(id: string | null) {
     setSetDrawerID(id);
@@ -321,6 +328,7 @@ export default function SessionExerciseCarousel() {
                 exerciseID={ex}
                 onSelectExerciseOptions={handleSelectedExerciseOptions}
                 onSelectSetDrawerID={handleSetDrawerID}
+                onSelectExerciseDetails={handleSetExerciseDetails}
               />
             </div>
           ))}
@@ -353,6 +361,14 @@ export default function SessionExerciseCarousel() {
           </Button>
         </div>
       )}
+
+      {/* Exercise Details Drawer */}
+      {/* TODO: Implement delete option */}
+      <ExerciseDetailsDrawer
+        selectedExercise={exerciseDetails}
+        onClose={() => setExerciseDetails(null)}
+        onDelete={() => {}}
+      />
 
       {/* Option Drawer */}
       <OptionsDrawer

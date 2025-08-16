@@ -1,14 +1,15 @@
 // hooks/use-exercise.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ExerciseHistory, fetchExercise } from "@/actions/fetch-exercise";
+import { useQuery } from "@tanstack/react-query";
+import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
+import { Exercise } from "@/lib/definitions";
+import { getQueryClient } from "@/lib/getQueryClient";
 
 export function useExercise(id: string) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  const { data, isLoading, isError, error } = useQuery<ExerciseHistory[], Error>({
+  const queryClient = getQueryClient();
+  const { data, isLoading, isFetching, isError, error } = useQuery<
+    ExerciseWithHistory,
+    Error
+  >({
     queryKey: ["exercise", id],
     queryFn: async () => {
       const res = await fetch(`/api/exercises/${id}`);
@@ -16,14 +17,26 @@ export function useExercise(id: string) {
         const { error } = await res.json();
         throw new Error(error || "Failed to fetch exercise history");
       }
-      return res.json() as Promise<ExerciseHistory[]>;
+      return res.json() as Promise<ExerciseWithHistory>;
     },
     enabled: !!id,
+    placeholderData: () => {
+      // Look up this exercise in the exercises list query cache
+      const exercises = queryClient.getQueryData<Exercise[]>(["exercises"]);
+      const exercise = exercises?.find((e) => e.id === id);
+
+      if (exercise) {
+        return { exercise, history: [] }; // hydrate instantly
+      }
+      return undefined;
+    },
+    refetchOnMount: true,
   });
 
   return {
     data, // includes { exercise, history }
     isLoading,
+    isFetching,
     isError,
     error,
   };

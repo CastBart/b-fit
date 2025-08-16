@@ -12,7 +12,7 @@ import {
   getEnumValueByKey,
   getEnumValuesByKeys,
 } from "@/lib/definitions";
-import { ExerciseHistory } from "@/actions/fetch-exercise";
+import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
 
 // Example: Create Exercise
 export async function createExerciseDB(
@@ -59,10 +59,29 @@ export async function createExerciseDB(
 }
 
 // Fetch Exercise History
-export async function fetchExerciseHistoryDB(
+export async function fetchExerciseDB(
   exerciseId: string,
   userId: string
-): Promise<ExerciseHistory[] | { error: string }> {
+): Promise<ExerciseWithHistory | { error: string }> {
+  const exerciseRecord = await db.exercise.findUnique({
+    where: { id: exerciseId },
+  });
+  if (!exerciseRecord) {
+    return { error: "Exercise not found." };
+  }
+  const exercise: Exercise = {
+    id: exerciseRecord.id,
+    owner: getEnumValueByKey(ExerciseOwnership, exerciseRecord.ownership),
+    name: exerciseRecord.name,
+    equipment: getEnumValueByKey(ExerciseEquipment, exerciseRecord.equipment),
+    primaryMuscle: getEnumValueByKey(MuscleGroup, exerciseRecord.primaryMuscle),
+    auxiliaryMuscles: getEnumValuesByKeys(
+      MuscleGroup,
+      exerciseRecord.auxiliaryMuscles
+    ),
+    type: getEnumValueByKey(ExerciseType, exerciseRecord.exerciseType),
+  };
+
   const histories = await db.exerciseHistory.findMany({
     where: {
       exerciseId,
@@ -87,7 +106,7 @@ export async function fetchExerciseHistoryDB(
     },
   });
 
-  return histories.map((history) => ({
+  const history = histories.map((history) => ({
     exerciseName: history.exercise.name,
     workoutName: history.session.workoutName,
     sessionStartTime: history.session.startTime,
@@ -97,6 +116,11 @@ export async function fetchExerciseHistoryDB(
       setNumber: set.setNumber,
     })),
   }));
+
+  return {
+    exercise,
+    history,
+  };
 }
 
 //fetch all exercises

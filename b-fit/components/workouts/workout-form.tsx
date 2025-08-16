@@ -171,7 +171,8 @@ export default function WorkoutForm({
                     <Input
                       {...field}
                       placeholder="Enter workout name"
-                      className="border-none pl-0 text-2xl md:text-2xl sm:text-2xl lg:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring"
+                      className="border-none pl-0 text-2xl md:text-2xl sm:text-2xl lg:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring w-full truncate"
+                      style={{ maxWidth: "100%" }}
                     />
                     {mode === "edit" && (
                       <EditDropdown
@@ -261,7 +262,7 @@ function EditDropdown({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger >
+      <DropdownMenuTrigger>
         <EllipsisHorizontalIcon className="h-7 w-7 cursor-pointer" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px] space-y-2">
