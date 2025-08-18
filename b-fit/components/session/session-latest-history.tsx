@@ -13,10 +13,12 @@ import { Loader2 } from "lucide-react";
 
 interface LatestExerciseHistoryProps {
   id: string;
+  onSelectExerciseDetails: (id: string | null) => void;
 }
 
 export default function LatestExerciseHistory({
   id,
+  onSelectExerciseDetails
 }: LatestExerciseHistoryProps) {
   const { data, isFetching } = useExercise(id);
 
@@ -44,7 +46,7 @@ export default function LatestExerciseHistory({
       : latest
   );
   return (
-    <div className="rounded-xl border bg-secondary/50">
+    <div className="rounded-xl border bg-secondary/50" onClick={() => onSelectExerciseDetails(id)}>
       <div className="px-4 pt-2 flex justify-between">
         <div>{latest.workoutName}</div>
         <div>{moment(latest.sessionStartTime).format("MMM Do YY hh:mm")}</div>

@@ -102,7 +102,7 @@ export async function fetchExerciseDB(
       },
     },
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
   });
 

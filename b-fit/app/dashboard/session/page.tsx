@@ -30,7 +30,6 @@ import {
 import ExerciseCarousel from "@/components/session/session-exercise-carousel";
 import { Button } from "@/components/ui/button";
 import RestTimerDrawer from "@/components/session/session-timer-drawer";
-import { Wrench } from "lucide-react";
 import SessionSettingsDrawer from "@/components/session/session-settings-drawer";
 import { SessionInput } from "@/actions/session-complete";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";

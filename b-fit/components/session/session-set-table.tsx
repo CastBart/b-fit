@@ -61,7 +61,7 @@ export default function SessionSetTable({
     <div className=" space-y-8">
       <div className="flex space-x-2 items-center">
         <h3
-          className="text-2xl font-semibold"
+          className="text-2xl font-semibold cursor-pointer"
           onClick={() => {
             const id = exerciseMap[exerciseID].id;
             onSelectExerciseDetails(id);
@@ -180,39 +180,7 @@ export default function SessionSetTable({
           })}
         </TableBody>
       </Table>
-      <LatestExerciseHistory id={exerciseMap[exerciseID].id} />
-      <>
-        {/* {data &&
-        data?.history.map((ex, index) => (
-          <div key={index} className="rounded-xl border bg-secondary/50">
-            <div className="px-4 pt-2 flex justify-between">
-            <div>{ex.workoutName}</div>
-              <div>{moment(ex.sessionStartTime).format("MMM Do YY hh:mm")}</div>
-            </div>
-            <Table>
-            <TableCaption className="hidden">Sets</TableCaption>
-            <TableHeader>
-            <TableRow>
-            <TableHead className="text-center">Set</TableHead>
-            <TableHead className="text-center">Weight</TableHead>
-            <TableHead className="text-center">Reps</TableHead>
-            </TableRow>
-            </TableHeader>
-            <TableBody>
-            {ex.sets.map((set, setIndex) => (
-              <TableRow key={setIndex}>
-              <TableCell className="text-center">
-              {set.setNumber}
-              </TableCell>
-              <TableCell className="text-center">{set.weight}</TableCell>
-              <TableCell className="text-center">{set.reps}</TableCell>
-              </TableRow>
-              ))}
-              </TableBody>
-              </Table>
-              </div>
-              ))} */}
-      </>
+      <LatestExerciseHistory id={exerciseMap[exerciseID].id} onSelectExerciseDetails={onSelectExerciseDetails}/>
     </div>
   );
 }
