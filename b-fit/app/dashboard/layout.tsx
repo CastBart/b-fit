@@ -5,8 +5,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { Toaster } from "@/components/ui/sonner";
-import { QueryProvider } from "@/providers/query-provider"; // ✅ Import the QueryProvider
 import { StoreProvider } from "@/providers/store-provider";
+import QueryProvider from "@/providers/query-provider";
 import { startGlobalTimer } from "@/lib/timeRunner";
 import { GlobalTimerProvider } from "@/providers/global-timer-provider";
 import SessionResumeButton from "@/components/session/session-resume-button";

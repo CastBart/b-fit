@@ -8,7 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "../ui/separator";
 import { Exercise } from "@/lib/definitions";
 import ExerciseDetailsInfo from "./exercise-details-info";
@@ -29,7 +29,7 @@ export function ExerciseDetailsDrawer({
 }: ExerciseDetailsDrawerProps) {
   const { data, isLoading } = useExercise(selectedExercise || "");
 
-  if (isLoading) {
+  if (!data) {
     return (
       <Drawer
         open={!!selectedExercise}
@@ -42,7 +42,7 @@ export function ExerciseDetailsDrawer({
               <DrawerHeader>
                 <div className="flex flex-col gap-2">
                   <DrawerTitle className="text-center text-3xl">
-                    Exercise Details
+                    Exercise Drawer
                   </DrawerTitle>
                   <DrawerDescription className="hidden">
                     View exercise details
@@ -50,8 +50,25 @@ export function ExerciseDetailsDrawer({
                   <Separator className="h-1"></Separator>
                 </div>
               </DrawerHeader>
-              <div className="w-full flex justify-center py-10">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <div className="h-[335px] overflow-y-auto custom-scrollbar ">
+                <Tabs defaultValue="info" className="px-4 flex flex-col">
+                  <TabsList className="grid grid-cols-2 sticky top-0 z-10">
+                    <TabsTrigger value="info">Info</TabsTrigger>
+                    <TabsTrigger value="history">History</TabsTrigger>
+                  </TabsList>
+                  <div className=" overflow-y-auto ">
+                    <TabsContent value="history">
+                      <div className="w-full flex justify-center py-10">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="history">
+                      <div className="w-full flex justify-center py-10">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      </div>
+                    </TabsContent>
+                  </div>
+                </Tabs>
               </div>
               <DrawerFooter>
                 <DrawerClose asChild id="exercise-filters-drawer-close">

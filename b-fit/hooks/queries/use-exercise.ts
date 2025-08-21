@@ -1,11 +1,11 @@
 // hooks/use-exercise.ts
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
 import { Exercise } from "@/lib/definitions";
 import { getQueryClient } from "@/lib/getQueryClient";
 
 export function useExercise(id: string) {
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient()
   const { data, isLoading, isFetching, isError, error } = useQuery<
     ExerciseWithHistory,
     Error
@@ -30,7 +30,6 @@ export function useExercise(id: string) {
       }
       return undefined;
     },
-    refetchOnMount: true,
   });
 
   return {
