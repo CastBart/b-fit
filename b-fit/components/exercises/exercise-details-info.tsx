@@ -9,13 +9,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Separator } from "../ui/separator";
+import ExerciseInstructions from "./exercise-details-instructions";
 
 interface ExerciseDetailsInfoProps {
   exercise: Exercise;
   onDelete: (exerciseId: string, exerciseName: string) => void;
 }
 
-export default function ExerciseDetailsInfo({ exercise, onDelete }: ExerciseDetailsInfoProps) {
+export default function ExerciseDetailsInfo({
+  exercise,
+  onDelete,
+}: ExerciseDetailsInfoProps) {
   function handleDelete() {
     onDelete(exercise.id, exercise.name);
   }
@@ -24,14 +29,32 @@ export default function ExerciseDetailsInfo({ exercise, onDelete }: ExerciseDeta
     <TabsContent value="info">
       <div className="flex items-center">
         <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
-        {exercise.owner === ExerciseOwnership.Custom ? <EditDropdown onDelete={handleDelete} /> : ""}
+        {exercise.owner === ExerciseOwnership.Custom ? (
+          <EditDropdown onDelete={handleDelete} />
+        ) : (
+          ""
+        )}
       </div>
       <div className="space-y-2">
         <SelectionButton label="Equipment" value={exercise.equipment} />
-        <SelectionButton label="Primary Muscle" value={exercise.primaryMuscle} />
-        <SelectionButton label="Auxiliary Muscles" value={exercise.auxiliaryMuscles} />
+        <SelectionButton
+          label="Primary Muscle"
+          value={exercise.primaryMuscle}
+        />
+        <SelectionButton
+          label="Auxiliary Muscles"
+          value={exercise.auxiliaryMuscles}
+        />
         <SelectionButton label="Exercise Type" value={exercise.type} />
       </div>
+      {exercise.instructions && (
+        <>
+          <Separator className="my-4 h-1" />
+          <div className="text-xl font-bold pr-2">Instructions</div>
+          <Separator className="my-4 h-1" />
+          <ExerciseInstructions instructions={exercise.instructions} />
+        </>
+      )}
     </TabsContent>
   );
 }
@@ -77,4 +100,3 @@ function SelectionButton({ label, value }: SelectionButtonProps) {
     </Button>
   );
 }
-

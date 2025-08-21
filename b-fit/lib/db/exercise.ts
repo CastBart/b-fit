@@ -80,6 +80,7 @@ export async function fetchExerciseDB(
       exerciseRecord.auxiliaryMuscles
     ),
     type: getEnumValueByKey(ExerciseType, exerciseRecord.exerciseType),
+    instructions: exerciseRecord.instructions || "",
   };
 
   const histories = await db.exerciseHistory.findMany({
@@ -144,6 +145,7 @@ export async function fetchUserExercisesDB(
       exercise.auxiliaryMuscles
     ),
     type: getEnumValueByKey(ExerciseType, exercise.exerciseType),
+    instructions: exercise.instructions || "",
   }));
 }
 

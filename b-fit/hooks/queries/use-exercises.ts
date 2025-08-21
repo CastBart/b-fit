@@ -8,7 +8,7 @@ import { CreateExerciseSchema } from "@/schemas";
 import * as z from "zod";
 
 export function useExercises() {
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     data: exercises = [],
