@@ -68,27 +68,46 @@ export async function completeSession(sessionData: SessionInput) {
           },
         });
 
-        for (const history of exerciseHistories) {
-          await tx.exerciseHistory.create({
-            data: {
-              sessionId: session.id,
-              exerciseId: history.exerciseId,
-              userId: user.id!,
-              sets: {
-                create: history.sets.map((s) => ({
-                  reps: s.reps,
-                  weight: s.weight,
-                  isCompleted: true,
-                  setNumber: s.setNumber,
-                })),
+        // for (const history of exerciseHistories) {
+        //   await tx.exerciseHistory.create({
+        //     data: {
+        //       sessionId: session.id,
+        //       exerciseId: history.exerciseId,
+        //       userId: user.id!,
+        //       sets: {
+        //         create: history.sets.map((s) => ({
+        //           reps: s.reps,
+        //           weight: s.weight,
+        //           isCompleted: true,
+        //           setNumber: s.setNumber,
+        //         })),
+        //       },
+        //     },
+        //   });
+        // }
+
+        await Promise.all(
+          exerciseHistories.map((history) => {
+            return tx.exerciseHistory.create({
+              data: {
+                sessionId: session.id,
+                exerciseId: history.exerciseId,
+                userId: user.id!,
+                sets: {
+                  create: history.sets.map((s) => ({
+                    reps: s.reps,
+                    weight: s.weight,
+                    isCompleted: true,
+                    setNumber: s.setNumber,
+                  })),
+                },
               },
-            },
-          });
-        }
+            });
+          })
+        );
       },
       { maxWait: 10000, timeout: 20000 }
     );
-    revalidatePath("/dashboard");
 
     return { success: true };
   } catch (error) {

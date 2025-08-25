@@ -20,12 +20,15 @@ import {
   CircleCheck,
   Hourglass,
   RotateCcw,
+  Ban,
 } from "lucide-react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { pauseSession, resumeSession } from "@/store/sessionSlice";
 import { RootState } from "@/store";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
+import { Session } from "inspector/promises";
+import SessionCancelAlert from "./session-cancel-alert";
 
 export function formatStartTime(timestamp: number | null): string {
   if (!timestamp) return "Not started";
@@ -74,6 +77,7 @@ export default function SessionSettingsDrawer() {
           <Separator className="h-1" />
         </DrawerHeader>
         <div className="flex flex-col gap-2 px-4">
+          {/* Start Time */}
           <div className="flex border rounded-lg justify-between px-2 py-4">
             <div className="flex justify-center gap-2">
               <CalendarDays />
@@ -81,6 +85,7 @@ export default function SessionSettingsDrawer() {
             </div>
             <div>{formatStartTime(startTime)}</div>
           </div>
+          {/* Duration */}
           <div className="flex border rounded-lg  justify-between px-2 py-4">
             <div className="flex justify-center gap-2">
               <Hourglass />
@@ -88,12 +93,14 @@ export default function SessionSettingsDrawer() {
             </div>
             <div>{formatTime(workoutDuration!)}</div>
           </div>
+          {/* Complete button */}
           <div className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary">
             <div className="flex justify-center gap-2">
               <CircleCheck />
               <div>Complete</div>
             </div>
           </div>
+          {/* Pause/Resume button */}
           <div
             className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary"
             onClick={() => {
@@ -109,6 +116,14 @@ export default function SessionSettingsDrawer() {
               <div>{isPaused ? "Resume " : "Pause"}</div>
             </div>
           </div>
+          {/* Cancel button */}
+          {/* <div className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary">
+            <div className="flex justify-center gap-2">
+              <Ban />
+              <div>Cancel</div>
+            </div>
+          </div> */}
+          <SessionCancelAlert />
         </div>
         <DrawerFooter>
           <DrawerClose>Close</DrawerClose>

@@ -75,7 +75,6 @@ export default function SessionExerciseCarousel() {
 
   //update ordered Array od ID exericses when exercises change
   useEffect(() => {
-    console.log("exerciseMap updated", exerciseMap);
     const orderedExerciseArray = Object.values(exerciseMap);
     setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
   }, [exerciseMap]);
@@ -203,7 +202,6 @@ export default function SessionExerciseCarousel() {
     lastNode.next = newNodes[0];
     newNodes[0].prev = lastNode;
     const joinedHead = getHeadNode(lastNode);
-    console.log(joinedHead);
 
     //create progress for new nodes
     for (const node of newNodes) {
@@ -287,16 +285,7 @@ export default function SessionExerciseCarousel() {
       exerciseMap,
       progress,
     };
-    // await fetch("/api/session", {
-    //   method: "POST",
-    //   body: JSON.stringify(sessionData),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
     createSession(sessionData);
-    // dispatch(endSession());
-    // router.push("/dashboard");
   }
 
   if (!currentExercise || !exerciseProgress)
@@ -319,7 +308,7 @@ export default function SessionExerciseCarousel() {
       />
       <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} />
 
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div className="overflow-hidden " ref={emblaRef}>
         <div className="flex space-x-4">
           {exerciseIds.map((ex) => (
             <div key={ex} className="flex-shrink-0 w-full">
@@ -333,6 +322,8 @@ export default function SessionExerciseCarousel() {
           ))}
         </div>
       </div>
+      {/* Padding for Timer button */}
+      <div className="h-[110px]"></div>
 
       {/* Timer Button */}
       {timer && timer.isRunning && !workoutCompleted && <RestTimerDrawer />}

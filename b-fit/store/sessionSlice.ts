@@ -550,6 +550,7 @@ export const sessionSlice = createSlice({
 
     endSession: (state) => {
       Object.assign(state, initialState);
+      
     },
   },
 });

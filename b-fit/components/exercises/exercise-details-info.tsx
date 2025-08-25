@@ -26,7 +26,7 @@ export default function ExerciseDetailsInfo({
   }
 
   return (
-    <TabsContent value="info">
+    <TabsContent value="info" >
       <div className="flex items-center">
         <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
         {exercise.owner === ExerciseOwnership.Custom ? (
@@ -47,14 +47,6 @@ export default function ExerciseDetailsInfo({
         />
         <SelectionButton label="Exercise Type" value={exercise.type} />
       </div>
-      {exercise.instructions && (
-        <>
-          <Separator className="my-4 h-1" />
-          <div className="text-xl font-bold pr-2">Instructions</div>
-          <Separator className="my-4 h-1" />
-          <ExerciseInstructions instructions={exercise.instructions} />
-        </>
-      )}
     </TabsContent>
   );
 }

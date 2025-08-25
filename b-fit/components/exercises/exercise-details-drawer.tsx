@@ -15,6 +15,7 @@ import ExerciseDetailsInfo from "./exercise-details-info";
 import ExerciseDetailsHistory from "./exercise-details-history";
 import { useExercise } from "@/hooks/queries/use-exercise";
 import { Loader2 } from "lucide-react";
+import ExerciseInstructions from "./exercise-details-instructions";
 
 interface ExerciseDetailsDrawerProps {
   selectedExercise: string | null;
@@ -50,7 +51,7 @@ export function ExerciseDetailsDrawer({
                   <Separator className="h-1"></Separator>
                 </div>
               </DrawerHeader>
-              <div className="h-[335px] overflow-y-auto custom-scrollbar ">
+              <div className="h-[600px] overflow-y-auto custom-scrollbar ">
                 <Tabs defaultValue="info" className="px-4 flex flex-col">
                   <TabsList className="grid grid-cols-2 sticky top-0 z-10">
                     <TabsTrigger value="info">Info</TabsTrigger>
@@ -105,17 +106,29 @@ export function ExerciseDetailsDrawer({
                 <Separator className="h-1"></Separator>
               </div>
             </DrawerHeader>
-            <div className="h-[335px] overflow-y-auto custom-scrollbar ">
+            <div className="h-screen overflow-y-auto custom-scrollbar ">
               <Tabs defaultValue="info" className="px-4 flex flex-col">
-                <TabsList className="grid grid-cols-2 sticky top-0 z-10">
-                  <TabsTrigger value="info">Info</TabsTrigger>
-                  <TabsTrigger value="history">History</TabsTrigger>
-                </TabsList>
-                <div className=" overflow-y-auto  ">
+                <div className="sticky top-0 z-10 pb-2 bg-background ">
+                  <TabsList
+                    className={`grid ${exercise.instructions ? "grid-cols-3" : "grid-cols-2"} `}
+                  >
+                    <TabsTrigger value="info">Info</TabsTrigger>
+                    {exercise.instructions && (
+                      <TabsTrigger value="instructions">
+                        Instructions
+                      </TabsTrigger>
+                    )}
+                    <TabsTrigger value="history">History</TabsTrigger>
+                  </TabsList>
+                </div>
+                <div className=" p-2 ">
                   <ExerciseDetailsInfo
                     exercise={exercise}
                     onDelete={onDelete}
                   />
+                  {exercise.instructions && (
+                    <ExerciseInstructions exercise={exercise} />
+                  )}
                   <ExerciseDetailsHistory exercise={exercise} />
                 </div>
               </Tabs>

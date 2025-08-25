@@ -42,7 +42,7 @@ export default function ExerciseDetailsHistory({
     );
   }
   return (
-    <TabsContent value="history">
+    <TabsContent value="history" className="">
       <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
       <div className="space-y-4">
         {exerciseWithHistory?.history.map((ex, index) => (

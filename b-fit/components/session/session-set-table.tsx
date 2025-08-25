@@ -15,9 +15,6 @@ import { Input } from "../ui/input";
 import { updateSet, completeSet, addNote } from "@/store/sessionSlice";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 import { Textarea } from "../ui/textarea";
-import { Exercise } from "@/lib/definitions";
-import { useExercise } from "@/hooks/queries/use-exercise";
-import moment from "moment";
 import LatestExerciseHistory from "./session-latest-history";
 
 /**
