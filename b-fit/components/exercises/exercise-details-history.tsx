@@ -49,7 +49,7 @@ export default function ExerciseDetailsHistory({
           <div key={index} className="rounded-xl border bg-secondary/50">
             <div className="px-4 pt-2 flex justify-between">
               <div>{ex.workoutName}</div>
-              <div>{moment(ex.sessionStartTime).format("MMM Do YY hh:mm")}</div>
+              <div>{moment(ex.sessionStartTime).format("MMM Do, YYYY, hh:mm")}</div>
             </div>
             <Table>
               <TableCaption className="hidden">Sets</TableCaption>

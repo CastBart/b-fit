@@ -14,7 +14,12 @@ import {
 } from "@/lib/definitions";
 import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
 
-// Example: Create Exercise
+/**
+ * Creates a new exercise in the database after validating the input data.
+ * @param data Data for the new exercise passed from the frontend
+ * @param userId ID of the user creating the exercise
+ * @returns Database record of the created exercise or an error object
+ */
 export async function createExerciseDB(
   data: z.infer<typeof CreateExerciseSchema>,
   userId: string
@@ -58,7 +63,12 @@ export async function createExerciseDB(
   });
 }
 
-// Fetch Exercise History
+/**
+ * Fetches an exercise along with its history for a specific user.
+ * @param exerciseId  ID of the exercise to fetch history for
+ * @param userId  ID of the user requesting the exercise history
+ * @returns  Exercise details along with its history or an error object
+ */
 export async function fetchExerciseDB(
   exerciseId: string,
   userId: string
@@ -125,6 +135,11 @@ export async function fetchExerciseDB(
 }
 
 //fetch all exercises
+/**
+ * Fetches all exercises owned by a specific user and public exercises.
+ * @param userId ID of the user whose exercises are to be fetched
+ * @returns List of exercises owned by the user or public exercises
+ */
 export async function fetchUserExercisesDB(
   userId: string
 ): Promise<Exercise[]> {

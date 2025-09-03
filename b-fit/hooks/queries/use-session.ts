@@ -2,14 +2,66 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SessionInput } from "@/actions/session-complete";
 import { useRouter } from "next/navigation";
-import { getQueryClient } from "@/lib/getQueryClient";
-import { useDispatch } from "react-redux";
-import { endSession } from "@/store/sessionSlice";
-export const useSession = () => {
+import { SessionWithHistory } from "@/lib/db/session";
+import { Session } from "@prisma/client";
+/**
+ *
+ * @param sessionId Optional session ID to fetch a specific session. If not provided, fetches all sessions.
+ * @returns If sessionId is provided, returns a single session object and related states. If not, returns an array of sessions and related states.
+ */
+export const useSession = (sessionId?: string) => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const dispatch = useDispatch();
 
+  /**
+   * Fetch a single session by ID (if sessionId is passed)
+   */
+  const {
+    data: session,
+    isLoading: isSessionLoading,
+    isError: isSessionError,
+    error: sessionError,
+  } = useQuery<SessionWithHistory, Error>({
+    queryKey: ["sessions", sessionId],
+    queryFn: async () => {
+      const res = await fetch(`/api/session/${sessionId}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch session.");
+      }
+
+      return data;
+    },
+    enabled: !!sessionId, // only run if an id is provided
+  });
+
+  /**
+   * Fetch all sessions (for listing history, dashboards, etc.)
+   */
+  const {
+    data: sessions,
+    isLoading: isSessionsLoading,
+    isError: isSessionsError,
+    error: sessionsError,
+  } = useQuery<Session[], Error>({
+    queryKey: ["sessions"],
+    queryFn: async () => {
+      const res = await fetch(`/api/session`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch sessions.");
+      }
+
+      return data;
+    },
+    enabled: !sessionId, // don’t fetch all if we’re focusing on a single one
+  });
+
+  /**
+   * Create a new session
+   */
   const createMutation = useMutation({
     mutationFn: async (data: SessionInput) => {
       const res = await fetch("/api/session/create", {
@@ -22,26 +74,26 @@ export const useSession = () => {
 
       const result = await res.json();
       if (!res.ok) {
-        throw new Error(result.error || "Failed to create workout.");
+        throw new Error(result.error || "Failed to create session.");
       }
 
       return result;
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
-      // Invalidate & set exercise histories for each exercise
+
+      // Invalidate & update exercise histories
       const completedExercises = Object.values(variables.progress).filter(
         (ex) => ex.sets.some((set) => set.completed)
       );
+
       completedExercises.forEach((ex) => {
         const exerciseId = variables.exerciseMap[ex.exerciseId].id;
-        console.log("Current Exercise Invalidation ID:", exerciseId);
-        // Invalidate exercise history query
+
         queryClient.invalidateQueries({
           queryKey: ["exercise", exerciseId],
         });
 
-        // Optimistically update exercise history cache
         queryClient.setQueryData(["exercise", exerciseId], (oldData: any) => {
           if (!oldData) return oldData;
 
@@ -58,20 +110,17 @@ export const useSession = () => {
                 setNumber: set.setNumber,
               })),
           };
-          console.log("Old Data:", oldData);
-          console.log("Old History:", oldData.history);
-          console.log("New History Entry:", newHistoryEntry);
+
           return {
             ...oldData,
             history: [...oldData.history, newHistoryEntry],
           };
         });
       });
+
       toast.success("Session Completed!", {
         description: `Session "${variables.workoutName}" has been saved.`,
       });
-      router.push("/dashboard");
-      dispatch(endSession());
     },
     onError: (error: any) => {
       toast.error("Failed to save Session", {
@@ -80,27 +129,20 @@ export const useSession = () => {
     },
   });
 
-  //Todo: Implement fetch sessions Query
-  // const { data, isLoading, isError, error } = useQuery({
-  //   queryKey: ["sessions"],
-  //   queryFn: async () => {
-  //     const res = await fetch(`/api/sessions`);
-  //     const data = await res.json();
-
-  //     if (!res.ok) {
-  //       throw new Error(data.error || "Failed to fetch workouts.");
-  //     }
-
-  //     return data;
-  //   },
-  //   staleTime: 1000 * 60 * 5, // 5 minutes
-  // });
-
   return {
-    // sessions: data,
-    // isLoading,
-    // isError,
-    // error,
+    // Single session
+    session,
+    isSessionLoading,
+    isSessionError,
+    sessionError,
+
+    // All sessions
+    sessions,
+    isSessionsLoading,
+    isSessionsError,
+    sessionsError,
+
+    // Mutation
     createSession: createMutation.mutate,
     isCreating: createMutation.isPending,
   };
