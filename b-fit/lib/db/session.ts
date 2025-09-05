@@ -30,3 +30,26 @@ export async function fetchSingleSessionDB(
     },
   });
 }
+
+/**
+ * 
+ * @param userId ID of the user whose sessions are to be fetched
+ * @returns List of sessions for the user, including exercise histories and sets
+ */
+export async function fetchAllSessionsDB(
+  userId: string
+): Promise<SessionWithHistory[]> {
+  return db.session.findMany({
+    where: { userId },
+    include: {
+      exerciseHistories: {
+        include: {
+          sets: true,
+        },
+      },
+    },
+    orderBy: {
+      startTime: "desc", // latest first
+    },
+  });
+}

@@ -47,7 +47,7 @@ export const useSession = (sessionId?: string) => {
   } = useQuery<Session[], Error>({
     queryKey: ["sessions"],
     queryFn: async () => {
-      const res = await fetch(`/api/session`);
+      const res = await fetch(`/api/sessions`);
       const data = await res.json();
 
       if (!res.ok) {

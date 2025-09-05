@@ -1,11 +1,11 @@
-// app/session/[id]/page.tsx
+// app/sessios/page.tsx
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import SessionCompleteClientPage from "@/components/session/session-complete";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { fetchSession } from "@/actions/session-fetch-session";
 import { SessionsCalendarView } from "@/components/session/session-calendar-view";
 
-export default function SessionPage() {
+export default function AllSessionsPage() {
   const queryClient = getQueryClient();
   //   await queryClient.prefetchQuery({
   //     queryKey: ["exercises"],
