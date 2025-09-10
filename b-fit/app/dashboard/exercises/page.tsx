@@ -2,12 +2,11 @@ import {
   dehydrate,
   HydrationBoundary,
 } from "@tanstack/react-query";
-import { Suspense } from "react";
 
 import Exercises from "@/components/exercises/exercises";
-import ExercisesSkeleton from "@/components/exercises/skeletons/skeleton-exercises";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 import { getQueryClient } from "@/lib/getQueryClient";
+
 
 export default async function Page() {
   const queryClient = getQueryClient();

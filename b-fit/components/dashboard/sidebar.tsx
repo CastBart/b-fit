@@ -1,5 +1,4 @@
 "use client";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import {
   Sidebar,
   SidebarContent,
@@ -13,9 +12,10 @@ import {
 } from "@/components/ui/sidebar";
 import Sidebar_Header from "./sidebar-header";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Calculator,
+  CalendarDays,
   ClipboardPen,
   Dumbbell,
   Grab,
@@ -24,14 +24,9 @@ import {
 
 export function DashboardSidebar() {
   const pathName = usePathname();
-  const user = useCurrentUser();
   return (
     <Sidebar>
-      <Sidebar_Header
-        imgSrc={user?.image || ""}
-        name={user?.name || ""}
-        email={user?.email || ""}
-      />
+      <Sidebar_Header />
       <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
@@ -76,6 +71,16 @@ export function DashboardSidebar() {
               <Link href="/dashboard/exercises">
                 <Dumbbell />
                 Exercises
+              </Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton
+              asChild
+              isActive={pathName === "/dashboard/sessions"}
+              className="text-lg min-h-[48px]"
+            >
+              <Link href="/dashboard/sessions">
+                <CalendarDays />
+                Sessions
               </Link>
             </SidebarMenuButton>
             <SidebarMenuButton

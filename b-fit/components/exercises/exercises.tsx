@@ -25,8 +25,6 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
     isError,
     error,
     handleDelete,
-    createExercise,
-    refetch,
   } = useExercises();
 
   const [searchTerm, setSearchTerm] = useState("");

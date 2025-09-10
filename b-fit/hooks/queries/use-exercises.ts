@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 import { deleteExercise } from "@/actions/delete-exercise";
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ export function useExercises() {
     isLoading,
     isError,
     error,
-  } = useQuery<Exercise[]>({
+  } = useQuery<Exercise[], Error>({
     queryKey: ["exercises"],
     queryFn: async () => {
       const res = await fetch("/api/exercises");
@@ -24,7 +24,7 @@ export function useExercises() {
       if (!res.ok) {
         throw new Error(data.error || "Failed to fetch exercises - Use Exercises.");
       }
-      return data;
+      return data as Exercise[];
     },
   });
 

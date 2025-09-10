@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { formatTime } from "@/lib/formatTime";
+import { useMemo, useState } from "react";
+import { Calendar, CalendarDayButton } from "@/components/ui/calendar"; // <-- import CalendarDayButton
 import { useSession } from "@/hooks/queries/use-session";
-export function SessionsCalendarView() {
-  const {sessions, isSessionsLoading, isSessionsError, sessionsError} = useSession();
+import { formatTime } from "@/lib/formatTime";
 
+/** helper to join class names */
+const cls = (...parts: Array<string | false | undefined>) =>
+  parts.filter(Boolean).join(" ");
+
+export function SessionsCalendarView() {
+  const { sessions, isSessionsLoading } = useSession();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
+  // Build a Set of normalized day timestamps (00:00:00) for quick lookup
+  const sessionDaysSet = useMemo(() => {
+    const set = new Set<number>();
+    (sessions ?? []).forEach((s) => {
+      const d = new Date(s.startTime);
+      d.setHours(0, 0, 0, 0);
+      set.add(d.getTime());
+    });
+    return set;
+  }, [sessions]);
 
   if (isSessionsLoading || !sessions) {
     return <div>Loading sessions...</div>;
   }
   const workoutsOnSelectedDay = selectedDate
     ? sessions.filter(
-        (s) => new Date(s.startTime).toDateString() === selectedDate.toDateString()
+        (s) =>
+          new Date(s.startTime).toDateString() === selectedDate.toDateString()
       )
     : [];
 
@@ -28,12 +44,37 @@ export function SessionsCalendarView() {
         className="w-full"
         modifiers={{
           hasSession: (date) =>
-            sessions.some(
-              (s) => new Date(s.startTime).toDateString() === date.toDateString()
-            ),
+            sessionDaysSet.has(new Date(date).setHours(0, 0, 0, 0)),
         }}
-        modifiersClassNames={{
-          hasSession: "bg-green-500 text-white rounded-full",
+        components={{
+          // Compose with the existing CalendarDayButton so we keep all behavior
+          DayButton: (props: any) => {
+            const { day, modifiers, children } = props;
+            const hasSession = !!modifiers.hasSession;
+
+            // Render the default CalendarDayButton but provide custom children:
+            // 1) day number (the default child)
+            // 2) a dot indicator below
+            return (
+              <CalendarDayButton {...props}>
+                {/* DayButton uses children as the inner content; we provide two spans:
+                    - primary number (the default children)
+                    - the small dot indicator */}
+                <span>{children}</span>
+                {hasSession && (
+                  <span
+                    className={cls(
+                      "inline-block mt-0.5 h-1.5 w-1.5 rounded-full",
+                      // if the day is selected or has dark bg, you might want to invert color:
+                      modifiers.selected
+                        ? "bg-primary-foreground"
+                        : "bg-primary"
+                    )}
+                  />
+                )}
+              </CalendarDayButton>
+            );
+          },
         }}
       />
 

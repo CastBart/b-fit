@@ -63,7 +63,7 @@ export function ExerciseDetailsDrawer({
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                       </div>
                     </TabsContent>
-                    <TabsContent value="history">
+                    <TabsContent value="info">
                       <div className="w-full flex justify-center py-10">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                       </div>

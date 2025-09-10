@@ -2,7 +2,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import SessionCompleteClientPage from "@/components/session/session-complete";
 import { getQueryClient } from "@/lib/getQueryClient";
-import { fetchSession } from "@/actions/session-fetch-session";
+import { fetchSession } from "@/actions/fetch-session";
 import { SessionsCalendarView } from "@/components/session/session-calendar-view";
 
 export default function SessionPage() {

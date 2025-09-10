@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { getWorkoutWithExercises } from "@/actions/fetch-workout";
 import WorkoutDetails from "@/components/workouts/workout-details";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 
 
 export default async function WorkoutDetailsPage({ params }: { params: { id: string } }) {

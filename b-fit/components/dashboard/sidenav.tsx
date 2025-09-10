@@ -39,7 +39,7 @@ export default function SideNav() {
             return (
               <Link href={link.link} className={`block`} key={key}>
                 <Button
-                  variant="customlink"
+                  // variant="customlink"
                   className={`flex h-[48px] w-full items-center justify-start gap-4 my-2 rounded-md p-3 ${
                     pathname === link.link
                       ? "bg-gray-700"

@@ -295,3 +295,13 @@ tr {
   z-index: 99999 !important;
   pointer-events: auto !important;
 }
+
+
+/* Calendar Styles
+.rdp-day_hasSession {
+  @apply bg-green-500 text-white rounded-full;
+}
+
+.rdp-day_hasSession:hover {
+  @apply bg-green-600 text-white;
+} */

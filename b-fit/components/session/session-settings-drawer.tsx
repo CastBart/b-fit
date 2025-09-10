@@ -30,9 +30,9 @@ import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 import { Session } from "inspector/promises";
 import SessionCancelAlert from "./session-cancel-alert";
 
-export function formatStartTime(timestamp: number | null): string {
-  if (!timestamp) return "Not started";
-  const date = new Date(timestamp);
+export function formatStartTime(dateTimeStamp: number | null): string {
+  if (!dateTimeStamp) return "Not started";
+   const date = new Date(dateTimeStamp);
 
   return date.toLocaleString(undefined, {
     weekday: "short", // "Mon", "Tue", etc.

@@ -15,7 +15,7 @@ export async function GET() {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error("[SESSIONS_FETCH_API_ERROR]", error);
+    // console.error("[SESSIONS_FETCH_API_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to fetch sessions" },
       { status: 500 }

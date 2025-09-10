@@ -82,7 +82,7 @@ export default function SessionPage() {
 
   const indexFromId = useCallback(
     (id: string) => exerciseIds.findIndex((exID) => exID === id),
-    [exerciseMap, exerciseIds]
+    [exerciseIds]
   );
 
   const idFromIndex = useCallback(

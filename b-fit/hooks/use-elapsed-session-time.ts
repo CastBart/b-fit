@@ -8,9 +8,14 @@ export function useElapsedSessionTime() {
 
   if (!startTime) return null;
 
+  // Convert to timestamps (ms since epoch)
+  const start = new Date(startTime).getTime();
   const now = Date.now();
-  const totalPaused =
-    accumulatedPauseDuration + (isPaused && pauseTime ? now - pauseTime : 0);
+  const pause = pauseTime ? new Date(pauseTime).getTime() : null;
 
-  return Math.floor((now - startTime - totalPaused) / 1000);
+  const totalPaused =
+    accumulatedPauseDuration +
+    (isPaused && pause ? now - pause : 0);
+
+  return Math.floor((now - start - totalPaused) / 1000); // seconds
 }

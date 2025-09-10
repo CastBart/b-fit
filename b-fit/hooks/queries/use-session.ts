@@ -4,6 +4,7 @@ import { SessionInput } from "@/actions/session-complete";
 import { useRouter } from "next/navigation";
 import { SessionWithHistory } from "@/lib/db/session";
 import { Session } from "@prisma/client";
+import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
 /**
  *
  * @param sessionId Optional session ID to fetch a specific session. If not provided, fetches all sessions.
@@ -94,28 +95,35 @@ export const useSession = (sessionId?: string) => {
           queryKey: ["exercise", exerciseId],
         });
 
-        queryClient.setQueryData(["exercise", exerciseId], (oldData: any) => {
-          if (!oldData) return oldData;
+        queryClient.setQueryData<ExerciseWithHistory>(
+          ["exercise", exerciseId],
+          (oldData) => {
+            if (!oldData) return oldData;
 
-          const newHistoryEntry = {
-            sessionId: variables.sessionId,
-            exerciseId,
-            date: new Date().toISOString(),
-            sets: ex.sets
-              .filter((set) => set.completed)
-              .map((set) => ({
-                reps: set.reps,
-                weight: set.weight,
-                isCompleted: true,
-                setNumber: set.setNumber,
-              })),
-          };
+            const newHistoryEntry: ExerciseHistory = {
+              exerciseName: variables.exerciseMap[ex.exerciseId].name,
+              workoutName: variables.workoutName,
+              sessionStartTime: variables.startTime,
+              sets: ex.sets
+                .filter((set) => set.completed)
+                .map((set) => ({
+                  reps: set.reps,
+                  weight: set.weight,
+                  isCompleted: true,
+                  setNumber: set.setNumber,
+                })),
+            };
 
-          return {
-            ...oldData,
-            history: [...oldData.history, newHistoryEntry],
-          };
-        });
+            return {
+              ...oldData,
+              history: [newHistoryEntry, ...oldData.history].sort(
+                (a, b) =>
+                  new Date(b.sessionStartTime).getTime() -
+                  new Date(a.sessionStartTime).getTime()
+              ),
+            };
+          }
+        );
       });
 
       toast.success("Session Completed!", {

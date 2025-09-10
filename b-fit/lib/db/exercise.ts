@@ -72,12 +72,12 @@ export async function createExerciseDB(
 export async function fetchExerciseDB(
   exerciseId: string,
   userId: string
-): Promise<ExerciseWithHistory | { error: string }> {
+): Promise<ExerciseWithHistory> {
   const exerciseRecord = await db.exercise.findUnique({
     where: { id: exerciseId },
   });
   if (!exerciseRecord) {
-    return { error: "Exercise not found." };
+    throw new Error("Exercise not found.");
   }
   const exercise: Exercise = {
     id: exerciseRecord.id,
@@ -120,7 +120,7 @@ export async function fetchExerciseDB(
   const history = histories.map((history) => ({
     exerciseName: history.exercise.name,
     workoutName: history.session.workoutName,
-    sessionStartTime: history.session.startTime,
+    sessionStartTime: new Date(history.session.startTime).getTime(),
     sets: history.sets.map((set) => ({
       reps: set.reps,
       weight: set.weight,
