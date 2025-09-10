@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar"; // <-- import CalendarDayButton
 import { useSession } from "@/hooks/queries/use-session";
 import { formatTime } from "@/lib/formatTime";
+import moment from "moment";
+import { SessionDetailsDrawer } from "./session-details-drawer";
 
 /** helper to join class names */
 const cls = (...parts: Array<string | false | undefined>) =>
@@ -11,7 +13,12 @@ const cls = (...parts: Array<string | false | undefined>) =>
 
 export function SessionsCalendarView() {
   const { sessions, isSessionsLoading } = useSession();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    null
+  );
 
   // Build a Set of normalized day timestamps (00:00:00) for quick lookup
   const sessionDaysSet = useMemo(() => {
@@ -86,9 +93,13 @@ export function SessionsCalendarView() {
             {workoutsOnSelectedDay.map((s) => (
               <li
                 key={s.id}
-                className="p-3 rounded-lg border bg-card shadow-sm"
+                className="p-3 rounded-lg border bg-card shadow-sm cursor-pointer"
+                onClick={() => setSelectedSessionId(s.id)}
               >
                 <h3 className="font-semibold">{s.workoutName}</h3>
+                <p className="text-sm text-muted-foreground">
+                  Start time: {moment(s.startTime).format("HH:mm A")}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Duration: {formatTime(s.duration)}
                 </p>
@@ -97,6 +108,11 @@ export function SessionsCalendarView() {
           </ul>
         )}
       </div>
+
+      <SessionDetailsDrawer
+        selectedSessionId={selectedSessionId}
+        onClose={() => setSelectedSessionId(null)}
+      />
     </div>
   );
 }

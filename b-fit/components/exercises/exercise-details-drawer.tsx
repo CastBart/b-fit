@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "../ui/separator";
-import { Exercise } from "@/lib/definitions";
 import ExerciseDetailsInfo from "./exercise-details-info";
 import ExerciseDetailsHistory from "./exercise-details-history";
 import { useExercise } from "@/hooks/queries/use-exercise";
