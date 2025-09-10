@@ -17,6 +17,7 @@ import {
   addExercises,
   removeExercise,
   resumeSession,
+  endSession
 } from "@/store/sessionSlice";
 import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { SupersetManager } from "@/lib/superset-manager";
@@ -30,14 +31,14 @@ import {
 import ExerciseCarousel from "@/components/session/session-exercise-carousel";
 import { Button } from "@/components/ui/button";
 import RestTimerDrawer from "@/components/session/session-timer-drawer";
-import { Wrench } from "lucide-react";
 import SessionSettingsDrawer from "@/components/session/session-settings-drawer";
 import { SessionInput } from "@/actions/session-complete";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/queries/use-session";
+import { ExerciseDetailsDrawer } from "@/components/exercises/exercise-details-drawer";
 
-export default function SessionExerciseCarousel() {
+export default function SessionPage() {
   const dispatch = useDispatch();
   const {
     workoutCompleted,
@@ -75,14 +76,13 @@ export default function SessionExerciseCarousel() {
 
   //update ordered Array od ID exericses when exercises change
   useEffect(() => {
-    console.log("exerciseMap updated", exerciseMap);
     const orderedExerciseArray = Object.values(exerciseMap);
     setExerciseIds(orderedExerciseArray.map((ex) => ex.instanceId));
   }, [exerciseMap]);
 
   const indexFromId = useCallback(
     (id: string) => exerciseIds.findIndex((exID) => exID === id),
-    [exerciseMap, exerciseIds]
+    [exerciseIds]
   );
 
   const idFromIndex = useCallback(
@@ -120,15 +120,34 @@ export default function SessionExerciseCarousel() {
     null
   );
 
+  const [exerciseDetails, setExerciseDetails] = useState<string | null>(null);
+
   const [setDrawerID, setSetDrawerID] = useState<string | null>(null);
 
   const [supersetManager, setSupersetManager] =
     useState<SupersetManager | null>(null);
 
+  /**
+   * Sets the ID of the exercise to show details for in the Exercise Details Drawer
+   * @param id ID of exercise to show details for
+   */
+  function handleSetExerciseDetails(id: string | null) {
+    setExerciseDetails(id);
+  }
+
+  /**
+   * Sets the ID of the exercise to show sets for in the Set Drawer
+   * @param id ID of exercise to show sets for
+   */
   function handleSetDrawerID(id: string | null) {
     setSetDrawerID(id);
   }
 
+  /**
+   * Handles when an exercise is selected and opens the options drawer
+   * Finds the corresponding ExerciseNode in the linked list and sets it to state
+   * @param exerciseID ID of exercise to show options for
+   */
   function handleSelectedExerciseOptions(exerciseID: string) {
     // Unflatten the exercise map to get the linked list
     const headNode = unFlattenExerciseNodeList(exerciseMap, headExerciseId!);
@@ -145,6 +164,10 @@ export default function SessionExerciseCarousel() {
     }
   }
 
+  /**
+   * Handles when the user confirms the superset selection
+   * Updates the exercise map in Redux with the new superset structure
+   */
   function handleSuperSetSelect() {
     if (!supersetManager) return;
 
@@ -159,6 +182,10 @@ export default function SessionExerciseCarousel() {
     setSupersetExercise(null);
   }
 
+  /**
+   * Handles adding new exercises to the exercise list during the session
+   * @param newExercises Array of exercises to add to the session at the end of the current list
+   */
   function handleAddedExercises(newExercises: Exercise[]) {
     const existingIds = Object.keys(exerciseMap);
     const newProgress: Record<string, ExerciseProgress> = {};
@@ -197,7 +224,6 @@ export default function SessionExerciseCarousel() {
     lastNode.next = newNodes[0];
     newNodes[0].prev = lastNode;
     const joinedHead = getHeadNode(lastNode);
-    console.log(joinedHead);
 
     //create progress for new nodes
     for (const node of newNodes) {
@@ -223,6 +249,12 @@ export default function SessionExerciseCarousel() {
     setExerciseIds(Object.values(newFlattenedNodes).map((ex) => ex.instanceId));
   }
 
+  /**
+   * Handles removing an exercise from the session
+   * Updates the linked list pointers and Redux state
+   * @param instanceId ID of exercise instance to remove from session
+   * @returns exits if exercise not found
+   */
   function handleRemoveExercise(instanceId: string) {
     const nodeToRemove = exerciseMap[instanceId];
     if (!nodeToRemove) return;
@@ -271,6 +303,10 @@ export default function SessionExerciseCarousel() {
     );
   }
 
+  /**
+   * Handles completing the session and sending data to the backend
+   * Gathers all necessary session data and calls the createSession action
+   */
   async function handleCompleteSession() {
     const sessionData: SessionInput = {
       sessionId: sessionId!,
@@ -281,16 +317,9 @@ export default function SessionExerciseCarousel() {
       exerciseMap,
       progress,
     };
-    // await fetch("/api/session", {
-    //   method: "POST",
-    //   body: JSON.stringify(sessionData),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
+    dispatch(endSession());
+    router.push("/dashboard");
     createSession(sessionData);
-    // dispatch(endSession());
-    // router.push("/dashboard");
   }
 
   if (!currentExercise || !exerciseProgress)
@@ -299,6 +328,7 @@ export default function SessionExerciseCarousel() {
         <div className="text-center">Loading exercise for session page...</div>
       </div>
     );
+
   return (
     <div className="p-4 max-w-[900px] mx-auto">
       {/* <div className="flex flex-col"> */}
@@ -313,7 +343,7 @@ export default function SessionExerciseCarousel() {
       />
       <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} />
 
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div className="overflow-hidden " ref={emblaRef}>
         <div className="flex space-x-4">
           {exerciseIds.map((ex) => (
             <div key={ex} className="flex-shrink-0 w-full">
@@ -321,11 +351,14 @@ export default function SessionExerciseCarousel() {
                 exerciseID={ex}
                 onSelectExerciseOptions={handleSelectedExerciseOptions}
                 onSelectSetDrawerID={handleSetDrawerID}
+                onSelectExerciseDetails={handleSetExerciseDetails}
               />
             </div>
           ))}
         </div>
       </div>
+      {/* Padding for Timer button */}
+      <div className="h-[110px]"></div>
 
       {/* Timer Button */}
       {timer && timer.isRunning && !workoutCompleted && <RestTimerDrawer />}
@@ -353,6 +386,14 @@ export default function SessionExerciseCarousel() {
           </Button>
         </div>
       )}
+
+      {/* Exercise Details Drawer */}
+      {/* TODO: Implement delete option */}
+      <ExerciseDetailsDrawer
+        selectedExercise={exerciseDetails}
+        onClose={() => setExerciseDetails(null)}
+        onDelete={() => {}}
+      />
 
       {/* Option Drawer */}
       <OptionsDrawer

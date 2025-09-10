@@ -1,4 +1,4 @@
-import { db } from "../lib/db";
+import { db } from "../lib/db/db";
 import exercisesData from "@/lib/exercise-list"; // ✅ Your default exercise list
 import {
   ExerciseEquipment,

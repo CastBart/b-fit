@@ -1,4 +1,4 @@
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 import { getQueryClient } from "@/lib/getQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 

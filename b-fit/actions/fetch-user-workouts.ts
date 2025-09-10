@@ -1,5 +1,5 @@
 "use server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
 import { Workout, Exercise } from "@/lib/definitions";
 import { getEnumValueByKey, getEnumValuesByKeys } from "@/lib/definitions";

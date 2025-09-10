@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { revalidatePath } from "next/cache";
 
 export async function deleteWorkout(id: string) {

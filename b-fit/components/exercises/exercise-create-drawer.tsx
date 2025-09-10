@@ -1,4 +1,4 @@
-import { useTransition, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -32,11 +32,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateExerciseSchema } from "@/schemas/index";
 import { useExercises } from "@/hooks/queries/use-exercises";
+import { Loader2 } from "lucide-react";
 
 export default function CreateExerciseDrawer() {
-  const { createExercise } = useExercises();
+  const { isCreating, createExercise } = useExercises();
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const form = useForm<
     z.infer<typeof CreateExerciseSchema> & {
@@ -124,6 +124,7 @@ export default function CreateExerciseDrawer() {
                     <FormMessage />
                   </FormItem>
                 )}
+                disabled={isCreating}
               />
 
               {/* Equipment Selection (Single-Select) */}
@@ -137,6 +138,7 @@ export default function CreateExerciseDrawer() {
                     name="equipment"
                     control={form.control}
                     singleSelect
+                    disabled={isCreating}
                   />
                 )}
               />
@@ -151,6 +153,7 @@ export default function CreateExerciseDrawer() {
                     name="primaryMuscle"
                     control={form.control}
                     singleSelect
+                    disabled={isCreating}
                   />
                 )}
               />
@@ -166,6 +169,7 @@ export default function CreateExerciseDrawer() {
                     name="auxiliaryMuscles"
                     control={form.control}
                     blankSelectionTxt="None"
+                    disabled={isCreating}
                   />
                 )}
               />
@@ -180,6 +184,7 @@ export default function CreateExerciseDrawer() {
                     name="exerciseType"
                     control={form.control}
                     singleSelect
+                    disabled={isCreating}
                   />
                 )}
               />
@@ -190,7 +195,7 @@ export default function CreateExerciseDrawer() {
         <DrawerFooter className="flex justify-between px-4 mt-auto">
           <FormError message={error} />
           <div className="w-full flex justify-between gap-4">
-            <DrawerClose asChild className="w-full">
+            <DrawerClose asChild className="w-full" disabled={isCreating}>
               <Button type="button" variant="secondary">
                 Cancel
               </Button>
@@ -199,9 +204,16 @@ export default function CreateExerciseDrawer() {
               type="submit"
               form="create-exercise-form"
               className="w-full mt-auto"
-              disabled={isPending}
+              disabled={isCreating}
             >
-              Create
+              {isCreating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create"
+              )}
             </Button>
           </div>
         </DrawerFooter>

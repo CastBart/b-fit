@@ -1,4 +1,4 @@
-"use client";
+
 
 import { Pages } from "@/lib/definitions";
 import Link from "next/link";
@@ -9,16 +9,9 @@ import {
   ClipboardDocumentListIcon,
   BoltIcon,
 } from "@heroicons/react/24/solid";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import SessionResumeButton from "@/components/session/session-resume-button";
+import { CalendarDays } from "lucide-react";
 
 const links: Pages = {
-  calorieCounter: {
-    name: "Calorie Calculator",
-    link: "/dashboard/caloriecalculator",
-    icon: CalculatorIcon,
-    description: "Check your daily calories",
-  },
   exercises: {
     name: "Exercises",
     link: "/dashboard/exercises",
@@ -37,10 +30,21 @@ const links: Pages = {
     icon: PencilSquareIcon,
     description: "View and create new workout plans",
   },
+  sessions:{
+    name: "Sessions",
+    link: "/dashboard/sessions",
+    icon: CalendarDays,
+    description: "View your past session in a calendar view",
+  },
+   calorieCounter: {
+    name: "Calorie Calculator",
+    link: "/dashboard/caloriecalculator",
+    icon: CalculatorIcon,
+    description: "Check your daily calories",
+  },
 };
 
 export default function Page() {
-  const user = useCurrentUser();
 
   return (
     <section className="p-4">
@@ -64,7 +68,6 @@ export default function Page() {
           );
         })}
       </ul>
-      {/* <SessionResumeButton /> */}
     </section>
   );
 }

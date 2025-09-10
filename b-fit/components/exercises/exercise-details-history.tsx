@@ -19,10 +19,10 @@ interface ExerciseDetailsHistoryProps {
 export default function ExerciseDetailsHistory({
   exercise,
 }: ExerciseDetailsHistoryProps) {
-  const { data, isLoading } = useExercise(exercise.id);
-  const exerciseHistory = data;
+  const { data, isFetching } = useExercise(exercise.id);
+  const exerciseWithHistory = data;
 
-  if (isLoading) {
+  if (isFetching && !data?.history.length) {
     return (
       <TabsContent value="history">
         <div className="w-full flex justify-center py-10">
@@ -31,26 +31,33 @@ export default function ExerciseDetailsHistory({
       </TabsContent>
     );
   }
-
+  // No history state
+  if (!isFetching && !exerciseWithHistory?.history.length) {
+    return (
+      <TabsContent value="history">
+        <div className="w-full flex justify-center py-10 text-muted-foreground">
+          No history of this exercise
+        </div>
+      </TabsContent>
+    );
+  }
   return (
-    <TabsContent value="history">
+    <TabsContent value="history" className="">
       <div className="text-xl font-bold py-2 pr-2">{exercise.name}</div>
       <div className="space-y-4">
-        {exerciseHistory?.map((ex, index) => (
+        {exerciseWithHistory?.history.map((ex, index) => (
           <div key={index} className="rounded-xl border bg-secondary/50">
-            <div className="px-2 flex justify-between">
+            <div className="px-4 pt-2 flex justify-between">
               <div>{ex.workoutName}</div>
-              <div>
-                {moment(ex.sessionStartTime).format("MMM Do YY, hh:mm")}
-              </div>
+              <div>{moment(ex.sessionStartTime).format("MMM Do, YYYY, HH:mm")}</div>
             </div>
             <Table>
               <TableCaption className="hidden">Sets</TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-center">Set</TableHead>
-                  <TableHead className="text-center">Reps</TableHead>
                   <TableHead className="text-center">Weight</TableHead>
+                  <TableHead className="text-center">Reps</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -59,8 +66,8 @@ export default function ExerciseDetailsHistory({
                     <TableCell className="text-center">
                       {set.setNumber}
                     </TableCell>
-                    <TableCell className="text-center">{set.reps}</TableCell>
                     <TableCell className="text-center">{set.weight}</TableCell>
+                    <TableCell className="text-center">{set.reps}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

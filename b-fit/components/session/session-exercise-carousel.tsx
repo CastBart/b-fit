@@ -155,11 +155,11 @@ function SortableExerciseCard({
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (isActive && nodeRef.current) {
-      nodeRef.current.scrollIntoView({ behavior: "smooth", inline: "center" });
-    }
-  }, [isActive]);
+  // useEffect(() => {
+  //   if (isActive && nodeRef.current) {
+  //     nodeRef.current.scrollIntoView({ behavior: "smooth", inline: "center" });
+  //   }
+  // }, [isActive]);
   const isInSuperset = !!exercise.supersetGroupId;
 
   const prevNode = exercise.prev ? exerciseMap[exercise.prev] : null;

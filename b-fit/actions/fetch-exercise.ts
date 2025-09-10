@@ -1,11 +1,17 @@
 // actions/fetch-exercise.ts
-import { db } from "@/lib/db";
 import { auth } from "@/auth";
+import { fetchExerciseDB } from "@/lib/db/exercise";
+import { Exercise } from "@/lib/definitions";
+
+export interface ExerciseWithHistory {
+  exercise: Exercise;
+  history: ExerciseHistory[];
+}
 
 export interface ExerciseHistory {
   exerciseName: string;
   workoutName: string;
-  sessionStartTime: Date;
+  sessionStartTime: number;
   sets: ExerciseSet[];
 }
 
@@ -17,44 +23,16 @@ export interface ExerciseSet {
 
 export async function fetchExercise(
   exerciseId: string
-): Promise<ExerciseHistory[] | { error: string }> {
-  const session = await auth();
-  if (!session?.user) {
-    return { error: "Unauthorised" };
+): Promise<ExerciseWithHistory> {
+  try {
+    const session = await auth();
+    if (!session?.user || !session.user.id) {
+      throw new Error("Unauthorized");
+    }
+    const result = await fetchExerciseDB(exerciseId, session.user.id);
+    return result ;
+  } catch (error) {
+    // console.error("[FETCH_EXERCISE_DB] - Error fetching exercise history:", error);
+    throw new Error("Failed to fetch exercise history.");
   }
-  const userId = session.user.id;
-  const histories = await db.exerciseHistory.findMany({
-    where: {
-      exerciseId,
-      userId,
-    },
-    include: {
-      sets: true,
-      session: {
-        select: {
-          startTime: true,
-          workoutName: true,
-        },
-      },
-      exercise: {
-        select: {
-          name: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-  });
-
-  return histories.map((history) => ({
-    exerciseName: history.exercise.name,
-    workoutName: history.session.workoutName,
-    sessionStartTime: history.session.startTime,
-    sets: history.sets.map((set) => ({
-      reps: set.reps,
-      weight: set.weight,
-      setNumber: set.setNumber,
-    })),
-  }));
 }

@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { fetchUserExercises } from "@/actions/fetch-exercises";
+import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 import { deleteExercise } from "@/actions/delete-exercise";
-import { createExercise } from "@/actions/create-exercise"; 
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
 import { getQueryClient } from "@/lib/getQueryClient";
@@ -9,16 +8,24 @@ import { CreateExerciseSchema } from "@/schemas";
 import * as z from "zod";
 
 export function useExercises() {
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     data: exercises = [],
     isPending,
+    isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<Exercise[], Error>({
     queryKey: ["exercises"],
-    queryFn: () => fetchUserExercises(),
+    queryFn: async () => {
+      const res = await fetch("/api/exercises");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch exercises - Use Exercises.");
+      }
+      return data as Exercise[];
+    },
   });
 
   const createMutation = useMutation({
@@ -28,12 +35,12 @@ export function useExercises() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExercise),
       });
-  
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to create exercise");
       }
-  
+
       return data.exercise;
     },
     onSuccess: (exercise) => {
@@ -46,7 +53,15 @@ export function useExercises() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteExercise,
+    mutationFn: async (exerciseId: string) => {
+      const response = await fetch(`/api/exercises/${exerciseId}/delete`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete exercise");
+      }
+    },
     onSuccess: (_, id) => {
       queryClient.setQueryData(["exercises"], (old?: Exercise[]) =>
         old ? old.filter((e) => e.id !== id) : []
@@ -60,7 +75,7 @@ export function useExercises() {
       description:
         "Are you sure you want to delete this exercise? This action cannot be undone.",
       position: "bottom-center",
-      duration: 10000,
+      duration: 10000000,
       action: {
         label: "Confirm Delete",
         onClick: () => deleteMutation.mutate(id),
@@ -71,7 +86,7 @@ export function useExercises() {
 
   return {
     exercises,
-    isPending,
+    isCreating: createMutation.isPending,
     isError,
     error,
     createExercise: createMutation.mutate,

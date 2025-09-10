@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
 
 export async function getWorkoutWithExercises(workoutId: string) {

@@ -13,12 +13,12 @@ interface ExerciseTableProps {
 }
 
 export default function ExerciseTable({ mode, exercises, onDelete, onSelect }: ExerciseTableProps) {
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
 
   function handleRowClick(exercise: Exercise) {
     if (mode === "view") {
-      setSelectedExercise(exercise);
+      setSelectedExercise(exercise.id);
     } else if (mode === "select") {
       setSelectedExercises((prev) =>
         prev.includes(exercise) ? prev.filter((e) => e !== exercise) : [...prev, exercise]

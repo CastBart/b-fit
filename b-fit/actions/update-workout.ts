@@ -1,7 +1,7 @@
 "use server";
 
 import * as z from "zod";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
 import { WorkoutSchema } from "@/schemas";
 

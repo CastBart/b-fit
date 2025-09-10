@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import ExerciseTable from "@/components/exercises/exercise-table";
 import CreateExerciseDrawer from "@/components/exercises/exercise-create-drawer";
 import ExerciseSearch from "@/components/exercises/exercise-search";
@@ -19,8 +19,13 @@ interface ExercisesProps {
 }
 
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
-  const { exercises, isPending, isError, error, handleDelete, createExercise, refetch } = useExercises();
-
+  const {
+    exercises,
+    isCreating: isPending,
+    isError,
+    error,
+    handleDelete,
+  } = useExercises();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({

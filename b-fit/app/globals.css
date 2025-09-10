@@ -208,7 +208,7 @@ tr {
     --sidebar-accent-foreground: 240 4.8% 95.9%; /* Light text for contrast */
     --sidebar-border: 240 3.7% 15.9%; /* Subtle blue-gray border */
     --sidebar-ring: 217.2 91.2% 59.8%; /* Bright blue focus ring */
-}
+  }
 }
 
 @layer base {
@@ -234,7 +234,8 @@ tr {
   overflow-y: auto; /* Scroll when needed */
 }
 
-@media (min-width: 1024px) { /* Desktop */
+@media (min-width: 1024px) {
+  /* Desktop */
   .custom-drawer {
     height: 65vh;
     width: 600px;
@@ -249,7 +250,8 @@ tr {
   }
 }
 
-@media (max-width: 640px) and (orientation: portrait) { /* Mobile Portrait */
+@media (max-width: 640px) and (orientation: portrait) {
+  /* Mobile Portrait */
   .custom-drawer {
     height: 65vh;
     width: 100vw;
@@ -264,7 +266,8 @@ tr {
   }
 }
 
-@media (max-width: 1024px) and (orientation: landscape) { /* Mobile Landscape */
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* Mobile Landscape */
   .custom-drawer {
     height: 100vh;
     width: 100vw;
@@ -283,3 +286,22 @@ tr {
     overflow-y: auto; /* Ensure scrolling */
   }
 }
+
+[data-sonner-toast] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+[data-sonner-toaster] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+
+
+/* Calendar Styles
+.rdp-day_hasSession {
+  @apply bg-green-500 text-white rounded-full;
+}
+
+.rdp-day_hasSession:hover {
+  @apply bg-green-600 text-white;
+} */
