@@ -95,6 +95,7 @@ export const useSession = (sessionId?: string) => {
           queryKey: ["exercise", exerciseId],
         });
 
+        //set query data cache for exercise history
         queryClient.setQueryData<ExerciseWithHistory>(
           ["exercise", exerciseId],
           (oldData) => {
@@ -124,7 +125,17 @@ export const useSession = (sessionId?: string) => {
             };
           }
         );
+
+        //todo: set query data for session with history
+
+        //todo: set query data for sessions
       });
+
+      queryClient.setQueryData<SessionWithHistory>(["session", data.id], data);
+
+      queryClient.setQueryData<SessionWithHistory[]>(["sessions"], (old) =>
+        old ? [data, ...old] : [data]
+      );
 
       toast.success("Session Completed!", {
         description: `Session "${variables.workoutName}" has been saved.`,

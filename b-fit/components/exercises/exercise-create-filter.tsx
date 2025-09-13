@@ -19,6 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Controller, Control } from "react-hook-form";
+import MuscleMapHighlight from "../muscleGroup/muscle-group-body";
+import MuscleMapHighlightFullBody from "../muscleGroup/muscle-group-body";
 
 interface ExerciseFilterProps<T> {
   title: string;
@@ -47,15 +49,15 @@ export default function ExerciseCreateFilter<T extends string>({
         const selectedItems: T[] = Array.isArray(field.value)
           ? field.value
           : field.value
-          ? [field.value]
-          : [];
+            ? [field.value]
+            : [];
 
         const handleSelection = (value: T) => {
           const newSelection = singleSelect
             ? value
             : selectedItems.includes(value)
-            ? selectedItems.filter((i) => i !== value) // Remove
-            : [...selectedItems, value]; // Add
+              ? selectedItems.filter((i) => i !== value) // Remove
+              : [...selectedItems, value]; // Add
 
           field.onChange(newSelection);
         };
@@ -78,29 +80,51 @@ export default function ExerciseCreateFilter<T extends string>({
                     </div>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="custom-dialog" id={`${name}-dialog-content`}>
+                <DialogContent
+                  className="custom-dialog"
+                  id={`${name}-dialog-content`}
+                >
                   <DialogHeader className="gap-2">
                     <DialogTitle className="text-center">{title}</DialogTitle>
-                    <DialogDescription className="hidden">Use the options below to select the {title} of your exercise</DialogDescription>
+                    <DialogDescription className="hidden">
+                      Use the options below to select the {title} of your
+                      exercise
+                    </DialogDescription>
                     <Separator className="h-1" />
                   </DialogHeader>
-                  <div className="grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar" id={`${name}-filter-oprions`}>
-                    {data.map((item) => (
-                      <div
-                        id={`filter-option-${String(item)}`}
-                        key={String(item)}
-                        onClick={() => handleSelection(item)}
-                        className={`flex gap-2 items-center justify-center h-20 px-4 py-2 rounded-sm shadow cursor-pointer
+                  <div
+                    className="grid grid-cols-2 gap-2 max-h-[500px] p-2 overflow-y-auto custom-scrollbar"
+                    id={`${name}-filter-oprions`}
+                  >
+                    {data.map((item) => {
+                      const isMuscleFilter = name.includes("Muscle");
+                      return (
+                        <div
+                          id={`filter-option-${String(item)}`}
+                          key={String(item)}
+                          onClick={() => handleSelection(item)}
+                          className={`flex flex-col gap-2 items-center justify-center h-[200px] px-4 py-2 rounded-sm shadow cursor-pointer
                         ${
                           selectedItems.includes(item)
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary text-secondary-foreground"
                         } 
                         hover:bg-primary/90`}
-                      >
-                        {String(item)}
-                      </div>
-                    ))}
+                        >
+                          
+                          {isMuscleFilter && (
+                            <MuscleMapHighlightFullBody
+                              highlighted={[
+                                String(item).toLowerCase().replace(/\s+/g, "-"),
+                              ]}
+                              muscle={String(item).toLowerCase().replace(/\s+/g, "-")}
+                              className="h-[150px]"
+                            />
+                          )}
+                          {String(item)}
+                        </div>
+                      );
+                    })}
                   </div>
                   <DialogFooter className="sm:justify-center">
                     <DialogClose asChild className="w-full">
