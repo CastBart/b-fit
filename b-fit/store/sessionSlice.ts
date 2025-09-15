@@ -550,7 +550,10 @@ export const sessionSlice = createSlice({
 
     endSession: (state) => {
       Object.assign(state, initialState);
-      
+    },
+
+    rehydrateSession: (state, action: PayloadAction<SessionState>) => {
+      return { ...action.payload };
     },
   },
 });
@@ -575,6 +578,7 @@ export const {
   addTimeToTimer,
   pauseSession,
   resumeSession,
+  rehydrateSession,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
