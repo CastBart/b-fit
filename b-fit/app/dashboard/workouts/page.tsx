@@ -18,7 +18,7 @@ export default async function WorkoutsPage() {
   return (
     <div className="max-w-[600px] mx-auto">
       <div className="flex flex-col border rounded-3xl space-y-2 p-4 my-10 h-[calc(100vh-9rem)] m-2">
-        <Button asChild className="self-end w-full" size={"lg"}>
+        <Button asChild className="self-end w-full p-4" size={"lg"}>
           <Link href="/dashboard/workouts/create">Create Workout</Link>
         </Button>
         <HydrationBoundary state={dehydrate(queryClient)}>
