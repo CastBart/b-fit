@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import MuscleGroupBody from "./workout-muscle-groups";
 
 type WorkoutFormProps = {
   mode: "create" | "edit";
@@ -219,12 +220,13 @@ export default function WorkoutForm({
           </Button>
         )}
       </div>
+
       {form.formState.errors.exercises && (
         <p className="text-sm text-destructive">
           {form.formState.errors.exercises.message}
         </p>
       )}
-
+      <MuscleGroupBody head={head} className="h-[200px]"/>
       <SelectedExercisesList head={head} setHead={setHead} form={form} />
 
       <Button

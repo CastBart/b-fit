@@ -2,8 +2,7 @@
 
 import { db } from "@/lib/db/db";
 import { auth } from "@/auth";
-import { ExerciseProgress, SessionState } from "@/store/sessionSlice";
-import { revalidatePath } from "next/cache";
+import { ExerciseProgress } from "@/store/sessionSlice";
 import { FlattenedExerciseNode } from "@/lib/exercise-linked-list";
 
 export interface SessionInput {
@@ -20,7 +19,7 @@ export async function completeSession(sessionData: SessionInput) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { error: "Unauthorized: User not logged in" };
+      throw new Error("Unauthorized: User not logged in");
     }
     const user = session.user;
     const {
@@ -33,7 +32,7 @@ export async function completeSession(sessionData: SessionInput) {
       duration,
     } = sessionData;
 
-    // Prepare data for ExerciseHistory creation
+    // ✅ collect completed exercises
     const exerciseHistories = Object.values(progress)
       .filter((ex) => ex.sets.some((set) => set.completed))
       .map((ex) => {
@@ -43,18 +42,21 @@ export async function completeSession(sessionData: SessionInput) {
             reps: set.reps,
             weight: set.weight,
             setNumber: set.setNumber,
+            isCompleted: true,
           }));
 
         return {
           exerciseId: exerciseMap[ex.exerciseId].id,
-          userId: user.id,
           sets,
         };
       });
+
     if (exerciseHistories.length === 0) {
-      return { error: "No completed sets to save." };
+      throw new Error("No completed sets to save.");
     }
-    await db.$transaction(
+
+    // ✅ create session & histories in one transaction
+    const createdSession = await db.$transaction(
       async (tx) => {
         const session = await tx.session.create({
           data: {
@@ -62,38 +64,41 @@ export async function completeSession(sessionData: SessionInput) {
             userId: user.id!,
             workoutId,
             workoutName,
-            startTime: new Date(startTime!),
+            startTime: new Date(startTime),
             duration,
             complete: true,
           },
         });
 
         await Promise.all(
-          exerciseHistories.map((history) => {
-            return tx.exerciseHistory.create({
+          exerciseHistories.map((history) =>
+            tx.exerciseHistory.create({
               data: {
                 sessionId: session.id,
                 exerciseId: history.exerciseId,
                 userId: user.id!,
-                sets: {
-                  create: history.sets.map((s) => ({
-                    reps: s.reps,
-                    weight: s.weight,
-                    isCompleted: true,
-                    setNumber: s.setNumber,
-                  })),
-                },
+                sets: { create: history.sets },
               },
-            });
-          })
+            })
+          )
         );
+
+        // 👇 fetch the session back with histories + sets
+        return tx.session.findUniqueOrThrow({
+          where: { id: session.id },
+          include: {
+            exerciseHistories: {
+              include: { sets: true },
+            },
+          },
+        });
       },
       { maxWait: 10000, timeout: 20000 }
     );
 
-    return { success: true };
+    return createdSession;
   } catch (error) {
-    console.error("[COMPLETE_SESSION_ERROR]", error);
-    return { error: "Internal server error" };
+    // console.error("[COMPLETE_SESSION_ERROR]", error);
+    throw error; // let API route handle formatting into NextResponse
   }
 }
