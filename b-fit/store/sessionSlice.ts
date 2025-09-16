@@ -23,6 +23,7 @@ export type ExerciseProgress = {
 interface TimerState {
   isRunning: boolean;
   endTime: number | null;
+  duration: number;
 }
 
 export interface SessionState {
@@ -58,7 +59,7 @@ const initialState: SessionState = {
   exerciseMap: {},
   headExerciseId: null,
   progress: {},
-  timer: { isRunning: false, endTime: null },
+  timer: { isRunning: false, endTime: null, duration: 0 },
 };
 
 /**
@@ -275,6 +276,7 @@ export const sessionSlice = createSlice({
         state.timer = {
           isRunning: true,
           endTime: Date.now() + duration * 1000,
+          duration: duration,
         };
       };
 
@@ -508,6 +510,7 @@ export const sessionSlice = createSlice({
       state.timer = {
         isRunning: true,
         endTime: Date.now() + action.payload * 1000,
+        duration: action.payload,
       };
     },
 
@@ -522,12 +525,14 @@ export const sessionSlice = createSlice({
       state.timer = {
         isRunning: false,
         endTime: null,
+        duration: 0,
       };
     },
 
     addTimeToTimer: (state, action: PayloadAction<number>) => {
       if (state.timer?.isRunning && state.timer.endTime) {
         state.timer.endTime += action.payload * 1000;
+        state.timer.duration += action.payload;
       }
     },
 

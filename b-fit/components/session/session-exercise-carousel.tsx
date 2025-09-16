@@ -30,15 +30,18 @@ import {
 } from "@dnd-kit/modifiers";
 import { SupersetManager } from "@/lib/superset-manager";
 import WorkoutSelectExerciseDrawer from "../workouts/workout-add-exercise-drawer";
+import { Exercise } from "@/lib/definitions";
 
 type ExerciseThumbsProps = {
   exerciseIds: string[];
   onReorder: (order: string[]) => void;
+  onExerciseSelect: (exercises: Exercise[]) => void;
 };
 
 export default function ExerciseThumbs({
   exerciseIds,
   onReorder,
+  onExerciseSelect,
 }: ExerciseThumbsProps) {
   const dispatch = useDispatch();
   const { activeExerciseId, exerciseMap } = useSelector(
@@ -108,20 +111,29 @@ export default function ExerciseThumbs({
       onDragEnd={handleDragEnd}
       modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
     >
-      <SortableContext
-        items={exerciseIds}
-        strategy={horizontalListSortingStrategy}
-      >
-        <div className="flex gap-4 overflow-x-auto mb-2 custom-scrollbar-vertical">
-          {exerciseIds.map((instanceId) => {
-            const exercise = exerciseMap[instanceId];
-            const isActive = activeExerciseId === instanceId;
-            return (
-              <SortableExerciseCard key={exercise.instanceId} exercise={exercise} isActive={isActive} />
-            );
-          })}
+      <div className="flex flex-row  items-center overflow-x-auto">
+        <SortableContext
+          items={exerciseIds}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className="flex gap-4">
+            {exerciseIds.map((instanceId) => {
+              const exercise = exerciseMap[instanceId];
+              const isActive = activeExerciseId === instanceId;
+              return (
+                <SortableExerciseCard
+                  key={exercise.instanceId}
+                  exercise={exercise}
+                  isActive={isActive}
+                />
+              );
+            })}
+          </div>
+        </SortableContext>
+        <div className="ml-2">
+          <WorkoutSelectExerciseDrawer onExerciseSelect={onExerciseSelect} />
         </div>
-      </SortableContext>
+      </div>
     </DndContext>
   );
 }
@@ -190,9 +202,11 @@ function SortableExerciseCard({
       className="cursor-pointer relative flex items-center flex-col"
     >
       <div
-        className={`aspect-square h-[120px] flex items-center justify-center border mb-2 rounded-lg ${isActive ? "" : "opacity-50"}`}
+        className={`w-24 h-12 flex items-center justify-center border mb-2 rounded-lg ${isActive ? "" : "opacity-50"}`}
       >
-        <span className="font-semibold text-center">{exercise.name}</span>
+        <span className="font-semibold text-center line-clamp-2">
+          {exercise.name}
+        </span>
       </div>
 
       {isInSuperset && (

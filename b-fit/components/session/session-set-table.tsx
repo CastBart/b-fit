@@ -56,7 +56,7 @@ export default function SessionSetTable({
   const exerciseNode = exerciseMap[exerciseID];
   return (
     <div className=" space-y-8">
-      <div className="flex space-x-2 items-center">
+      <div className="flex space-x-2 items-center mt-2">
         <h3
           className="text-2xl font-semibold cursor-pointer"
           onClick={() => {

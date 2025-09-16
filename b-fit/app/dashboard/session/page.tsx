@@ -340,8 +340,9 @@ export default function SessionPage() {
         onReorder={(newOrder) => {
           setExerciseIds(newOrder);
         }}
+        onExerciseSelect={handleAddedExercises}
       />
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} />
+      {/* <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} /> */}
 
       <div className="overflow-hidden " ref={emblaRef}>
         <div className="flex space-x-4">

@@ -16,11 +16,15 @@ import { formatTime } from "@/lib/formatTime";
 import { Button } from "../ui/button";
 import { Timer } from "lucide-react";
 import clsx from "clsx";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addTimeToTimer } from "@/store/sessionSlice";
+import { RootState } from "@/store";
 
 export default function RestTimerDrawer() {
   const timeLeft = useRestTimer();
+  const {
+    timer,
+  } = useSelector((state: RootState) => state.session);
   const dispatch = useDispatch();
   if (timeLeft === null) return null;
 
@@ -32,7 +36,7 @@ export default function RestTimerDrawer() {
         <div className="fixed bottom-0 left-0 right-0 p-4 z-10 flex justify-center">
           <Button
             variant={isNegative ? "secondary" : "default"}
-            className="rounded-full py-10 px-10 text-3xl flex w-[200px] justify-center space-x-2"
+            className="rounded-full p-8 text-xl flex w-[150px] justify-center space-x-2"
           >
             <Timer />
             <span className="w-full">{formatTime(timeLeft!)}</span>
@@ -41,7 +45,7 @@ export default function RestTimerDrawer() {
       </DrawerTrigger>
       <DrawerContent className="w-screen lg:w-[600px] justify-self-center">
         <DrawerHeader>
-          <DrawerTitle className="text-center text-3xl">Rest Timer</DrawerTitle>
+          <DrawerTitle className="text-center text-3xl">{`Rest Timer (${timer?.duration && formatTime(timer?.duration)})`}</DrawerTitle>
           <DrawerDescription className="hidden">
             Rest timer drawer: Allows user to add or subtract time from the
             timer
@@ -50,28 +54,28 @@ export default function RestTimerDrawer() {
         </DrawerHeader>
         <div className="flex justify-center items-center gap-10 py-6">
           <Button
+          className="rounded-full"
             variant="default"
-            size="lg"
-             onClick={() => dispatch(addTimeToTimer(-15))}
-            // disabled={sets.length === 0}
-            // className="flex justify-center items-center"
+            onClick={() => dispatch(addTimeToTimer(-15))}
           >
-            <MinusIcon className="w-5 h-5" />
-            <span className="text-xl">15</span>
+            <MinusIcon />
           </Button>
-          <span className={clsx("text-3xl text-center font-medium w-[220px] py-6 px-6 rounded-full",
-            isNegative? "bg-secondary text-secondary-foreground ":"bg-primary text-primary-foreground"
-          )}>
+          <span
+            className={clsx(
+              "text-xl text-center font-medium w-[150px] p-6 rounded-full",
+              isNegative
+                ? "bg-secondary text-secondary-foreground "
+                : "bg-primary text-primary-foreground"
+            )}
+          >
             {formatTime(timeLeft!)}
           </span>
           <Button
-          className=""
+            className="rounded-full"
             variant="default"
-            size="lg"
             onClick={() => dispatch(addTimeToTimer(15))}
           >
-            <span className="text-xl">15</span>
-            <PlusIcon className="w-5 h-5 " />
+            <PlusIcon />
           </Button>
         </div>
       </DrawerContent>
