@@ -10,7 +10,6 @@ import { GlobalTimerProvider } from "@/providers/global-timer-provider";
 import SessionResumeButton from "@/components/session/session-resume-button";
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  // const session = await auth();
   return (
     <SessionProvider>
       <StoreProvider>

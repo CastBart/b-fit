@@ -160,7 +160,7 @@ export default function SelectedExercisesList({
 
   return (
     <div className="p-2 border rounded-lg">
-      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-420px)]">
+      <div className="overflow-y-auto custom-scrollbar max-h-[calc(100vh-220px)]">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

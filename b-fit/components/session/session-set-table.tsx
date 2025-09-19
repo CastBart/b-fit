@@ -84,7 +84,7 @@ export default function SessionSetTable({
               })
             )
           }
-          className="w-full border rounded p-2"
+          className="w-full border rounded p-2 focus-visible:ring-0"
         />
       </div>
       <Table>
