@@ -1,10 +1,8 @@
 import { deleteWorkout } from "@/actions/delete-workout";
 import { NextResponse } from "next/server";
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const result = await deleteWorkout(params.id);
 
   if ("error" in result) {
