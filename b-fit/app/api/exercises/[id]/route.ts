@@ -3,10 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchExerciseDB } from "@/lib/db/exercise";
 import { auth } from "@/auth";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || !session.user.id) {

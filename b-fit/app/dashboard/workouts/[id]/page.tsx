@@ -6,7 +6,8 @@ import WorkoutDetails from "@/components/workouts/workout-details";
 import { fetchUserExercises } from "@/actions/fetch-exercises-all";
 
 
-export default async function WorkoutDetailsPage({ params }: { params: { id: string } }) {
+export default async function WorkoutDetailsPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["exercises"],

@@ -103,13 +103,7 @@ export default function ExerciseCreateFilter<T extends string>({
                           id={`filter-option-${String(item)}`}
                           key={String(item)}
                           onClick={() => handleSelection(item)}
-                          className={`flex flex-col gap-2 items-center justify-center h-[200px] px-4 py-2 rounded-sm shadow cursor-pointer
-                        ${
-                          selectedItems.includes(item)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-secondary text-secondary-foreground"
-                        } 
-                        hover:bg-primary/90`}
+                          className={`flex flex-col gap-2 items-center justify-center h-[200px] px-4 py-2 rounded-sm shadow cursor-pointer ${selectedItems.includes(item) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"} hover:bg-primary/90`}
                         >
                           
                           {isMuscleFilter && (
