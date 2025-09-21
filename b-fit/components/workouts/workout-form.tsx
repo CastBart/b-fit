@@ -117,7 +117,7 @@ export default function WorkoutForm({
       dispatch(
         startSession({
           workoutId,
-          workoutName: data?.workout?.name!,
+          workoutName: data?.name!,
           headId,
           flattenedMap,
         })

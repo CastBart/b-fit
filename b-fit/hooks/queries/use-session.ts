@@ -63,7 +63,7 @@ export const useSession = (sessionId?: string) => {
   /**
    * Create a new session
    */
-  const createMutation = useMutation({
+  const createMutation = useMutation<SessionWithHistory, Error, SessionInput>({
     mutationFn: async (data: SessionInput) => {
       const res = await fetch("/api/session/create", {
         method: "POST",
