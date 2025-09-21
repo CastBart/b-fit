@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 import { ExerciseEquipment, ExerciseType, getEnumValueByKey, getEnumValuesByKeys, MuscleGroup } from "@/lib/definitions";
 
 export default function WorkoutDetailsClient({ workoutId }: { workoutId: string }) {
-  const { data, isLoading } = useWorkout(workoutId);
+  const { data: workout, isLoading } = useWorkout(workoutId);
 
   if (isLoading) {
     return (
@@ -19,9 +19,9 @@ export default function WorkoutDetailsClient({ workoutId }: { workoutId: string 
     );
   }
 
-  if (!data?.success || !data.workout) return notFound();
+  if (!workout) return notFound();
 
-  const { workout } = data;
+  
 
   // Build the linked list
   let head: ExerciseNode | null = null;

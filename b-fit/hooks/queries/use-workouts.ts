@@ -3,11 +3,17 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { WorkoutSchema } from "@/schemas";
 import type { Workout } from "@/lib/definitions";
+import { WorkoutWithExercises } from "@/actions/fetch-workout";
 
 export const useWorkouts = () => {
   const queryClient = useQueryClient(); // ✅ correct client-side queryClient
 
-  const createMutation = useMutation({
+  //create muatation
+  const createMutation = useMutation<
+    WorkoutWithExercises,
+    Error,
+    z.infer<typeof WorkoutSchema>
+  >({
     mutationFn: async (data: z.infer<typeof WorkoutSchema>) => {
       const res = await fetch("/api/workouts/create", {
         method: "POST",
@@ -22,12 +28,15 @@ export const useWorkouts = () => {
         throw new Error(result.error || "Failed to create workout.");
       }
 
-      return result;
+      return result.workout as WorkoutWithExercises;
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] }); // ✅ will now work
+    onSuccess: (newWorkout) => {
+      queryClient.setQueryData<WorkoutWithExercises[]>(["workouts"], (old) =>
+        old ? [...old, newWorkout] : [newWorkout]
+      );
+
       toast.success("Workout created!", {
-        description: `Workout "${variables.name}" has been saved.`,
+        description: `Workout "${newWorkout.name}" has been saved.`,
       });
     },
     onError: (error: any) => {
@@ -49,7 +58,6 @@ export const useWorkouts = () => {
 
       return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return {

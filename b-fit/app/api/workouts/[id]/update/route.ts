@@ -12,5 +12,5 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({workout: result.workout});
 }
