@@ -127,10 +127,10 @@ export const useSession = (sessionId?: string) => {
         );
       });
 
-      //todo: set query data for session with history
+      //setting session data cache
       queryClient.setQueryData<SessionWithHistory>(["session", data.id], data);
 
-      //todo: set query data for sessions
+      //setting sessions list cache
       queryClient.setQueryData<SessionWithHistory[]>(["sessions"], (old) =>
         old ? [data, ...old] : [data]
       );

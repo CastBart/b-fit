@@ -22,7 +22,9 @@ export function useExercises() {
       const res = await fetch("/api/exercises");
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch exercises - Use Exercises.");
+        throw new Error(
+          data.error || "Failed to fetch exercises - Use Exercises."
+        );
       }
       return data as Exercise[];
     },
@@ -44,7 +46,9 @@ export function useExercises() {
       return data.exercise;
     },
     onSuccess: (exercise) => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      queryClient.setQueryData<Exercise[]>(["exercises"], (old) =>
+        old ? [...old, exercise] : [exercise]
+      );
       toast.success(`Exercise "${exercise.exerciseName}" created.`);
     },
     onError: (error) => {

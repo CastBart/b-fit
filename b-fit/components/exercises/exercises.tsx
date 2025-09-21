@@ -21,7 +21,6 @@ interface ExercisesProps {
 export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
   const {
     exercises,
-    isCreating: isPending,
     isError,
     error,
     handleDelete,
@@ -65,7 +64,6 @@ export default function Exercises({ mode, onExerciseSelect }: ExercisesProps) {
     return true;
   });
 
-  if (isPending) return <p>Loading exercises...</p>;
   if (isError) return <p>Error loading exercises: {String(error)}</p>;
 
   return (
