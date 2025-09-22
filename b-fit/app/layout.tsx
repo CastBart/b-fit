@@ -1,16 +1,8 @@
 import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata } from "next";
-import { Inter, Ubuntu, Outfit } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 
-
-const inter = Inter({ subsets: ["latin"] });
-const ubuntu = Ubuntu({
-  weight: ["300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  display: "swap",
-});
 const outfit = Outfit({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   style: ["normal"],
@@ -29,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.className}`}>
         <ThemeProvider
           attribute="class"

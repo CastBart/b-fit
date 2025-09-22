@@ -12,7 +12,7 @@ import {
   getEnumValueByKey,
   getEnumValuesByKeys,
 } from "@/lib/definitions";
-import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
+import { ExerciseWithHistory } from "@/actions/fetch-exercise";
 
 /**
  * Creates a new exercise in the database after validating the input data.
@@ -23,11 +23,11 @@ import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
 export async function createExerciseDB(
   data: z.infer<typeof CreateExerciseSchema>,
   userId: string
-) {
+): Promise<Exercise> {
   // Validate fields
   const validatedFields = CreateExerciseSchema.safeParse(data);
   if (!validatedFields.success) {
-    return { error: "Invalid exercise fields!" };
+    throw new Error("Invalid exercise fields!");
   }
   const {
     exerciseName,
@@ -48,9 +48,9 @@ export async function createExerciseDB(
 
   // Ensure all required fields are correctly mapped
   if (!equipmentEnumKey || !primaryMuscleEnumKey || !exerciseTypeEnumKey) {
-    return { error: "Invalid enum values provided." };
+    throw new Error("Invalid enum values provided.");
   }
-  return db.exercise.create({
+  const exercise = await db.exercise.create({
     data: {
       name: exerciseName,
       equipment: equipmentEnumKey,
@@ -61,6 +61,18 @@ export async function createExerciseDB(
       ownership: "Custom",
     },
   });
+
+  return {
+    id: exercise.id,
+    owner: getEnumValueByKey(ExerciseOwnership, exercise.ownership),
+    name: exercise.name,
+    equipment: getEnumValueByKey(ExerciseEquipment, exercise.equipment),
+    primaryMuscle: getEnumValueByKey(MuscleGroup, exercise.primaryMuscle),
+    auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, exercise.auxiliaryMuscles),
+    type: getEnumValueByKey(ExerciseType, exercise.exerciseType),
+    notes: exercise.notes || undefined,
+    instructions: exercise.instructions || "",
+  }
 }
 
 /**

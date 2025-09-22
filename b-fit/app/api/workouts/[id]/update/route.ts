@@ -1,10 +1,8 @@
 import { updateWorkout } from "@/actions/update-workout";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const id = params.id;
   const body = await req.json();
 
@@ -14,5 +12,5 @@ export async function POST(
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({workout: result.workout});
 }

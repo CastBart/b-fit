@@ -17,9 +17,8 @@ import {
   addExercises,
   removeExercise,
   resumeSession,
-  endSession
+  endSession,
 } from "@/store/sessionSlice";
-import WorkoutSelectExerciseDrawer from "@/components/workouts/workout-add-exercise-drawer";
 import { SupersetManager } from "@/lib/superset-manager";
 import { Exercise } from "@/lib/definitions";
 import SetDrawer from "@/components/session/session-set-drawer";
@@ -340,8 +339,9 @@ export default function SessionPage() {
         onReorder={(newOrder) => {
           setExerciseIds(newOrder);
         }}
+        onExerciseSelect={handleAddedExercises}
       />
-      <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} />
+      {/* <WorkoutSelectExerciseDrawer onExerciseSelect={handleAddedExercises} /> */}
 
       <div className="overflow-hidden " ref={emblaRef}>
         <div className="flex space-x-4">

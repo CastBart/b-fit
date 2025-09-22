@@ -13,25 +13,14 @@ export async function POST(req: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
-    const result = await createExerciseDB(body, userId); // Replace with actual user ID from session or context
 
-    if ("error" in result) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+    const exercise = await createExerciseDB(body, userId); // Replace with actual user ID from session or context
+
+    if ("error" in exercise) {
+      return NextResponse.json({ error: exercise.error }, { status: 500 });
     }
 
-    return NextResponse.json(
-      {
-        exercise: {
-          exerciseName: result.name,
-          equipment: result.equipment,
-          primaryMuscle: result.primaryMuscle,
-          auxiliaryMuscles: result.auxiliaryMuscles,
-          exerciseType: result.exerciseType,
-        },
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ exercise }, { status: 201 });
   } catch (error) {
     console.error("[EXERCISE_CREATE]", error);
     return NextResponse.json(

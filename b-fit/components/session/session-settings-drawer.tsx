@@ -29,6 +29,7 @@ import { RootState } from "@/store";
 import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 import { Session } from "inspector/promises";
 import SessionCancelAlert from "./session-cancel-alert";
+import SessionCompleteAlert from "./session-complete-alert";
 
 export function formatStartTime(dateTimeStamp: number | null): string {
   if (!dateTimeStamp) return "Not started";
@@ -94,12 +95,13 @@ export default function SessionSettingsDrawer() {
             <div>{formatTime(workoutDuration!)}</div>
           </div>
           {/* Complete button */}
-          <div className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary">
+          {/* <div className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary" onClick={() => {}}>
             <div className="flex justify-center gap-2">
               <CircleCheck />
               <div>Complete</div>
             </div>
-          </div>
+          </div> */}
+          <SessionCompleteAlert />
           {/* Pause/Resume button */}
           <div
             className="flex border rounded-lg  justify-between px-2 py-4 cursor-pointer hover:bg-secondary"

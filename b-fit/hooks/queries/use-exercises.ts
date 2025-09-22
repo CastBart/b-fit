@@ -1,9 +1,6 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { fetchUserExercises } from "@/actions/fetch-exercises-all";
-import { deleteExercise } from "@/actions/delete-exercise";
 import { Exercise } from "@/lib/definitions";
 import { toast } from "sonner";
-import { getQueryClient } from "@/lib/getQueryClient";
 import { CreateExerciseSchema } from "@/schemas";
 import * as z from "zod";
 
@@ -12,8 +9,6 @@ export function useExercises() {
 
   const {
     data: exercises = [],
-    isPending,
-    isLoading,
     isError,
     error,
   } = useQuery<Exercise[], Error>({
@@ -22,13 +17,19 @@ export function useExercises() {
       const res = await fetch("/api/exercises");
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch exercises - Use Exercises.");
+        throw new Error(
+          data.error || "Failed to fetch exercises - Use Exercises."
+        );
       }
       return data as Exercise[];
     },
   });
 
-  const createMutation = useMutation({
+  const createMutation = useMutation<
+    Exercise,
+    Error,
+    z.infer<typeof CreateExerciseSchema>
+  >({
     mutationFn: async (newExercise: z.infer<typeof CreateExerciseSchema>) => {
       const response = await fetch("/api/exercises/create", {
         method: "POST",
@@ -44,29 +45,37 @@ export function useExercises() {
       return data.exercise;
     },
     onSuccess: (exercise) => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
-      toast.success(`Exercise "${exercise.exerciseName}" created.`);
+      queryClient.setQueryData<Exercise[]>(["exercises"], (old) =>
+        old ? [...old, exercise] : [exercise]
+      );
+      toast.success(`Exercise "${exercise.name}" created.`);
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (exerciseId: string) => {
+  const deleteMutation = useMutation<string, Error, string>({
+    mutationFn: async (exerciseId) => {
       const response = await fetch(`/api/exercises/${exerciseId}/delete`, {
         method: "DELETE",
       });
+
+      const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || "Failed to delete exercise");
       }
+
+      return data.id as string;
     },
-    onSuccess: (_, id) => {
+    onSuccess: (exerciseId) => {
       queryClient.setQueryData(["exercises"], (old?: Exercise[]) =>
-        old ? old.filter((e) => e.id !== id) : []
+        old ? old.filter((e) => e.id !== exerciseId) : []
       );
       toast.success("Exercise deleted.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

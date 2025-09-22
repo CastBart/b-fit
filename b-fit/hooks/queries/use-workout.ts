@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getWorkoutWithExercises } from "@/actions/fetch-workout";
+import {
+  getWorkoutWithExercises,
+  WorkoutWithExercises,
+} from "@/actions/fetch-workout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { WorkoutSchema } from "@/schemas";
-import { getQueryClient } from "@/lib/getQueryClient";
 
 type UpdateWorkoutParams = {
   id: string;
@@ -23,13 +25,15 @@ export function useWorkout(id: string) {
   });
 
   // Update mutation
-  const updateMutation = useMutation({
+  const updateMutation = useMutation<
+    WorkoutWithExercises,
+    Error,
+    UpdateWorkoutParams
+  >({
     mutationFn: async ({ id, data }: UpdateWorkoutParams) => {
       const res = await fetch(`/api/workouts/${id}/update`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
@@ -39,24 +43,28 @@ export function useWorkout(id: string) {
         throw new Error(result.error || "Failed to update workout.");
       }
 
-      return result;
+      return result.workout as WorkoutWithExercises;
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["workout", variables.id] });
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+    onSuccess: (updatedWorkout, variables) => {
+      queryClient.setQueryData(["workout", variables.id], updatedWorkout);
+      queryClient.setQueryData<WorkoutWithExercises[]>(["workouts"], (old) =>
+        old
+          ? old.map((w) => (w.id === updatedWorkout.id ? updatedWorkout : w))
+          : []
+      );
+
       toast.success("Workout updated successfully.");
       router.push("/dashboard/workouts");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error("Failed to update workout", {
         description: error?.message ?? "Something went wrong.",
       });
-      router.push("/dashboard/workouts");
     },
   });
 
   // Delete mutation
-  const deleteMutation = useMutation({
+  const deleteMutation = useMutation<string, Error, string>({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/workouts/${id}/delete`, {
         method: "DELETE",
@@ -68,11 +76,17 @@ export function useWorkout(id: string) {
         throw new Error(result.error || "Failed to delete workout.");
       }
 
-      return result;
+      return result.id as string;
     },
-    onSuccess: (_, deletedId) => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+    onSuccess: (deletedId) => {
+      // Remove single workout cache
       queryClient.removeQueries({ queryKey: ["workout", deletedId] });
+
+      // Update workouts list cache
+      queryClient.setQueryData<WorkoutWithExercises[]>(["workouts"], (old) =>
+        old ? old.filter((w) => w.id !== deletedId) : []
+      );
+
       toast.success("Workout deleted.");
       router.push("/dashboard/workouts");
     },

@@ -3,13 +3,17 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
-  const result = await deleteWorkout(params.id);
+  const params = await props.params;
 
-  if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
+  try {
+    const deletedId = await deleteWorkout(params.id);
+    return NextResponse.json({ id: deletedId });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message ?? "Failed to delete workout" },
+      { status: 400 }
+    );
   }
-
-  return NextResponse.json(result);
 }

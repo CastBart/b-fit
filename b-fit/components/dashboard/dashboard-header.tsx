@@ -23,6 +23,7 @@ export default function DashboardHeader() {
     "/dashboard/session": "Session",
     "/dashboard/workouts/create": "Create Workout",
     "/dashboard/settings": "Settings",
+    "/dashboard/sessions": "Session Calendar",
   };
 
   const exactBackPaths: Record<string, string> = {
@@ -34,6 +35,7 @@ export default function DashboardHeader() {
     "/dashboard/session": "/dashboard",
     "/dashboard/workouts/create": "/dashboard/workouts",
     "/dashboard/settings": "/dashboard",
+    "/dashboard/sessions": "/dashboard",
   };
 
   if (exactTitles[pathname]) {

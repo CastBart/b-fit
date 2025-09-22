@@ -117,7 +117,7 @@ export default function WorkoutForm({
       dispatch(
         startSession({
           workoutId,
-          workoutName: data?.workout?.name!,
+          workoutName: data?.name!,
           headId,
           flattenedMap,
         })
@@ -226,7 +226,9 @@ export default function WorkoutForm({
           {form.formState.errors.exercises.message}
         </p>
       )}
-      <MuscleGroupBody head={head} className="h-[200px]"/>
+      <div >
+        <MuscleGroupBody head={head} className="h-[100px] w-[100px] md:h-[150px] md:w-[150px] lg:h-[200px] lg:w-[200px]" />
+      </div>
       <SelectedExercisesList head={head} setHead={setHead} form={form} />
 
       <Button

@@ -1,16 +1,15 @@
 import { createWorkout } from "@/actions/create-workout";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const result = await createWorkout(body);
-
-    if (result.error) {
-      return new Response(JSON.stringify({ error: result.error }), { status: 400 });
-    }
-
-    return new Response(JSON.stringify(result), { status: 200 });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Unexpected error" }), { status: 500 });
+    const workout = await createWorkout(body);
+    return NextResponse.json({ workout });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message ?? "Failed to create workout" },
+      { status: 400 }
+    );
   }
 }

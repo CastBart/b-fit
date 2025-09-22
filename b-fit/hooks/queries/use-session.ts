@@ -63,7 +63,7 @@ export const useSession = (sessionId?: string) => {
   /**
    * Create a new session
    */
-  const createMutation = useMutation({
+  const createMutation = useMutation<SessionWithHistory, Error, SessionInput>({
     mutationFn: async (data: SessionInput) => {
       const res = await fetch("/api/session/create", {
         method: "POST",
@@ -127,10 +127,10 @@ export const useSession = (sessionId?: string) => {
         );
       });
 
-      //todo: set query data for session with history
+      //setting session data cache
       queryClient.setQueryData<SessionWithHistory>(["session", data.id], data);
 
-      //todo: set query data for sessions
+      //setting sessions list cache
       queryClient.setQueryData<SessionWithHistory[]>(["sessions"], (old) =>
         old ? [data, ...old] : [data]
       );

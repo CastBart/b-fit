@@ -30,15 +30,19 @@ import {
 } from "@dnd-kit/modifiers";
 import { SupersetManager } from "@/lib/superset-manager";
 import WorkoutSelectExerciseDrawer from "../workouts/workout-add-exercise-drawer";
+import { Exercise } from "@/lib/definitions";
+import { CheckCircle2 } from "lucide-react";
 
 type ExerciseThumbsProps = {
   exerciseIds: string[];
   onReorder: (order: string[]) => void;
+  onExerciseSelect: (exercises: Exercise[]) => void;
 };
 
 export default function ExerciseThumbs({
   exerciseIds,
   onReorder,
+  onExerciseSelect,
 }: ExerciseThumbsProps) {
   const dispatch = useDispatch();
   const { activeExerciseId, exerciseMap } = useSelector(
@@ -108,20 +112,29 @@ export default function ExerciseThumbs({
       onDragEnd={handleDragEnd}
       modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
     >
-      <SortableContext
-        items={exerciseIds}
-        strategy={horizontalListSortingStrategy}
-      >
-        <div className="flex gap-4 overflow-x-auto mb-2 custom-scrollbar-vertical">
-          {exerciseIds.map((instanceId) => {
-            const exercise = exerciseMap[instanceId];
-            const isActive = activeExerciseId === instanceId;
-            return (
-              <SortableExerciseCard key={exercise.instanceId} exercise={exercise} isActive={isActive} />
-            );
-          })}
+      <div className="flex flex-row  items-center overflow-x-auto">
+        <SortableContext
+          items={exerciseIds}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className="flex gap-4">
+            {exerciseIds.map((instanceId) => {
+              const exercise = exerciseMap[instanceId];
+              const isActive = activeExerciseId === instanceId;
+              return (
+                <SortableExerciseCard
+                  key={exercise.instanceId}
+                  exercise={exercise}
+                  isActive={isActive}
+                />
+              );
+            })}
+          </div>
+        </SortableContext>
+        <div className="ml-2">
+          <WorkoutSelectExerciseDrawer onExerciseSelect={onExerciseSelect} />
         </div>
-      </SortableContext>
+      </div>
     </DndContext>
   );
 }
@@ -133,8 +146,8 @@ function SortableExerciseCard({
   exercise: FlattenedExerciseNode;
   isActive: boolean;
 }) {
-  const exerciseMap = useSelector(
-    (state: RootState) => state.session.exerciseMap
+  const { progress, exerciseMap } = useSelector(
+    (state: RootState) => state.session
   );
   const dispatch = useDispatch();
   const {
@@ -155,11 +168,16 @@ function SortableExerciseCard({
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  // useEffect(() => {
-  //   if (isActive && nodeRef.current) {
-  //     nodeRef.current.scrollIntoView({ behavior: "smooth", inline: "center" });
-  //   }
-  // }, [isActive]);
+  //scroll into view if active. currently there is an issue where the whole page scrolls into view not just the carousel.
+  useEffect(() => {
+    if (isActive && nodeRef.current) {
+      nodeRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [isActive]);
   const isInSuperset = !!exercise.supersetGroupId;
 
   const prevNode = exercise.prev ? exerciseMap[exercise.prev] : null;
@@ -172,6 +190,12 @@ function SortableExerciseCard({
   const isLast =
     isInSuperset &&
     (!nextNode || nextNode.supersetGroupId !== exercise.supersetGroupId);
+
+  // ✅ Check completion from redux progress
+  const exerciseProgress = progress[exercise.instanceId];
+  const isCompleted =
+    exerciseProgress?.sets.length > 0 &&
+    exerciseProgress.sets.every((s) => s.completed);
 
   return (
     <div
@@ -190,10 +214,18 @@ function SortableExerciseCard({
       className="cursor-pointer relative flex items-center flex-col"
     >
       <div
-        className={`aspect-square h-[120px] flex items-center justify-center border mb-2 rounded-lg ${isActive ? "" : "opacity-50"}`}
+        className={`w-24 h-12 flex items-center justify-center border rounded-lg ${isActive ? "" : "opacity-50"}`}
       >
-        <span className="font-semibold text-center">{exercise.name}</span>
+        <span className="font-semibold text-center line-clamp-2">
+          {exercise.name}
+        </span>
       </div>
+      {/* ✅ Completion tick overlay */}
+      {isCompleted && (
+        <span className="text-center absolute top-1 right-1 w-5 h-5 text-black bg-green-700 rounded-full">
+          <CheckCircle2 className="w-5 h-5 text-black" />
+        </span>
+      )}
 
       {isInSuperset && (
         <div className="absolute bottom-0 right-0 left-0 rounded-l-full rounded-r-full h-1 bg-primary">
