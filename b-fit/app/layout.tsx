@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import ServiceWorkerRegister from "@/providers/service-worker";
 
 const outfit = Outfit({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -29,6 +30,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ServiceWorkerRegister />
           {children}
         </ThemeProvider>
       </body>
