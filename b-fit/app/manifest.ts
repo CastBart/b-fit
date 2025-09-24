@@ -29,13 +29,11 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/Screenshot-Home-Page-Desktop.png",
         sizes: "1920x1080",
         type: "image/png",
-        form_factor: "wide",
       },
       {
         src: "/Screenshot-Home-Page-Mobile2.png",
         sizes: "1080x1920",
         type: "image/png",
-        form_factor: "narrow",
       },
     ],
   };

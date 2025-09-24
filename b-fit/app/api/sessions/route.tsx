@@ -1,4 +1,4 @@
-// app/api/sessions/route.ts
+// app/api/sessions/route.ts - get
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { fetchAllSessionsDB } from "@/lib/db/session";

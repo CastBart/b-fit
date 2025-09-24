@@ -1,3 +1,4 @@
+// /app/api/workouts/[id]/update/route.ts - post
 import { updateWorkout } from "@/actions/update-workout";
 import { NextResponse } from "next/server";
 

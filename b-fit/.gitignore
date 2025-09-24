@@ -43,3 +43,7 @@ node_modules/
 /playwright/.cache/
 
 certificates
+
+# serwist
+public/sw*
+public/swe-worker*

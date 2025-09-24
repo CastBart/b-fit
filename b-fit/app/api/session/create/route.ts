@@ -1,3 +1,4 @@
+// /app/api/session/create/route.ts - post
 import { completeSession, SessionInput } from "@/actions/session-complete";
 import { NextResponse } from "next/server";
 

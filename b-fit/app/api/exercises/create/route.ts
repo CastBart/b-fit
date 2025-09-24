@@ -1,4 +1,4 @@
-// app/api/exercises/route.ts
+// app/api/exercises/create/route.ts - post
 
 import { NextResponse } from "next/server";
 import { createExerciseDB } from "@/lib/db/exercise";
