@@ -3,7 +3,11 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker" // 👈 add this for Service Worker typings
+    ],
+    "types": [
+      "@serwist/next/typings" // 👈 add this for window.serwist typing
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -37,6 +41,7 @@
     "components/home/HomeHeader.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "public/sw.js" // 👈 exclude the built service worker
   ]
 }

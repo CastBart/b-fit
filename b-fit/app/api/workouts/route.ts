@@ -1,4 +1,4 @@
-// /app/api/workouts/route.ts
+// /app/api/workouts/route.ts - get
 import { NextResponse } from "next/server";
 import { fetchUserWorkouts } from "@/actions/fetch-user-workouts";
 

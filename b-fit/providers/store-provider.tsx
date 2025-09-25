@@ -8,7 +8,7 @@ import { rehydrateSession, SessionState } from "@/store/sessionSlice";
 const SESSION_STORAGE_KEY = "session";
 const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24h
 
-export function saveSessionToStorage(session: SessionState) {
+function saveSessionToStorage(session: SessionState) {
   try {
     const payload = {
       ...session,
@@ -21,19 +21,15 @@ export function saveSessionToStorage(session: SessionState) {
   }
 }
 
-export function loadSessionFromStorage(): SessionState | null {
+function loadSessionFromStorage(): SessionState | null {
   try {
     const raw = localStorage.getItem(SESSION_STORAGE_KEY);
     if (!raw) return null;
-
     const parsed = JSON.parse(raw);
-
-    // check expiration
     if (parsed.expiresAt && parsed.expiresAt < Date.now()) {
       localStorage.removeItem(SESSION_STORAGE_KEY);
       return null;
     }
-
     return parsed as SessionState;
   } catch (err) {
     console.error("Failed to load session:", err);
@@ -47,20 +43,19 @@ export function clearSessionStorage() {
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // 1. Load saved session if exists
+    // 1. Hydrate session slice from storage if valid
     const saved = loadSessionFromStorage();
     if (saved?.isActive) {
       store.dispatch(rehydrateSession(saved));
     }
 
-    // 2. Subscribe to changes
+    // 2. Persist on any state change
     const unsubscribe = store.subscribe(() => {
       const state = store.getState();
-
       if (state.session.isActive) {
         saveSessionToStorage(state.session);
       } else {
-        localStorage.removeItem(SESSION_STORAGE_KEY);
+        clearSessionStorage();
       }
     });
 

@@ -1,4 +1,4 @@
-// app/api/exercises/route.ts
+// app/api/exercises/route.ts - get
 import { NextRequest, NextResponse } from "next/server";
 import { fetchUserExercisesDB } from "@/lib/db/exercise";
 import { auth } from "@/auth";

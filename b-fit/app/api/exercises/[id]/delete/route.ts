@@ -1,3 +1,4 @@
+// app/api/exercises/[id]/delete/route.ts - delete
 import { deleteExercise } from "@/actions/delete-exercise";
 import { NextResponse } from "next/server";
 
