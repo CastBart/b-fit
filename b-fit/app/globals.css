@@ -153,14 +153,14 @@ tr {
     --chart-4: 45 90% 55%; /* Yellow for contrast */
     --chart-5: 0 70% 60%; /* Soft red */
 
-    --sidebar-background: 210 70% 80%; /* Medium light blue for sidebar */
-    --sidebar-foreground: 210 20% 20%; /* Dark blue-gray text in sidebar */
-    --sidebar-primary: 210 80% 40%; /* Deep blue for sidebar primary elements */
-    --sidebar-primary-foreground: 210 30% 96%; /* Light text on primary elements */
-    --sidebar-accent: 210 50% 85%; /* Light accent blue for sidebar */
-    --sidebar-accent-foreground: 210 25% 30%; /* Darker text for accents */
-    --sidebar-border: 210 30% 70%; /* Subtle blue border */
-    --sidebar-ring: 210 90% 50%; /* Vibrant blue for focus */
+    --sidebar-background: 0 0% 98%; /* Medium light blue for sidebar */
+    --sidebar-foreground: 240 5.3% 26.1%; /* Dark blue-gray text in sidebar */
+    --sidebar-primary: 240 5.9% 10%; /* Deep blue for sidebar primary elements */
+    --sidebar-primary-foreground: 0 0% 98%; /* Light text on primary elements */
+    --sidebar-accent: 240 4.8% 95.9%; /* Light accent blue for sidebar */
+    --sidebar-accent-foreground: 240 5.9% 10%; /* Darker text for accents */
+    --sidebar-border: 220 13% 91%; /* Subtle blue border */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* Vibrant blue for focus */
   }
 
   .dark {

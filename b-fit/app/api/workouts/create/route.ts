@@ -1,3 +1,4 @@
+// /app/api/workouts/create/route.ts - post
 import { createWorkout } from "@/actions/create-workout";
 import { NextResponse } from "next/server";
 

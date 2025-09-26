@@ -36,6 +36,7 @@ import { useElapsedSessionTime } from "@/hooks/use-elapsed-session-time";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/queries/use-session";
 import { ExerciseDetailsDrawer } from "@/components/exercises/exercise-details-drawer";
+import { clearSessionStorage } from "@/providers/store-provider";
 
 export default function SessionPage() {
   const dispatch = useDispatch();
@@ -317,16 +318,17 @@ export default function SessionPage() {
       progress,
     };
     dispatch(endSession());
+    clearSessionStorage();
     router.push("/dashboard");
     createSession(sessionData);
   }
 
-  if (!currentExercise || !exerciseProgress)
-    return (
-      <div className="p-4 max-w-[900px] mx-auto ">
-        <div className="text-center">Loading exercise for session page...</div>
-      </div>
-    );
+  // if (!currentExercise || !exerciseProgress)
+  //   return (
+  //     <div className="p-4 max-w-[900px] mx-auto ">
+  //       <div className="text-center">Loading exercise for session page...</div>
+  //     </div>
+  //   );
 
   return (
     <div className="p-4 max-w-[900px] mx-auto">

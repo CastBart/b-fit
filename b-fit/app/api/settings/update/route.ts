@@ -1,3 +1,4 @@
+// /app/api/settings/update/route.ts - post
 import { NextResponse } from "next/server";
 import { updateUserSettings } from "@/actions/update-user-settings";
 import { UserSettings } from "@/lib/definitions";
