@@ -39,7 +39,7 @@
     ".next/types/**/*.ts",
     "app/ui/HomeNavigation.js",
     "components/home/HomeHeader.js"
-  ],
+, "tailwind.config.ts"  ],
   "exclude": [
     "node_modules",
     "public/sw.js" // 👈 exclude the built service worker

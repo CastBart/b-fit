@@ -8,10 +8,11 @@ import { StoreProvider } from "@/providers/store-provider";
 import QueryProvider from "@/providers/query-provider";
 import { GlobalTimerProvider } from "@/providers/global-timer-provider";
 import SessionResumeButton from "@/components/session/session-resume-button";
+import { ReleaseNotesDialog } from "@/components/release-notes";
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
       <StoreProvider>
         <QueryProvider>
           <SidebarProvider>
@@ -21,6 +22,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
               {children}
               <Toaster />
               <SessionResumeButton />
+              <ReleaseNotesDialog />
             </main>
             <GlobalTimerProvider />
           </SidebarProvider>
