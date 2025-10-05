@@ -41,9 +41,9 @@ export default function SessionCancelAlert() {
             className="bg-destructive text-destructive-foreground hover:bg-destructive/80"
             onClick={() => {
               // Dispatch your cancel logic here
+              dispatch(endSession());
               router.push("/dashboard");
               console.log("Session cancelled");
-              dispatch(endSession());
             }}
           >
             Yes, Cancel Session

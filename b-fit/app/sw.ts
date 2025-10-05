@@ -28,13 +28,13 @@ const serwist = new Serwist({
   precacheEntries: [
     ...(self.__SW_MANIFEST || []), // what Next injects (JS, CSS, etc.)
     "/offline", // your offline fallback page
-    "/dashboard/workouts", 
-    "/dashboard/exercises", 
-    "/dashboard/sessions", 
     "/dashboard",
-    "/dashboard/plans", 
-    "/dashboard/caloriecalculator", 
-    "/dashboard/session", 
+    "/dashboard/workouts",
+    "/dashboard/exercises",
+    "/dashboard/sessions",
+    "/dashboard/plans",
+    "/dashboard/caloriecalculator",
+    "/dashboard/session",
   ],
   skipWaiting: true,
   clientsClaim: true,
@@ -58,7 +58,7 @@ const mutationSync = new BackgroundSyncPlugin("mutation-queue", {
 });
 
 /* ---------------------------------
-   1. GET routes (API reads)
+   1. API GET
 ---------------------------------- */
 serwist.registerRoute(
   new Route(
@@ -82,7 +82,7 @@ serwist.registerRoute(
 );
 
 /* ---------------------------------
-   2. POST routes (API mutations)
+   2. API POST
 ---------------------------------- */
 serwist.registerRoute(
   new Route(
@@ -103,7 +103,7 @@ serwist.registerRoute(
 );
 
 /* ---------------------------------
-   3. DELETE routes (API deletes)
+   3. API DELETE
 ---------------------------------- */
 serwist.registerRoute(
   new Route(
@@ -122,16 +122,16 @@ serwist.registerRoute(
 );
 
 /* ---------------------------------
-   4. Page navigations (HTML documents)
+   4. Page navigations
 ---------------------------------- */
 serwist.registerRoute(
   new Route(
-    ({ request }) => request.mode === "navigate", // catch all navigations
+    ({ request }) => request.mode === "navigate",
     new NetworkFirst({
       cacheName: "pages",
       plugins: [
         new ExpirationPlugin({
-          maxEntries: 50, // keep last 50 pages
+          maxEntries: 50,
           maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
         }),
       ],
@@ -140,5 +140,45 @@ serwist.registerRoute(
   )
 );
 
-// 🚀 Add listeners for install, activate, fetch, etc.
+/* ---------------------------------
+   5. Next.js static assets (chunks, css, etc.)
+---------------------------------- */
+serwist.registerRoute(
+  new Route(
+    ({ url }) => url.pathname.startsWith("/_next/static/"),
+    new StaleWhileRevalidate({
+      cacheName: "next-static",
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 200,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+        }),
+      ],
+    })
+  )
+);
+
+/* ---------------------------------
+   6. Generic scripts / styles / workers
+   (covers runtime chunks that don’t fall under /_next/static/)
+---------------------------------- */
+serwist.registerRoute(
+  new Route(
+    ({ request }) =>
+      request.destination === "script" ||
+      request.destination === "style" ||
+      request.destination === "worker",
+    new StaleWhileRevalidate({
+      cacheName: "assets",
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60 * 24 * 30,
+        }),
+      ],
+    })
+  )
+);
+
+// 🚀 Add listeners
 serwist.addEventListeners();

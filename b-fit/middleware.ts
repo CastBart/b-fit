@@ -15,20 +15,24 @@ export default auth((req) => {
   const isPublicAuthRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute){
+  if (isApiAuthRoute) {
     return;
+  }
+  
+  if (isLoggedIn && nextUrl.pathname === "/") {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
   }
 
-  if(isAuthRoute){
-    if(isLoggedIn){
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
-    } 
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
     return;
   }
-  if(!isLoggedIn && !isPublicAuthRoute){
-    return Response.redirect(new URL("/auth/login", nextUrl))
+  if (!isLoggedIn && !isPublicAuthRoute) {
+    return Response.redirect(new URL("/auth/login", nextUrl));
   }
-  return ;
+  return;
 });
 
 export const config = {

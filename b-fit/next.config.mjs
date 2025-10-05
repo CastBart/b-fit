@@ -67,7 +67,7 @@ const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",     // your custom SW
   swDest: "public/sw.js", // compiled SW output
   register: false,
-  disable: process.env.NODE_ENV !== "production",
+  // disable: process.env.NODE_ENV !== "production",
 });
 
 export default withSerwist(baseConfig);
