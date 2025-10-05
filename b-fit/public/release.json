@@ -1,13 +1,8 @@
 {
-  "version": "1.2.3",
-  "date": "2025-10-04",
+  "version": "1.2.4",
+  "date": "2025-10-05",
   "showInApp": true,
   "notes": [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6"
+    "Fixing prebuild logic"
   ]
 }

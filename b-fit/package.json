@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "prebuild": "node scripts/prebuild.js"
+    "release-notes": "node scripts/prebuild.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
