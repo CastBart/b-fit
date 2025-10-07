@@ -1,8 +1,10 @@
 {
-  "version": "1.2.4",
-  "date": "2025-10-05",
+  "version": "1.2.5",
+  "date": "2025-10-07",
   "showInApp": true,
   "notes": [
-    "Fixing prebuild logic"
+    "Update to the weight to allow decimal values",
+    "UI change to the Exercise History during session",
+    "UI change to the set complete action"
   ]
 }

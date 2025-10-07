@@ -108,11 +108,14 @@ export default function SessionSetTable({
               exerciseProgress.activeSetNumber === set.setNumber;
             return (
               <TableRow key={set.setNumber}>
+                {/* Set number */}
                 <TableCell className="text-center">{set.setNumber}</TableCell>
+                {/* Weight input */}
                 <TableCell>
                   <Input
                     name="Weight"
                     type="number"
+                    step="any"
                     className={`text-center rounded-full transition 
                       ${currentIsActive ? "bg-muted" : ""} 
                       ${!currentIsActive && !set.completed ? "opacity-40" : ""}`}
@@ -123,12 +126,13 @@ export default function SessionSetTable({
                         updateSet({
                           exerciseId: exerciseID,
                           setNumber: set.setNumber,
-                          weight: parseInt(e.target.value),
+                          weight: parseFloat(e.target.value),
                         })
                       )
                     }
                   />
                 </TableCell>
+                {/* Reps Input */}
                 <TableCell>
                   <Input
                     name="Reps"
@@ -149,10 +153,10 @@ export default function SessionSetTable({
                     }
                   />
                 </TableCell>
+                {/* Complete Check box */}
                 <TableCell className="flex items-center justify-center">
                   <div
-                    className={`border py-1 px-2 rounded-full transition
-                      ${set.completed ? "" : currentIsActive ? "bg-primary cursor-pointer" : "opacity-40 cursor-not-allowed "}`}
+                    className={` transition ${set.completed ? "" : currentIsActive ? "bg-primary cursor-pointer border py-1 px-2 rounded-full" : "opacity-40 cursor-not-allowed "}`}
                     onClick={() => {
                       if (!set.completed && currentIsActive) {
                         dispatch(
@@ -177,7 +181,10 @@ export default function SessionSetTable({
           })}
         </TableBody>
       </Table>
-      <LatestExerciseHistory id={exerciseMap[exerciseID].id} onSelectExerciseDetails={onSelectExerciseDetails}/>
+      <LatestExerciseHistory
+        id={exerciseMap[exerciseID].id}
+        onSelectExerciseDetails={onSelectExerciseDetails}
+      />
     </div>
   );
 }

@@ -18,7 +18,7 @@ interface LatestExerciseHistoryProps {
 
 export default function LatestExerciseHistory({
   id,
-  onSelectExerciseDetails
+  onSelectExerciseDetails,
 }: LatestExerciseHistoryProps) {
   const { data, isFetching } = useExercise(id);
 
@@ -46,30 +46,36 @@ export default function LatestExerciseHistory({
       : latest
   );
   return (
-    <div className="rounded-xl border bg-secondary/50" onClick={() => onSelectExerciseDetails(id)}>
-      <div className="px-4 pt-2 flex justify-between">
-        <div>{latest.workoutName}</div>
-        <div>{moment(latest.sessionStartTime).format("MMM Do YY hh:mm")}</div>
-      </div>
-      <Table>
-        <TableCaption className="hidden">Sets</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-center">Set</TableHead>
-            <TableHead className="text-center">Weight</TableHead>
-            <TableHead className="text-center">Reps</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {latest.sets.map((set, idx) => (
-            <TableRow key={idx}>
-              <TableCell className="text-center">{set.setNumber}</TableCell>
-              <TableCell className="text-center">{set.weight}</TableCell>
-              <TableCell className="text-center">{set.reps}</TableCell>
+    <div className="flex flex-col space-y-2 text-muted-foreground">
+      <span className="w-full text-center ">Exercise History</span>
+      <div
+        className="rounded-3xl border bg-secondary/50"
+        onClick={() => onSelectExerciseDetails(id)}
+      >
+        <div className="px-6 pt-2 flex justify-between">
+          <div className="">{latest.workoutName}</div>
+          <div>{moment(latest.sessionStartTime).format("ddd, MMM Do YY hh:mm")}</div>
+        </div>
+        <Table>
+          <TableCaption className="hidden">Sets</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">Set</TableHead>
+              <TableHead className="text-center">Weight</TableHead>
+              <TableHead className="text-center">Reps</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {latest.sets.map((set, idx) => (
+              <TableRow key={idx}>
+                <TableCell className="text-center">{set.setNumber}</TableCell>
+                <TableCell className="text-center">{set.weight}</TableCell>
+                <TableCell className="text-center">{set.reps}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
