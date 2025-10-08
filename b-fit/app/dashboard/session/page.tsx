@@ -105,8 +105,10 @@ export default function SessionPage() {
   useEffect(() => {
     if (!emblaApi) return;
     emblaApi.on("select", onSelect).on("reInit", onSelect);
-    onSelect(); // initialize on mount
-  }, [emblaApi, onSelect]);
+    if (!activeExerciseId) {
+      onSelect(); // initialize on mount
+    }
+  }, [emblaApi, onSelect, activeExerciseId]);
 
   //update index after user click or complete set logic
   useEffect(() => {

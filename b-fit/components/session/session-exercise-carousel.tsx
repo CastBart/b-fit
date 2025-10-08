@@ -7,6 +7,7 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
+  MouseSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -50,16 +51,16 @@ export default function ExerciseThumbs({
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         delay: 250,
-        tolerance: 10,
+        tolerance: 5,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
         delay: 250,
-        tolerance: 10,
+        tolerance: 5,
       },
     })
   );
@@ -109,6 +110,7 @@ export default function ExerciseThumbs({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      // onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
     >
@@ -117,7 +119,7 @@ export default function ExerciseThumbs({
           items={exerciseIds}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-2">
             {exerciseIds.map((instanceId) => {
               const exercise = exerciseMap[instanceId];
               const isActive = activeExerciseId === instanceId;
@@ -168,7 +170,7 @@ function SortableExerciseCard({
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  //scroll into view if active. currently there is an issue where the whole page scrolls into view not just the carousel.
+  
   useEffect(() => {
     if (isActive && nodeRef.current) {
       nodeRef.current.scrollIntoView({
@@ -228,13 +230,13 @@ function SortableExerciseCard({
       )}
 
       {isInSuperset && (
-        <div className="absolute bottom-0 right-0 left-0 rounded-l-full rounded-r-full h-1 bg-primary">
+        <div className="absolute -bottom-1 right-0 left-0 rounded-l-full rounded-r-full h-1 bg-primary">
           {/* Core horizontal line */}
           <div
             className={clsx(
-              "h-full absolute bg-primary",
-              isFirst && "rounded-l-full -right-4 left-0",
-              isLast && "rounded-r-full -left-4 right-0"
+              "h-full absolute left-0 right-0 bg-primary",
+              isFirst && "rounded-l-full -right-5",
+              isLast && "rounded-r-full -left-5"
             )}
           />
         </div>

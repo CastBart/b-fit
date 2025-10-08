@@ -8,6 +8,7 @@ import {
   PointerSensor,
   TouchSensor,
   DragEndEvent,
+  MouseSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -60,7 +61,7 @@ export default function SelectedExercisesList({
   form,
 }: SelectedExerciseListProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         delay: 250,
         tolerance: 10,
