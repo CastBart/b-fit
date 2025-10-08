@@ -1,10 +1,10 @@
 {
-  "version": "1.2.5",
-  "date": "2025-10-07",
+  "version": "1.2.6",
+  "date": "2025-10-08",
   "showInApp": true,
   "notes": [
-    "Update to the weight to allow decimal values",
-    "UI change to the Exercise History during session",
-    "UI change to the set complete action"
+    "Fixing issue where after page reload, the active exercise is always set to first exercise.",
+    "Fixed issue where on mobile devices, the exercises were unsortable through a drag and drop feature.",
+    "UI Upgrade to supersetted exercises."
   ]
 }
