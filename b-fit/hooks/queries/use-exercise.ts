@@ -1,17 +1,26 @@
 // hooks/use-exercise.ts
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExerciseHistory, ExerciseWithHistory } from "@/actions/fetch-exercise";
+import { ExerciseWithHistory } from "@/actions/fetch-exercise";
 import { Exercise } from "@/lib/definitions";
-import { getQueryClient } from "@/lib/getQueryClient";
 
 export function useExercise(id: string) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
+
   const { data, isLoading, isFetching, isError, error } = useQuery<
     ExerciseWithHistory,
     Error
   >({
     queryKey: ["exercise", id],
     queryFn: async () => {
+      // ✅ Detect offline
+      if (!navigator.onLine) {
+        console.warn("Offline mode: returning cached exercise data");
+        const cached = queryClient.getQueryData<ExerciseWithHistory>(["exercise", id]);
+        if (cached) return cached;
+        throw new Error("No cached data available for offline mode");
+      }
+
+      // ✅ Normal fetch
       const res = await fetch(`/api/exercises/${id}`);
       if (!res.ok) {
         const { error } = await res.json();
@@ -21,19 +30,19 @@ export function useExercise(id: string) {
     },
     enabled: !!id,
     placeholderData: () => {
-      // Look up this exercise in the exercises list query cache
+      // ✅ Use cached exercises list as a fallback
       const exercises = queryClient.getQueryData<Exercise[]>(["exercises"]);
       const exercise = exercises?.find((e) => e.id === id);
-
       if (exercise) {
-        return { exercise, history: [] }; // hydrate instantly
+        return { exercise, history: [] };
       }
       return undefined;
     },
+    retry: false, 
   });
 
   return {
-    data, // includes { exercise, history }
+    data,
     isLoading,
     isFetching,
     isError,

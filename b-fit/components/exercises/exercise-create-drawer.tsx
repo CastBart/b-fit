@@ -33,6 +33,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateExerciseSchema } from "@/schemas/index";
 import { useExercises } from "@/hooks/queries/use-exercises";
 import { Loader2 } from "lucide-react";
+import { v4 as uuid } from "uuid";
 
 export default function CreateExerciseDrawer() {
   const { isCreating, createExercise } = useExercises();
@@ -63,7 +64,8 @@ export default function CreateExerciseDrawer() {
   }
 
   function onSubmit(values: z.infer<typeof CreateExerciseSchema>) {
-    createExercise(values, {
+    const exerciseWithID = { ...values, id: uuid() };
+    createExercise(exerciseWithID, {
       onSuccess: () => {
         form.reset();
         setOpen(false);
@@ -72,6 +74,11 @@ export default function CreateExerciseDrawer() {
         setError(err.message); // <-- this will show inside FormError
       },
     });
+
+    if (!navigator.onLine) {
+      form.reset();
+      setOpen(false);
+    }
   }
 
   return (

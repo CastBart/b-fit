@@ -31,6 +31,7 @@ export const NewPasswordSchema = z.object({
 });
 
 export const CreateExerciseSchema = z.object({ 
+  id: z.string().optional(),
   exerciseName: z.string().min(1, { message: "Exercise name is required" }),
   equipment: z
     .union([z.nativeEnum(ExerciseEquipment), z.literal("")])

@@ -1,10 +1,10 @@
 {
-  "version": "1.2.6",
-  "date": "2025-10-08",
+  "version": "1.2.9",
+  "date": "2025-10-12",
   "showInApp": true,
   "notes": [
-    "Fixing issue where after page reload, the active exercise is always set to first exercise.",
-    "Fixed issue where on mobile devices, the exercises were unsortable through a drag and drop feature.",
-    "UI Upgrade to supersetted exercises."
+    "Added ability to start workout from the workouts page",
+    "Offline Mutations for exercises",
+    "Caching and Prechache"
   ]
 }

@@ -110,6 +110,7 @@ export interface Exercise {
   type: ExerciseType;
   notes?: string;
   instructions?: string;
+  supsetGroupId?: string;
 }
 
 // Export enums for use in other files

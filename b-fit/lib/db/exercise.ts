@@ -30,6 +30,7 @@ export async function createExerciseDB(
     throw new Error("Invalid exercise fields!");
   }
   const {
+    id,
     exerciseName,
     equipment,
     primaryMuscle,
@@ -50,8 +51,11 @@ export async function createExerciseDB(
   if (!equipmentEnumKey || !primaryMuscleEnumKey || !exerciseTypeEnumKey) {
     throw new Error("Invalid enum values provided.");
   }
-  const exercise = await db.exercise.create({
-    data: {
+  const exercise = await db.exercise.upsert({
+    where: { id: id ?? "" },
+    update: {},
+    create: {
+      id,
       name: exerciseName,
       equipment: equipmentEnumKey,
       primaryMuscle: primaryMuscleEnumKey,

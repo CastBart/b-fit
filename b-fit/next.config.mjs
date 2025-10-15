@@ -1,4 +1,7 @@
 import withSerwistInit from "@serwist/next";
+import { v4 as uuid } from "uuid";
+
+const revision = uuid();
 
 /** @type {import('next').NextConfig} */
 const baseConfig = {
@@ -64,10 +67,22 @@ const baseConfig = {
 
 // Wrap with Serwist
 const withSerwist = withSerwistInit({
-  swSrc: "app/sw.ts",     // your custom SW
+  swSrc: "sw.ts",     // your custom SW
   swDest: "public/sw.js", // compiled SW output
-  register: false,
+  register: true,
   disable: process.env.NODE_ENV !== "production",
+  cacheOnNavigation: true,
+  reloadOnOnline: false,
+  additionalPrecacheEntries: [
+    { url: "/offline", revision },
+    { url: "/dashboard", revision },
+    { url: "/dashboard/workouts", revision },
+    { url: "/dashboard/exercises", revision },
+    { url: "/dashboard/sessions", revision },
+    { url: "/dashboard/plans", revision },
+    { url: "/dashboard/caloriecalculator", revision },
+    { url: "/dashboard/session", revision },
+  ],
 });
 
 export default withSerwist(baseConfig);

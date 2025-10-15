@@ -36,6 +36,7 @@ export async function fetchUserWorkouts(): Promise<Workout[]> {
       primaryMuscle: getEnumValueByKey(MuscleGroup, we.exercise.primaryMuscle),
       auxiliaryMuscles: getEnumValuesByKeys(MuscleGroup, we.exercise.auxiliaryMuscles),
       type: getEnumValueByKey(ExerciseType, we.exercise.exerciseType),
+      supersetGroupId: we.supersetGroupId || null,
     })),
   }));
 }

@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("[EXERCISE_CREATE] Incoming data:", body);
     // Ensure the user is authenticated
     const session = await auth();
     const userId = session?.user?.id;

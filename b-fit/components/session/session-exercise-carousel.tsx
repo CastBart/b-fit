@@ -234,9 +234,9 @@ function SortableExerciseCard({
           {/* Core horizontal line */}
           <div
             className={clsx(
-              "h-full absolute left-0 right-0 bg-primary",
-              isFirst && "rounded-l-full -right-5",
-              isLast && "rounded-r-full -left-5"
+              "h-full absolute bg-primary",
+              isFirst && "rounded-l-full -right-5 left-0",
+              isLast && "rounded-r-full -left-5 right-0"
             )}
           />
         </div>
